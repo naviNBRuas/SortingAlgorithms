@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# C/C++
+*.o
+*.out
+*.exe
+
+# Build artifacts
+build/
+dist/
+
+# Data
+data/
+
+# Notebooks
+.ipynb_checkpoints
+venv/
