@@ -1,14 +1,14 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 -O2
 
-SRCS = bubble_sort.c insertion_sort.c selection_sort.c merge_sort.c quick_sort.c bogo_sort.c cocktail_shaker_sort.c shell_sort.c
+SRCS = bubble_sort.c insertion_sort.c selection_sort.c merge_sort.c quick_sort.c bogo_sort.c cocktail_shaker_sort.c shell_sort.c bucket_sort.c
 
 # Add your C test source files here
-TEST_SRCS = tests/c/test_bubble_sort.c tests/c/test_insertion_sort.c tests/c/test_selection_sort.c tests/c/test_merge_sort.c tests/c/test_quick_sort.c tests/c/test_bogo_sort.c tests/c/test_cocktail_shaker_sort.c tests/c/test_shell_sort.c
+TEST_SRCS = tests/c/test_bubble_sort.c tests/c/test_insertion_sort.c tests/c/test_selection_sort.c tests/c/test_merge_sort.c tests/c/test_quick_sort.c tests/c/test_bogo_sort.c tests/c/test_cocktail_shaker_sort.c tests/c/test_shell_sort.c tests/c/test_bucket_sort.c
 
 # Executable names
 TARGETS = $(SRCS:.c=.out)
-TEST_TARGETS = tests/c/test_bubble_sort.test tests/c/test_insertion_sort.test tests/c/test_selection_sort.test tests/c/test_merge_sort.test tests/c/test_quick_sort.test tests/c/test_bogo_sort.test tests/c/test_cocktail_shaker_sort.test tests/c/test_shell_sort.test
+TEST_TARGETS = tests/c/test_bubble_sort.test tests/c/test_insertion_sort.test tests/c/test_selection_sort.test tests/c/test_merge_sort.test tests/c/test_quick_sort.test tests/c/test_bogo_sort.test tests/c/test_cocktail_shaker_sort.test tests/c/test_shell_sort.test tests/c/test_bucket_sort.test
 
 .PHONY: all clean tests
 
@@ -51,6 +51,10 @@ tests/c/test_cocktail_shaker_sort.test: tests/c/test_cocktail_shaker_sort.c src/
 # Explicit rule to build test_shell_sort.test
 tests/c/test_shell_sort.test: tests/c/test_shell_sort.c src/c/shell_sort.c
 	$(CC) $(CFLAGS) -o $@ tests/c/test_shell_sort.c src/c/shell_sort.c
+
+# Explicit rule to build test_bucket_sort.test
+tests/c/test_bucket_sort.test: tests/c/test_bucket_sort.c src/c/bucket_sort.c
+	$(CC) $(CFLAGS) -o $@ tests/c/test_bucket_sort.c src/c/bucket_sort.c
 
 clean:
 	rm -f $(TARGETS) $(TEST_TARGETS) *.o
