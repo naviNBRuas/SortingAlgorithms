@@ -2,15 +2,17 @@ import argparse
 import json
 import subprocess
 import sys
+import os
 
-sys.path.append('.')
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
 from visualizer.visualize import visualize
-from src.python.bubble_sort import bubble_sort
-from src.python.insertion_sort import insertion_sort
-from src.python.selection_sort import selection_sort
-from src.python.merge_sort import merge_sort
-from src.python.quick_sort import quick_sort
-from src.python.bogo_sort import bogo_sort
+import src.python.bubble_sort
+import src.python.insertion_sort
+import src.python.selection_sort
+import src.python.merge_sort
+import src.python.quick_sort
+import src.python.bogo_sort
 
 def main():
     parser = argparse.ArgumentParser(description="Sorting Algorithms Research Suite")
@@ -18,7 +20,7 @@ def main():
 
     # --- Run command ---
     run_parser = subparsers.add_parser("run", help="Run a sorting algorithm")
-    run_parser.add_argument("algorithm", help="The algorithm to run", choices=["bubble_sort", "insertion_sort", "selection_sort", "merge_sort", "quick_sort", "bogo_sort"])
+    run_parser.add_argument("algorithm", help="The algorithm to run", choices=["bubble_sort", "insertion_sort", "selection_sort", "merge_sort", "quick_sort", "bogo_sort", "cocktail_shaker_sort"])
     run_parser.add_argument("--language", choices=["python", "c"], default="python", help="The implementation language")
     run_parser.add_argument("--data", required=True, help="Path to the input data file (JSON list)")
     run_parser.add_argument("--trace", help="Path to save the execution trace (for visualization)")
@@ -44,37 +46,37 @@ def main():
         if args.language == "python":
             if args.algorithm == "bubble_sort":
                 trace = {}
-                bubble_sort(data, trace)
+                src.python.bubble_sort.bubble_sort(data, trace)
                 if args.trace:
                     with open(args.trace, 'w') as f:
                         json.dump(trace, f)
             elif args.algorithm == "insertion_sort":
                 trace = {}
-                insertion_sort(data, trace)
+                src.python.insertion_sort.insertion_sort(data, trace)
                 if args.trace:
                     with open(args.trace, 'w') as f:
                         json.dump(trace, f)
             elif args.algorithm == "selection_sort":
                 trace = {}
-                selection_sort(data, trace)
+                src.python.selection_sort.selection_sort(data, trace)
                 if args.trace:
                     with open(args.trace, 'w') as f:
                         json.dump(trace, f)
             elif args.algorithm == "merge_sort":
                 trace = {}
-                merge_sort(data, trace)
+                src.python.merge_sort.merge_sort(data, trace)
                 if args.trace:
                     with open(args.trace, 'w') as f:
                         json.dump(trace, f)
             elif args.algorithm == "quick_sort":
                 trace = {}
-                quick_sort(data, trace)
+                src.python.quick_sort.quick_sort(data, trace)
                 if args.trace:
                     with open(args.trace, 'w') as f:
                         json.dump(trace, f)
             elif args.algorithm == "bogo_sort":
                 trace = {}
-                bogo_sort(data, trace)
+                src.python.bogo_sort.bogo_sort(data, trace)
                 if args.trace:
                     with open(args.trace, 'w') as f:
                         json.dump(trace, f)
@@ -160,6 +162,20 @@ def main():
                 try:
                     # Run the C executable
                     result = subprocess.run(["./bogo_sort.out", temp_input_file_path, args.trace], capture_output=True, text=True)
+                    if result.returncode != 0:
+                        print(f"C executable failed with error: {result.stderr}")
+                finally:
+                    import os
+                    os.remove(temp_input_file_path)
+            elif args.algorithm == "cocktail_shaker_sort":
+                import tempfile
+                with tempfile.NamedTemporaryFile(mode='w+', delete=False) as temp_input_file:
+                    temp_input_file.write(' '.join(map(str, data)))
+                    temp_input_file_path = temp_input_file.name
+
+                try:
+                    # Run the C executable
+                    result = subprocess.run(["./cocktail_shaker_sort.out", temp_input_file_path, args.trace], capture_output=True, text=True)
                     if result.returncode != 0:
                         print(f"C executable failed with error: {result.stderr}")
                 finally:
