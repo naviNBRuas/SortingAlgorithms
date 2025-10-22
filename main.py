@@ -2,17 +2,15 @@ import argparse
 import json
 import subprocess
 import sys
-import os
 
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-
+sys.path.append('.')
 from visualizer.visualize import visualize
-import src.python.bubble_sort
-import src.python.insertion_sort
-import src.python.selection_sort
-import src.python.merge_sort
-import src.python.quick_sort
-import src.python.bogo_sort
+from src.python.bubble_sort import bubble_sort
+from src.python.insertion_sort import insertion_sort
+from src.python.selection_sort import selection_sort
+from src.python.merge_sort import merge_sort
+from src.python.quick_sort import quick_sort
+from src.python.bogo_sort import bogo_sort
 
 def main():
     parser = argparse.ArgumentParser(description="Sorting Algorithms Research Suite")
@@ -46,37 +44,37 @@ def main():
         if args.language == "python":
             if args.algorithm == "bubble_sort":
                 trace = {}
-                src.python.bubble_sort.bubble_sort(data, trace)
+                bubble_sort(data, trace)
                 if args.trace:
                     with open(args.trace, 'w') as f:
                         json.dump(trace, f)
             elif args.algorithm == "insertion_sort":
                 trace = {}
-                src.python.insertion_sort.insertion_sort(data, trace)
+                insertion_sort(data, trace)
                 if args.trace:
                     with open(args.trace, 'w') as f:
                         json.dump(trace, f)
             elif args.algorithm == "selection_sort":
                 trace = {}
-                src.python.selection_sort.selection_sort(data, trace)
+                selection_sort(data, trace)
                 if args.trace:
                     with open(args.trace, 'w') as f:
                         json.dump(trace, f)
             elif args.algorithm == "merge_sort":
                 trace = {}
-                src.python.merge_sort.merge_sort(data, trace)
+                merge_sort(data, trace)
                 if args.trace:
                     with open(args.trace, 'w') as f:
                         json.dump(trace, f)
             elif args.algorithm == "quick_sort":
                 trace = {}
-                src.python.quick_sort.quick_sort(data, trace)
+                quick_sort(data, trace)
                 if args.trace:
                     with open(args.trace, 'w') as f:
                         json.dump(trace, f)
             elif args.algorithm == "bogo_sort":
                 trace = {}
-                src.python.bogo_sort.bogo_sort(data, trace)
+                bogo_sort(data, trace)
                 if args.trace:
                     with open(args.trace, 'w') as f:
                         json.dump(trace, f)

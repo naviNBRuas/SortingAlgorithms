@@ -20,10 +20,11 @@ def exponential_search(arr, target):
         return 0
 
     # Find range for binary search by repeated doubling
-    i = 1
-    while i < n and arr[i] <= target:
-        i *= 2
+    # Find range for binary search by repeated doubling
+    bound = 1
+    while bound < n and arr[bound] <= target:
+        bound *= 2
 
     # Call binary search for the found range
-    # The range is from i/2 to min(i, n-1)
-    return binary_search(arr, target, i // 2, min(i, n) - 1)
+    # The range is from bound/2 to min(bound, n-1)
+    return binary_search(arr, target, bound // 2, min(bound, n) - 1)
