@@ -4,7 +4,7 @@
 | Sorting                | IntroSort                                    |                  O(n log n) | Hybrid                 | QuickSort with fallback to HeapSort.                 | Implemented     |
 | Sorting                | Pancake Sort                                 |                       O(n²) | Comparison             | Flipping prefix reversals; puzzle-like.              | Implemented     |
 | Sorting                | Strand Sort                                  |                  O(n log n) | Comparison             | Extracts sorted runs iteratively.                    | Implemented     |
-| Sorting                | Bitonic Sort                                 |                   O(log² n) | Parallel               | GPU/FPGA-friendly sorting network.                   | Missing     |
+| Sorting                | Bitonic Sort                                 |                   O(log² n) | Parallel               | GPU/FPGA-friendly sorting network.                   | Implemented     |
 | Sorting                | Batcher Odd-Even Merge                       |                   O(log² n) | Parallel               | Sorting network used in hardware.                    | Missing     |
 | Sorting                | FlashSort                                    |                O(n) average | Distribution           | Fast for specific distributions; niche.              | Missing     |
 | Sorting                | SmoothSort                                   |                  O(n log n) | Adaptive               | Dijkstra’s adaptive heap-based sort.                 | Missing     |
