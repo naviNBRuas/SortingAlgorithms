@@ -1,7 +1,7 @@
 | Category | Name | Efficiency | Type | Description | Status |
 | ---------------------- | -------------------------------------------- | --------------------------: | ---------------------- | ---------------------------------------------------- | -------- |
 | Sorting                | TimSort                                      |                  O(n log n) | Hybrid                 | Adaptive merge sort used in Python/Java.             | Implemented |
-| Sorting                | IntroSort                                    |                  O(n log n) | Hybrid                 | QuickSort with fallback to HeapSort.                 | Missing     |
+| Sorting                | IntroSort                                    |                  O(n log n) | Hybrid                 | QuickSort with fallback to HeapSort.                 | Implemented     |
 | Sorting                | Pancake Sort                                 |                       O(n²) | Comparison             | Flipping prefix reversals; puzzle-like.              | Missing     |
 | Sorting                | Strand Sort                                  |                  O(n log n) | Comparison             | Extracts sorted runs iteratively.                    | Missing     |
 | Sorting                | Bitonic Sort                                 |                   O(log² n) | Parallel               | GPU/FPGA-friendly sorting network.                   | Missing     |

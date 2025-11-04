@@ -19,6 +19,7 @@ from src.python.sorting.radix_sort import radix_sort
 from src.python.sorting.shell_sort import shell_sort
 from src.python.sorting.comb_sort import comb_sort
 from src.python.sorting.gnome_sort import gnome_sort
+from src.python.sorting.introsort import introsort
 
 PYTHON_ALGORITHMS = {
     "bubble_sort": bubble_sort,
@@ -35,6 +36,7 @@ PYTHON_ALGORITHMS = {
     "shell_sort": shell_sort,
     "comb_sort": comb_sort,
     "gnome_sort": gnome_sort,
+    "introsort": introsort,
 }
 
 C_ALGORITHMS = [
@@ -52,6 +54,7 @@ C_ALGORITHMS = [
     "heap_sort",
     "comb_sort",
     "gnome_sort",
+    "introsort",
 ]
 
 def run_c_algorithm(algorithm, data, trace_path, benchmark=False):
