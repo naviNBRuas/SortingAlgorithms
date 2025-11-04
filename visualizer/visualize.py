@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
 
-def visualize(trace_file, output_gif):
+def visualize(trace_file, output_gif, algorithm_name="Sorting Algorithm"):
     """Generates a GIF visualization of a sorting algorithm from a trace file."""
     with open(trace_file, 'r') as f:
         trace_data = json.load(f)
@@ -12,11 +12,11 @@ def visualize(trace_file, output_gif):
     trace = trace_data['steps']
 
     fig, ax = plt.subplots()
-    ax.set_title('Bubble Sort')
+    ax.set_title(algorithm_name)
     bar_rects = ax.bar(range(len(arr)), arr, align='edge')
 
     def update_fig(step):
-        ax.set_title(f"Bubble Sort - {step['type']}")
+        ax.set_title(f"{algorithm_name} - {step['type']}")
         for rect in bar_rects:
             rect.set_color('blue')
 
