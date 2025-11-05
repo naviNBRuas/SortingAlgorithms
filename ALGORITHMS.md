@@ -6,13 +6,13 @@
 | Sorting                | Strand Sort                                  |                  O(n log n) | Comparison             | Extracts sorted runs iteratively.                    | Implemented     |
 | Sorting                | Bitonic Sort                                 |                   O(log² n) | Parallel               | GPU/FPGA-friendly sorting network.                   | Implemented     |
 | Sorting                | Batcher Odd-Even Merge                       |                   O(log² n) | Parallel               | Sorting network used in hardware.                    | Missing     |
-| Sorting                | FlashSort                                    |                O(n) average | Distribution           | Fast for specific distributions; niche.              | Missing     |
-| Sorting                | SmoothSort                                   |                  O(n log n) | Adaptive               | Dijkstra’s adaptive heap-based sort.                 | Missing     |
-| Sorting                | American Flag Sort                           |                        O(n) | Distribution           | Radix-like string sorting for bytes.                 | Missing     |
-| Sorting                | SpreadSort                                   |                    O(n) avg | Hybrid                 | Radix + comparison hybrid; practical fast.           | Missing     |
-| Sorting                | Patience Sorting                             |                  O(n log n) | Greedy/Stacks          | Builds piles; used for LIS.                          | Missing     |
-| Sorting                | Cycle Sort                                   |                       O(n²) | Comparison             | Minimizes writes; for write-costly media.            | Missing     |
-| Sorting                | Stooge Sort                                  |                 O(n^2.7095) | Recursive              | Comically bad recursive sort.                        | Missing     |
+| Sorting                | FlashSort                                    |                O(n) average | Distribution           | Fast for specific distributions; niche.              | Implemented     |
+| Sorting                | SmoothSort                                   |                  O(n log n) | Adaptive               | Dijkstra’s adaptive heap-based sort.                 | Implemented     |
+| Sorting                | American Flag Sort                           |                        O(n) | Distribution           | Radix-like string sorting for bytes.                 | Implemented     |
+| Sorting                | SpreadSort                                   |                    O(n) avg | Hybrid                 | Radix + comparison hybrid; practical fast.           | Implemented     |
+| Sorting                | Patience Sorting                             |                  O(n log n) | Greedy/Stacks          | Builds piles; used for LIS.                          | Implemented     |
+| Sorting                | Cycle Sort                                   |                       O(n²) | Comparison             | Minimizes writes; for write-costly media.            | Implemented     |
+| Sorting                | Stooge Sort                                  |                 O(n^2.7095) | Recursive              | Comically bad recursive sort.                        | Implemented     |
 | Searching              | Interpolation Search                         |            O(log log n) avg | Interpolation          | Assumes uniform key distribution.                    |
 | Searching              | Hash Lookup                                  |                    O(1) avg | Hashing                | Constant-time expected lookup.                       |
 | Searching              | Linear Probing                               |                    O(1) avg | Hashing                | Collision strategy; primary clustering issues.       |

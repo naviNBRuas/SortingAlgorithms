@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 -O2 -Isrc/c -lm
 
-SRCS = bubble_sort.c insertion_sort.c selection_sort.c merge_sort.c quick_sort.c bogo_sort.c cocktail_shaker_sort.c shell_sort.c bucket_sort.c radix_sort.c counting_sort.c heap_sort.c comb_sort.c gnome_sort.c timsort.c introsort.c pancake_sort.c strand_sort.c bitonic_sort.c src/c/cjson/cJSON.c
+SRCS = bubble_sort.c insertion_sort.c selection_sort.c merge_sort.c quick_sort.c bogo_sort.c cocktail_shaker_sort.c shell_sort.c bucket_sort.c radix_sort.c counting_sort.c heap_sort.c comb_sort.c gnome_sort.c timsort.c introsort.c pancake_sort.c strand_sort.c bitonic_sort.c batcher_odd_even_merge_sort.c flash_sort.c smooth_sort.c american_flag_sort.c spread_sort.c patience_sort.c cycle_sort.c stooge_sort.c src/c/cjson/cJSON.c
 
 # Add your C test source files here
 TEST_SRCS = tests/c/test_bubble_sort.c tests/c/test_insertion_sort.c tests/c/test_selection_sort.c tests/c/test_merge_sort.c tests/c/test_quick_sort.c tests/c/test_bogo_sort.c tests/c/test_cocktail_shaker_sort.c tests/c/test_shell_sort.c tests/c/test_bucket_sort.c tests/c/test_radix_sort.c tests/c/test_counting_sort.c tests/c/test_heap_sort.c tests/c/test_comb_sort.c tests/c/test_gnome_sort.c tests/c/test_timsort.c
@@ -95,6 +95,38 @@ tests/c/test_strand_sort.test: tests/c/test_strand_sort.c src/c/strand_sort.c
 # Explicit rule to build test_bitonic_sort.test
 tests/c/test_bitonic_sort.test: tests/c/test_bitonic_sort.c src/c/bitonic_sort.c
 	$(CC) $(CFLAGS) -o $@ tests/c/test_bitonic_sort.c src/c/bitonic_sort.c
+
+# Explicit rule to build test_batcher_odd_even_merge_sort.test
+tests/c/test_batcher_odd_even_merge_sort.test: tests/c/test_batcher_odd_even_merge_sort.c src/c/batcher_odd_even_merge_sort.c
+	$(CC) $(CFLAGS) -o $@ tests/c/test_batcher_odd_even_merge_sort.c src/c/batcher_odd_even_merge_sort.c
+
+# Explicit rule to build test_flash_sort.test
+tests/c/test_flash_sort.test: tests/c/test_flash_sort.c src/c/flash_sort.c
+	$(CC) $(CFLAGS) -o $@ tests/c/test_flash_sort.c src/c/flash_sort.c
+
+# Explicit rule to build test_smooth_sort.test
+tests/c/test_smooth_sort.test: tests/c/test_smooth_sort.c src/c/smooth_sort.c
+	$(CC) $(CFLAGS) -o $@ tests/c/test_smooth_sort.c src/c/smooth_sort.c
+
+# Explicit rule to build test_american_flag_sort.test
+tests/c/test_american_flag_sort.test: tests/c/test_american_flag_sort.c src/c/american_flag_sort.c
+	$(CC) $(CFLAGS) -o $@ tests/c/test_american_flag_sort.c src/c/american_flag_sort.c
+
+# Explicit rule to build test_spread_sort.test
+tests/c/test_spread_sort.test: tests/c/test_spread_sort.c src/c/spread_sort.c
+	$(CC) $(CFLAGS) -o $@ tests/c/test_spread_sort.c src/c/spread_sort.c
+
+# Explicit rule to build test_patience_sort.test
+tests/c/test_patience_sort.test: tests/c/test_patience_sort.c src/c/patience_sort.c
+	$(CC) $(CFLAGS) -o $@ tests/c/test_patience_sort.c src/c/patience_sort.c
+
+# Explicit rule to build test_cycle_sort.test
+tests/c/test_cycle_sort.test: tests/c/test_cycle_sort.c src/c/cycle_sort.c
+	$(CC) $(CFLAGS) -o $@ tests/c/test_cycle_sort.c src/c/cycle_sort.c
+
+# Explicit rule to build test_stooge_sort.test
+tests/c/test_stooge_sort.test: tests/c/test_stooge_sort.c src/c/stooge_sort.c
+	$(CC) $(CFLAGS) -o $@ tests/c/test_stooge_sort.c src/c/stooge_sort.c
 
 clean:
 	rm -f $(TARGETS) $(TEST_TARGETS) *.o

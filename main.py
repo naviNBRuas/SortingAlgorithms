@@ -23,6 +23,14 @@ from src.python.sorting.introsort import introsort
 from src.python.sorting.pancake_sort import pancake_sort
 from src.python.sorting.strand_sort import strand_sort
 from src.python.sorting.bitonic_sort import bitonic_sort
+from src.python.sorting.batcher_odd_even_merge_sort import batcher_odd_even_merge_sort
+from src.python.sorting.flash_sort import flash_sort
+from src.python.sorting.smooth_sort import smooth_sort
+from src.python.sorting.american_flag_sort import american_flag_sort
+from src.python.sorting.spread_sort import spread_sort
+from src.python.sorting.patience_sort import patience_sort
+from src.python.sorting.cycle_sort import cycle_sort
+from src.python.sorting.stooge_sort import stooge_sort
 
 PYTHON_ALGORITHMS = {
     "bubble_sort": bubble_sort,
@@ -43,6 +51,14 @@ PYTHON_ALGORITHMS = {
     "pancake_sort": pancake_sort,
     "strand_sort": strand_sort,
     "bitonic_sort": bitonic_sort,
+    "batcher_odd_even_merge_sort": batcher_odd_even_merge_sort,
+    "flash_sort": flash_sort,
+    "smooth_sort": smooth_sort,
+    "american_flag_sort": american_flag_sort,
+    "spread_sort": spread_sort,
+    "patience_sort": patience_sort,
+    "cycle_sort": cycle_sort,
+    "stooge_sort": stooge_sort,
 }
 
 C_ALGORITHMS = [
@@ -64,6 +80,14 @@ C_ALGORITHMS = [
     "pancake_sort",
     "strand_sort",
     "bitonic_sort",
+    "batcher_odd_even_merge_sort",
+    "flash_sort",
+    "smooth_sort",
+    "american_flag_sort",
+    "spread_sort",
+    "patience_sort",
+    "cycle_sort",
+    "stooge_sort",
 ]
 
 def run_c_algorithm(algorithm, data, trace_path, benchmark=False):
