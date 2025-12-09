@@ -1,0 +1,16 @@
+[package]
+name = "sorting_algorithms"
+version = "0.1.0"
+authors = ["naviNBRuas"]
+edition = "2021"
+
+[lib]
+name = "sorting_algorithms"
+path = "src/lib.rs"
+
+[[bin]]
+name = "demo"
+path = "src/main.rs"
+
+[dependencies]
+rand = "0.8"
