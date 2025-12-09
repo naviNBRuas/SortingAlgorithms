@@ -1,0 +1,4 @@
+matplotlib>=3.8
+imageio>=2.34
+numpy>=1.26
+pytest>=7.4
