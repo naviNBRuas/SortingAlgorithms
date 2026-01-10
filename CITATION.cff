@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+title: SortingAlgorithms
+message: Please cite this software as below.
+authors:
+  - family-names: Ruas
+    given-names: Navin B.
+    orcid: https://orcid.org/0000-0000-0000-0000
+    affiliation: Independent
+    email: founder@nbr.company
+year: 2026
+version: 1.0.1
+keywords:
+  - sorting algorithms
+  - computer science
+  - data structures
+  - algorithm analysis
+  - C
+  - Python
+  - Go
+  - Rust
+  - assembly
+  - educational
+  - reusable
+  - open source
+  - performance
+  - benchmarking
+  - visualization
+  - enterprise
+  - documentation
+  - software engineering
+  - reproducibility
+  - library
+  - multi-language

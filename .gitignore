@@ -1,0 +1,52 @@
+# .gitignore for SortingAlgorithms
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.dll
+*.o
+*.a
+*.out
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.ipynb_checkpoints
+.DS_Store
+# C/C++
+*.exe
+*.obj
+*.lib
+*.dll
+*.exp
+*.pdb
+*.ilk
+*.manifest
+*.dSYM/
+# Go
+bin/
+*.test
+# Rust
+/target/
+Cargo.lock
+# Visualizations
+visualizations/gifs/
+# General
+*.cache
+*.report
+*.summary
+*.artifact
+*.result
+*.sample
+*.example
+*.output
+*.tmp
+*.bak
+*.swp
+*.swo
+*.log
+*.out
+*.DS_Store
