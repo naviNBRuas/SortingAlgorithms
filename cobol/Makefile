@@ -2,7 +2,7 @@
 COBC ?= cobc
 
 test_runner: $(wildcard *.cob)
-	$(COBC) -x -free -O -o $@ test.cob $(filter-out test.cob,$(wildcard *.cob))
+	$(COBC) -x -free -O -o $@ test.cob $(filter-out test.cob bench.cob,$(wildcard *.cob))
 
 test: test_runner
 	./test_runner

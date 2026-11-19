@@ -12,5 +12,9 @@ path = "src/lib.rs"
 name = "demo"
 path = "src/main.rs"
 
+[[bin]]
+name = "bench"
+path = "src/bench.rs"
+
 [dependencies]
 rand = "0.8"

@@ -298,6 +298,36 @@ export PYTHONPATH=$PWD/python
 python benchmarks/run_benchmarks.py && python benchmarks/generate_report.py
 ```
 """
+    lang_json = ROOT / "report" / "data" / "languages_tables.json"
+    if lang_json.exists():
+        lt = json.loads(lang_json.read_text())
+        md += f"""
+## 10. Cross-language speed comparison
+
+The same algorithms on the same deterministic data (n = 1000 values in 0..9999; smaller n for the super-polynomial sorts) in every edition,
+on {lt['meta']['cpu']} ({lt['meta']['os']}). Each value is the median time of one `sort()` call. Reproduce with `benchmarks/compare_languages.py`
+and `benchmarks/language_charts.py`.
+
+![Geometric-mean slowdown relative to C](report/figures/lang_overall.png)
+
+{lt['summary']}
+
+### Representative algorithms (median ms per sort)
+
+{lt['selected']}
+
+![Eight algorithms across nine editions](report/figures/lang_selected.png)
+
+![Time relative to the fastest edition, per algorithm](report/figures/lang_heatmap.png)
+
+### All algorithms (median ms per sort; n in parentheses)
+
+{lt['full']}
+
+Notes: Java is JIT-warmed (20 untimed runs) and excludes JVM start-up; COBOL is timed per process with a data-fill-only baseline
+subtracted (about 1 ms resolution; sub-millisecond results are shown as —); the two assembly rows and the machine-code row execute identical
+instructions; Python is measured both as plain kernels and as the instrumented reference implementation.
+"""
     (ROOT / "REPORT.md").write_text(md)
     print("REPORT.md written")
 
