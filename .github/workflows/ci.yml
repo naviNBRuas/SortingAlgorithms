@@ -15,6 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: cd c && make && ./example && make test
+  assembly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y valgrind binutils
+      - run: cd assembly && make test && make freestanding
   go:
     runs-on: ubuntu-latest
     steps:

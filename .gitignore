@@ -55,3 +55,5 @@ c/example
 .pytest_cache/
 *.egg-info/
 c/test_runner
+assembly/freestanding_runner
+assembly/test_runner
