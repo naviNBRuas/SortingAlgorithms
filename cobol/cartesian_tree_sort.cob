@@ -2,7 +2,7 @@
 >>SOURCE FORMAT FREE
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. cartesian-tree-sort-x-sift-up IS RECURSIVE.
+PROGRAM-ID. cts084-sift-up IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 w-1 USAGE BINARY-DOUBLE SIGNED.
@@ -29,7 +29,7 @@ LINKAGE SECTION.
 01 t-heap.
     05 t-heap-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-i USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-vals BY REFERENCE t-heap BY VALUE v-i.
+PROCEDURE DIVISION USING t-vals t-heap v-i.
     PERFORM UNTIL 1 = 2
         IF v-i > 0
             MOVE 1 TO f-1
@@ -68,10 +68,10 @@ PROCEDURE DIVISION USING BY REFERENCE t-vals BY REFERENCE t-heap BY VALUE v-i.
         MOVE w-17 TO v-i
     END-PERFORM
     GOBACK.
-END PROGRAM cartesian-tree-sort-x-sift-up.
+END PROGRAM cts084-sift-up.
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. cartesian-tree-sort-x-sift-down IS RECURSIVE.
+PROGRAM-ID. cts084-sift-down IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 v-going USAGE BINARY-DOUBLE SIGNED.
@@ -111,7 +111,7 @@ LINKAGE SECTION.
     05 t-heap-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-size USAGE BINARY-DOUBLE SIGNED.
 01 v-i USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-vals BY REFERENCE t-heap BY VALUE v-size BY VALUE v-i.
+PROCEDURE DIVISION USING t-vals t-heap v-size v-i.
     MOVE 1 TO v-going
     PERFORM UNTIL 1 = 2
         IF v-going = 1
@@ -185,7 +185,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-vals BY REFERENCE t-heap BY VALUE v-size
         END-IF
     END-PERFORM
     GOBACK.
-END PROGRAM cartesian-tree-sort-x-sift-down.
+END PROGRAM cts084-sift-down.
 
 IDENTIFICATION DIVISION.
 PROGRAM-ID. cartesian-tree-sort IS RECURSIVE.
@@ -251,6 +251,7 @@ LOCAL-STORAGE SECTION.
 01 w-52 USAGE BINARY-DOUBLE SIGNED.
 01 w-53 USAGE BINARY-DOUBLE SIGNED.
 01 w-54 USAGE BINARY-DOUBLE SIGNED.
+01 w-55 USAGE BINARY-DOUBLE SIGNED.
 01 f-1 USAGE BINARY-DOUBLE SIGNED.
 01 f-2 USAGE BINARY-DOUBLE SIGNED.
 01 f-3 USAGE BINARY-DOUBLE SIGNED.
@@ -270,7 +271,7 @@ LINKAGE SECTION.
 01 t-a.
     05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-n USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+PROCEDURE DIVISION USING t-a v-n.
     IF v-n < 2
         MOVE 1 TO f-1
     ELSE
@@ -380,46 +381,47 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
         MOVE t-heap-e(w-35) TO w-36
         COMPUTE w-37 = 0 + 1
         MOVE w-36 TO t-heap-e(w-37)
-        CALL "cartesian-tree-sort-x-sift-down" USING BY REFERENCE t-vals BY REFERENCE t-heap BY VALUE v-size BY VALUE 0
+        MOVE 0 TO w-38
+        CALL "cts084-sift-down" USING BY REFERENCE t-vals BY REFERENCE t-heap BY CONTENT v-size BY CONTENT w-38
         END-CALL
-        COMPUTE w-38 = v-node + 1
-        MOVE t-vals-e(w-38) TO w-39
-        COMPUTE w-40 = v-out + 1
-        MOVE w-39 TO t-a-e(w-40)
-        COMPUTE w-41 = v-node + 1
-        MOVE t-left-e(w-41) TO w-42
-        IF w-42 >= 0
+        COMPUTE w-39 = v-node + 1
+        MOVE t-vals-e(w-39) TO w-40
+        COMPUTE w-41 = v-out + 1
+        MOVE w-40 TO t-a-e(w-41)
+        COMPUTE w-42 = v-node + 1
+        MOVE t-left-e(w-42) TO w-43
+        IF w-43 >= 0
             MOVE 1 TO f-4
         ELSE
             MOVE 0 TO f-4
         END-IF
         IF f-4 = 1
-            COMPUTE w-43 = v-node + 1
-            MOVE t-left-e(w-43) TO w-44
-            COMPUTE w-45 = v-size + 1
-            MOVE w-44 TO t-heap-e(w-45)
+            COMPUTE w-44 = v-node + 1
+            MOVE t-left-e(w-44) TO w-45
             COMPUTE w-46 = v-size + 1
-            MOVE w-46 TO v-size
-            COMPUTE w-47 = v-size - 1
-            CALL "cartesian-tree-sort-x-sift-up" USING BY REFERENCE t-vals BY REFERENCE t-heap BY VALUE w-47
+            MOVE w-45 TO t-heap-e(w-46)
+            COMPUTE w-47 = v-size + 1
+            MOVE w-47 TO v-size
+            COMPUTE w-48 = v-size - 1
+            CALL "cts084-sift-up" USING BY REFERENCE t-vals BY REFERENCE t-heap BY CONTENT w-48
             END-CALL
         END-IF
-        COMPUTE w-48 = v-node + 1
-        MOVE t-right-e(w-48) TO w-49
-        IF w-49 >= 0
+        COMPUTE w-49 = v-node + 1
+        MOVE t-right-e(w-49) TO w-50
+        IF w-50 >= 0
             MOVE 1 TO f-5
         ELSE
             MOVE 0 TO f-5
         END-IF
         IF f-5 = 1
-            COMPUTE w-50 = v-node + 1
-            MOVE t-right-e(w-50) TO w-51
-            COMPUTE w-52 = v-size + 1
-            MOVE w-51 TO t-heap-e(w-52)
+            COMPUTE w-51 = v-node + 1
+            MOVE t-right-e(w-51) TO w-52
             COMPUTE w-53 = v-size + 1
-            MOVE w-53 TO v-size
-            COMPUTE w-54 = v-size - 1
-            CALL "cartesian-tree-sort-x-sift-up" USING BY REFERENCE t-vals BY REFERENCE t-heap BY VALUE w-54
+            MOVE w-52 TO t-heap-e(w-53)
+            COMPUTE w-54 = v-size + 1
+            MOVE w-54 TO v-size
+            COMPUTE w-55 = v-size - 1
+            CALL "cts084-sift-up" USING BY REFERENCE t-vals BY REFERENCE t-heap BY CONTENT w-55
             END-CALL
         END-IF
         ADD 1 TO v-out

@@ -2,7 +2,7 @@
 >>SOURCE FORMAT FREE
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. smooth-sort-x-tz IS RECURSIVE.
+PROGRAM-ID. ss97d-tz IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 v-c USAGE BINARY-DOUBLE SIGNED.
@@ -13,7 +13,7 @@ LOCAL-STORAGE SECTION.
 LINKAGE SECTION.
 01 v-x USAGE BINARY-DOUBLE SIGNED.
 01 r-val USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY VALUE v-x RETURNING r-val.
+PROCEDURE DIVISION USING v-x r-val.
     MOVE 0 TO v-c
     PERFORM UNTIL 1 = 2
         COMPUTE w-1 = FUNCTION MOD(v-x, 2)
@@ -33,10 +33,10 @@ PROCEDURE DIVISION USING BY VALUE v-x RETURNING r-val.
     MOVE v-c TO r-val
     GOBACK
     GOBACK.
-END PROGRAM smooth-sort-x-tz.
+END PROGRAM ss97d-tz.
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. smooth-sort-x-pow2 IS RECURSIVE.
+PROGRAM-ID. ss97d-pow2 IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 v-r USAGE BINARY-DOUBLE SIGNED.
@@ -46,7 +46,7 @@ LOCAL-STORAGE SECTION.
 LINKAGE SECTION.
 01 v-k USAGE BINARY-DOUBLE SIGNED.
 01 r-val USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY VALUE v-k RETURNING r-val.
+PROCEDURE DIVISION USING v-k r-val.
     MOVE 1 TO v-r
     MOVE 0 TO v-i
     MOVE v-k TO w-1
@@ -61,10 +61,10 @@ PROCEDURE DIVISION USING BY VALUE v-k RETURNING r-val.
     MOVE v-r TO r-val
     GOBACK
     GOBACK.
-END PROGRAM smooth-sort-x-pow2.
+END PROGRAM ss97d-pow2.
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. smooth-sort-x-sift IS RECURSIVE.
+PROGRAM-ID. ss97d-sift IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 v-val USAGE BINARY-DOUBLE SIGNED.
@@ -106,7 +106,7 @@ LINKAGE SECTION.
     05 t-lp-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-head USAGE BINARY-DOUBLE SIGNED.
 01 v-pshift USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY REFERENCE t-lp BY VALUE v-head BY VALUE v-pshift.
+PROCEDURE DIVISION USING t-a t-lp v-head v-pshift.
     COMPUTE w-1 = v-head + 1
     MOVE t-a-e(w-1) TO w-2
     MOVE w-2 TO v-val
@@ -185,10 +185,10 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY REFERENCE t-lp BY VALUE v-head BY V
     COMPUTE w-25 = v-head + 1
     MOVE v-val TO t-a-e(w-25)
     GOBACK.
-END PROGRAM smooth-sort-x-sift.
+END PROGRAM ss97d-sift.
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. smooth-sort-x-trinkle IS RECURSIVE.
+PROGRAM-ID. ss97d-trinkle IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 v-val USAGE BINARY-DOUBLE SIGNED.
@@ -244,7 +244,7 @@ LINKAGE SECTION.
 01 v-p USAGE BINARY-DOUBLE SIGNED.
 01 v-pshift USAGE BINARY-DOUBLE SIGNED.
 01 v-trusty USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY REFERENCE t-lp BY VALUE v-head BY VALUE v-p BY VALUE v-pshift BY VALUE v-trusty.
+PROCEDURE DIVISION USING t-a t-lp v-head v-p v-pshift v-trusty.
     COMPUTE w-1 = v-head + 1
     MOVE t-a-e(w-1) TO w-2
     MOVE w-2 TO v-val
@@ -340,10 +340,10 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY REFERENCE t-lp BY VALUE v-head BY V
                 MOVE v-stepson TO v-head
                 COMPUTE w-25 = FUNCTION MOD(v-p, 2)
                 COMPUTE w-26 = v-p - w-25
-                CALL "smooth-sort-x-tz" USING BY VALUE w-26 RETURNING w-27
+                CALL "ss97d-tz" USING BY CONTENT w-26 BY REFERENCE w-27
                 END-CALL
                 MOVE w-27 TO v-trail
-                CALL "smooth-sort-x-pow2" USING BY VALUE v-trail RETURNING w-28
+                CALL "ss97d-pow2" USING BY CONTENT v-trail BY REFERENCE w-28
                 END-CALL
                 COMPUTE w-29 = FUNCTION INTEGER-PART(v-p / w-28)
                 MOVE w-29 TO v-p
@@ -361,11 +361,11 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY REFERENCE t-lp BY VALUE v-head BY V
     IF f-6 = 1
         COMPUTE w-31 = v-head + 1
         MOVE v-val TO t-a-e(w-31)
-        CALL "smooth-sort-x-sift" USING BY REFERENCE t-a BY REFERENCE t-lp BY VALUE v-head BY VALUE v-pshift
+        CALL "ss97d-sift" USING BY REFERENCE t-a BY REFERENCE t-lp BY CONTENT v-head BY CONTENT v-pshift
         END-CALL
     END-IF
     GOBACK.
-END PROGRAM smooth-sort-x-trinkle.
+END PROGRAM ss97d-trinkle.
 
 IDENTIFICATION DIVISION.
 PROGRAM-ID. smooth-sort IS RECURSIVE.
@@ -425,6 +425,10 @@ LOCAL-STORAGE SECTION.
 01 w-46 USAGE BINARY-DOUBLE SIGNED.
 01 w-47 USAGE BINARY-DOUBLE SIGNED.
 01 w-48 USAGE BINARY-DOUBLE SIGNED.
+01 w-49 USAGE BINARY-DOUBLE SIGNED.
+01 w-50 USAGE BINARY-DOUBLE SIGNED.
+01 w-51 USAGE BINARY-DOUBLE SIGNED.
+01 w-52 USAGE BINARY-DOUBLE SIGNED.
 01 f-1 USAGE BINARY-DOUBLE SIGNED.
 01 f-2 USAGE BINARY-DOUBLE SIGNED.
 01 f-3 USAGE BINARY-DOUBLE SIGNED.
@@ -434,12 +438,12 @@ LOCAL-STORAGE SECTION.
 01 f-7 USAGE BINARY-DOUBLE SIGNED.
 01 f-8 USAGE BINARY-DOUBLE SIGNED.
 01 t-lp.
-    05 t-lp-e USAGE BINARY-LONG SIGNED OCCURS 64 TIMES.
+    05 t-lp-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 LINKAGE SECTION.
 01 t-a.
     05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-n USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+PROCEDURE DIVISION USING t-a v-n.
     IF v-n < 2
         MOVE 1 TO f-1
     ELSE
@@ -492,7 +496,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
             MOVE 0 TO f-3
         END-IF
         IF f-3 = 1
-            CALL "smooth-sort-x-sift" USING BY REFERENCE t-a BY REFERENCE t-lp BY VALUE v-head BY VALUE v-pshift
+            CALL "ss97d-sift" USING BY REFERENCE t-a BY REFERENCE t-lp BY CONTENT v-head BY CONTENT v-pshift
             END-CALL
             COMPUTE w-15 = FUNCTION INTEGER-PART(v-p / 4)
             MOVE w-15 TO v-p
@@ -509,10 +513,11 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
                 MOVE 0 TO f-4
             END-IF
             IF f-4 = 1
-                CALL "smooth-sort-x-trinkle" USING BY REFERENCE t-a BY REFERENCE t-lp BY VALUE v-head BY VALUE v-p BY VALUE v-pshift BY VALUE 0
+                MOVE 0 TO w-21
+                CALL "ss97d-trinkle" USING BY REFERENCE t-a BY REFERENCE t-lp BY CONTENT v-head BY CONTENT v-p BY CONTENT v-pshift BY CONTENT w-21
                 END-CALL
             ELSE
-                CALL "smooth-sort-x-sift" USING BY REFERENCE t-a BY REFERENCE t-lp BY VALUE v-head BY VALUE v-pshift
+                CALL "ss97d-sift" USING BY REFERENCE t-a BY REFERENCE t-lp BY CONTENT v-head BY CONTENT v-pshift
                 END-CALL
             END-IF
             IF v-pshift = 1
@@ -521,26 +526,27 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
                 MOVE 0 TO f-5
             END-IF
             IF f-5 = 1
-                COMPUTE w-21 = v-p * 2
-                MOVE w-21 TO v-p
+                COMPUTE w-22 = v-p * 2
+                MOVE w-22 TO v-p
                 MOVE 0 TO v-pshift
             ELSE
-                COMPUTE w-22 = v-pshift - 1
-                CALL "smooth-sort-x-pow2" USING BY VALUE w-22 RETURNING w-23
+                COMPUTE w-23 = v-pshift - 1
+                CALL "ss97d-pow2" USING BY CONTENT w-23 BY REFERENCE w-24
                 END-CALL
-                COMPUTE w-24 = v-p * w-23
-                MOVE w-24 TO v-p
+                COMPUTE w-25 = v-p * w-24
+                MOVE w-25 TO v-p
                 MOVE 1 TO v-pshift
             END-IF
         END-IF
-        COMPUTE w-25 = v-p + 1
-        COMPUTE w-26 = FUNCTION MOD(v-p, 2)
-        COMPUTE w-27 = w-25 - w-26
-        MOVE w-27 TO v-p
-        COMPUTE w-28 = v-head + 1
-        MOVE w-28 TO v-head
+        COMPUTE w-26 = v-p + 1
+        COMPUTE w-27 = FUNCTION MOD(v-p, 2)
+        COMPUTE w-28 = w-26 - w-27
+        MOVE w-28 TO v-p
+        COMPUTE w-29 = v-head + 1
+        MOVE w-29 TO v-head
     END-PERFORM
-    CALL "smooth-sort-x-trinkle" USING BY REFERENCE t-a BY REFERENCE t-lp BY VALUE v-head BY VALUE v-p BY VALUE v-pshift BY VALUE 0
+    MOVE 0 TO w-30
+    CALL "ss97d-trinkle" USING BY REFERENCE t-a BY REFERENCE t-lp BY CONTENT v-head BY CONTENT v-p BY CONTENT v-pshift BY CONTENT w-30
     END-CALL
     PERFORM UNTIL 1 = 2
         IF v-pshift NOT = 1
@@ -564,50 +570,52 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
             MOVE 0 TO f-7
         END-IF
         IF f-7 = 1
-            COMPUTE w-29 = FUNCTION MOD(v-p, 2)
-            COMPUTE w-30 = v-p - w-29
-            CALL "smooth-sort-x-tz" USING BY VALUE w-30 RETURNING w-31
+            COMPUTE w-31 = FUNCTION MOD(v-p, 2)
+            COMPUTE w-32 = v-p - w-31
+            CALL "ss97d-tz" USING BY CONTENT w-32 BY REFERENCE w-33
             END-CALL
-            MOVE w-31 TO v-trail
-            CALL "smooth-sort-x-pow2" USING BY VALUE v-trail RETURNING w-32
+            MOVE w-33 TO v-trail
+            CALL "ss97d-pow2" USING BY CONTENT v-trail BY REFERENCE w-34
             END-CALL
-            COMPUTE w-33 = FUNCTION INTEGER-PART(v-p / w-32)
-            MOVE w-33 TO v-p
-            COMPUTE w-34 = v-pshift + v-trail
-            MOVE w-34 TO v-pshift
-        ELSE
-            COMPUTE w-35 = v-p * 4
+            COMPUTE w-35 = FUNCTION INTEGER-PART(v-p / w-34)
             MOVE w-35 TO v-p
-            COMPUTE w-36 = FUNCTION INTEGER-PART(v-p / 4)
-            COMPUTE w-37 = FUNCTION MOD(w-36, 2)
-            IF w-37 = 0
+            COMPUTE w-36 = v-pshift + v-trail
+            MOVE w-36 TO v-pshift
+        ELSE
+            COMPUTE w-37 = v-p * 4
+            MOVE w-37 TO v-p
+            COMPUTE w-38 = FUNCTION INTEGER-PART(v-p / 4)
+            COMPUTE w-39 = FUNCTION MOD(w-38, 2)
+            IF w-39 = 0
                 MOVE 1 TO f-8
             ELSE
                 MOVE 0 TO f-8
             END-IF
             IF f-8 = 1
-                COMPUTE w-38 = v-p + 7
-                MOVE w-38 TO v-p
+                COMPUTE w-40 = v-p + 7
+                MOVE w-40 TO v-p
             ELSE
-                COMPUTE w-39 = v-p - 1
-                MOVE w-39 TO v-p
+                COMPUTE w-41 = v-p - 1
+                MOVE w-41 TO v-p
             END-IF
-            COMPUTE w-40 = v-pshift - 2
-            MOVE w-40 TO v-pshift
-            COMPUTE w-41 = v-pshift + 1
-            MOVE t-lp-e(w-41) TO w-42
-            COMPUTE w-43 = v-head - w-42
-            COMPUTE w-44 = w-43 - 1
-            COMPUTE w-45 = FUNCTION INTEGER-PART(v-p / 2)
-            COMPUTE w-46 = v-pshift + 1
-            CALL "smooth-sort-x-trinkle" USING BY REFERENCE t-a BY REFERENCE t-lp BY VALUE w-44 BY VALUE w-45 BY VALUE w-46 BY VALUE 1
+            COMPUTE w-42 = v-pshift - 2
+            MOVE w-42 TO v-pshift
+            COMPUTE w-43 = v-pshift + 1
+            MOVE t-lp-e(w-43) TO w-44
+            COMPUTE w-45 = v-head - w-44
+            COMPUTE w-46 = w-45 - 1
+            COMPUTE w-47 = FUNCTION INTEGER-PART(v-p / 2)
+            COMPUTE w-48 = v-pshift + 1
+            MOVE 1 TO w-49
+            CALL "ss97d-trinkle" USING BY REFERENCE t-a BY REFERENCE t-lp BY CONTENT w-46 BY CONTENT w-47 BY CONTENT w-48 BY CONTENT w-49
             END-CALL
-            COMPUTE w-47 = v-head - 1
-            CALL "smooth-sort-x-trinkle" USING BY REFERENCE t-a BY REFERENCE t-lp BY VALUE w-47 BY VALUE v-p BY VALUE v-pshift BY VALUE 1
+            COMPUTE w-50 = v-head - 1
+            MOVE 1 TO w-51
+            CALL "ss97d-trinkle" USING BY REFERENCE t-a BY REFERENCE t-lp BY CONTENT w-50 BY CONTENT v-p BY CONTENT v-pshift BY CONTENT w-51
             END-CALL
         END-IF
-        COMPUTE w-48 = v-head - 1
-        MOVE w-48 TO v-head
+        COMPUTE w-52 = v-head - 1
+        MOVE w-52 TO v-head
     END-PERFORM
     GOBACK.
 END PROGRAM smooth-sort.

@@ -2,7 +2,7 @@
 >>SOURCE FORMAT FREE
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. cycle-sort-x-rank-of IS RECURSIVE.
+PROGRAM-ID. cs95b-rank-of IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 v-pos USAGE BINARY-DOUBLE SIGNED.
@@ -20,7 +20,7 @@ LINKAGE SECTION.
 01 v-start USAGE BINARY-DOUBLE SIGNED.
 01 v-item USAGE BINARY-DOUBLE SIGNED.
 01 r-val USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n BY VALUE v-start BY VALUE v-item RETURNING r-val.
+PROCEDURE DIVISION USING t-a v-n v-start v-item r-val.
     MOVE v-start TO v-pos
     COMPUTE w-1 = v-start + 1
     MOVE w-1 TO v-i
@@ -45,7 +45,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n BY VALUE v-start BY VALUE
     MOVE v-pos TO r-val
     GOBACK
     GOBACK.
-END PROGRAM cycle-sort-x-rank-of.
+END PROGRAM cs95b-rank-of.
 
 IDENTIFICATION DIVISION.
 PROGRAM-ID. cycle-sort IS RECURSIVE.
@@ -81,7 +81,7 @@ LINKAGE SECTION.
 01 t-a.
     05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-n USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+PROCEDURE DIVISION USING t-a v-n.
     COMPUTE w-1 = v-n - 1
     MOVE 0 TO v-start
     MOVE w-1 TO w-2
@@ -92,7 +92,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
         COMPUTE w-3 = v-start + 1
         MOVE t-a-e(w-3) TO w-4
         MOVE w-4 TO v-item
-        CALL "cycle-sort-x-rank-of" USING BY REFERENCE t-a BY VALUE v-n BY VALUE v-start BY VALUE v-item RETURNING w-5
+        CALL "cs95b-rank-of" USING BY REFERENCE t-a BY CONTENT v-n BY CONTENT v-start BY CONTENT v-item BY REFERENCE w-5
         END-CALL
         MOVE w-5 TO v-pos
         IF v-pos NOT = v-start
@@ -130,7 +130,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
                 IF f-3 = 0
                     EXIT PERFORM
                 END-IF
-                CALL "cycle-sort-x-rank-of" USING BY REFERENCE t-a BY VALUE v-n BY VALUE v-start BY VALUE v-item RETURNING w-12
+                CALL "cs95b-rank-of" USING BY REFERENCE t-a BY CONTENT v-n BY CONTENT v-start BY CONTENT v-item BY REFERENCE w-12
                 END-CALL
                 MOVE w-12 TO v-pos
                 PERFORM UNTIL 1 = 2

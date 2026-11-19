@@ -2,7 +2,7 @@
 >>SOURCE FORMAT FREE
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. in-place-merge-sort-x-reverse IS RECURSIVE.
+PROGRAM-ID. ipms433-reverse IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 w-1 USAGE BINARY-DOUBLE SIGNED.
@@ -17,7 +17,7 @@ LINKAGE SECTION.
     05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-i USAGE BINARY-DOUBLE SIGNED.
 01 v-j USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-i BY VALUE v-j.
+PROCEDURE DIVISION USING t-a v-i v-j.
     COMPUTE w-1 = v-j - 1
     MOVE w-1 TO v-j
     PERFORM UNTIL 1 = 2
@@ -40,10 +40,10 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-i BY VALUE v-j.
         MOVE w-6 TO v-j
     END-PERFORM
     GOBACK.
-END PROGRAM in-place-merge-sort-x-reverse.
+END PROGRAM ipms433-reverse.
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. in-place-merge-sort-x-rotate IS RECURSIVE.
+PROGRAM-ID. ipms433-rotate IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 LINKAGE SECTION.
@@ -52,18 +52,18 @@ LINKAGE SECTION.
 01 v-i USAGE BINARY-DOUBLE SIGNED.
 01 v-m USAGE BINARY-DOUBLE SIGNED.
 01 v-j USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-i BY VALUE v-m BY VALUE v-j.
-    CALL "in-place-merge-sort-x-reverse" USING BY REFERENCE t-a BY VALUE v-i BY VALUE v-m
+PROCEDURE DIVISION USING t-a v-i v-m v-j.
+    CALL "ipms433-reverse" USING BY REFERENCE t-a BY CONTENT v-i BY CONTENT v-m
     END-CALL
-    CALL "in-place-merge-sort-x-reverse" USING BY REFERENCE t-a BY VALUE v-m BY VALUE v-j
+    CALL "ipms433-reverse" USING BY REFERENCE t-a BY CONTENT v-m BY CONTENT v-j
     END-CALL
-    CALL "in-place-merge-sort-x-reverse" USING BY REFERENCE t-a BY VALUE v-i BY VALUE v-j
+    CALL "ipms433-reverse" USING BY REFERENCE t-a BY CONTENT v-i BY CONTENT v-j
     END-CALL
     GOBACK.
-END PROGRAM in-place-merge-sort-x-rotate.
+END PROGRAM ipms433-rotate.
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. in-place-merge-sort-x-merge IS RECURSIVE.
+PROGRAM-ID. ipms433-merge IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 v-i USAGE BINARY-DOUBLE SIGNED.
@@ -124,7 +124,7 @@ LINKAGE SECTION.
 01 v-lo USAGE BINARY-DOUBLE SIGNED.
 01 v-mid USAGE BINARY-DOUBLE SIGNED.
 01 v-hi USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-lo BY VALUE v-mid BY VALUE v-hi.
+PROCEDURE DIVISION USING t-a v-lo v-mid v-hi.
     IF v-lo >= v-mid
         MOVE 1 TO f-1
     ELSE
@@ -208,15 +208,15 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-lo BY VALUE v-mid BY VALUE 
             END-IF
         END-PERFORM
         MOVE v-l TO v-j
-        CALL "in-place-merge-sort-x-rotate" USING BY REFERENCE t-a BY VALUE v-i BY VALUE v-mid BY VALUE v-j
+        CALL "ipms433-rotate" USING BY REFERENCE t-a BY CONTENT v-i BY CONTENT v-mid BY CONTENT v-j
         END-CALL
         COMPUTE w-20 = v-j - v-mid
         COMPUTE w-21 = v-i + w-20
         MOVE w-21 TO v-nm
-        CALL "in-place-merge-sort-x-merge" USING BY REFERENCE t-a BY VALUE v-lo BY VALUE v-i BY VALUE v-nm
+        CALL "ipms433-merge" USING BY REFERENCE t-a BY CONTENT v-lo BY CONTENT v-i BY CONTENT v-nm
         END-CALL
         COMPUTE w-22 = v-nm + 1
-        CALL "in-place-merge-sort-x-merge" USING BY REFERENCE t-a BY VALUE w-22 BY VALUE v-j BY VALUE v-hi
+        CALL "ipms433-merge" USING BY REFERENCE t-a BY CONTENT w-22 BY CONTENT v-j BY CONTENT v-hi
         END-CALL
     ELSE
         COMPUTE w-23 = v-mid + v-hi
@@ -255,24 +255,24 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-lo BY VALUE v-mid BY VALUE 
         END-PERFORM
         MOVE v-l TO v-i
         COMPUTE w-32 = v-j + 1
-        CALL "in-place-merge-sort-x-rotate" USING BY REFERENCE t-a BY VALUE v-i BY VALUE v-mid BY VALUE w-32
+        CALL "ipms433-rotate" USING BY REFERENCE t-a BY CONTENT v-i BY CONTENT v-mid BY CONTENT w-32
         END-CALL
         COMPUTE w-33 = v-j + 1
         COMPUTE w-34 = w-33 - v-mid
         COMPUTE w-35 = v-i + w-34
         MOVE w-35 TO v-nm
         COMPUTE w-36 = v-nm - 1
-        CALL "in-place-merge-sort-x-merge" USING BY REFERENCE t-a BY VALUE v-lo BY VALUE v-i BY VALUE w-36
+        CALL "ipms433-merge" USING BY REFERENCE t-a BY CONTENT v-lo BY CONTENT v-i BY CONTENT w-36
         END-CALL
         COMPUTE w-37 = v-j + 1
-        CALL "in-place-merge-sort-x-merge" USING BY REFERENCE t-a BY VALUE v-nm BY VALUE w-37 BY VALUE v-hi
+        CALL "ipms433-merge" USING BY REFERENCE t-a BY CONTENT v-nm BY CONTENT w-37 BY CONTENT v-hi
         END-CALL
     END-IF
     GOBACK.
-END PROGRAM in-place-merge-sort-x-merge.
+END PROGRAM ipms433-merge.
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. in-place-merge-sort-x-rec IS RECURSIVE.
+PROGRAM-ID. ipms433-rec IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 v-mid USAGE BINARY-DOUBLE SIGNED.
@@ -285,7 +285,7 @@ LINKAGE SECTION.
     05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-lo USAGE BINARY-DOUBLE SIGNED.
 01 v-hi USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-lo BY VALUE v-hi.
+PROCEDURE DIVISION USING t-a v-lo v-hi.
     COMPUTE w-1 = v-hi - v-lo
     IF w-1 < 2
         MOVE 1 TO f-1
@@ -298,25 +298,27 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-lo BY VALUE v-hi.
     COMPUTE w-2 = v-lo + v-hi
     COMPUTE w-3 = FUNCTION INTEGER-PART(w-2 / 2)
     MOVE w-3 TO v-mid
-    CALL "in-place-merge-sort-x-rec" USING BY REFERENCE t-a BY VALUE v-lo BY VALUE v-mid
+    CALL "ipms433-rec" USING BY REFERENCE t-a BY CONTENT v-lo BY CONTENT v-mid
     END-CALL
-    CALL "in-place-merge-sort-x-rec" USING BY REFERENCE t-a BY VALUE v-mid BY VALUE v-hi
+    CALL "ipms433-rec" USING BY REFERENCE t-a BY CONTENT v-mid BY CONTENT v-hi
     END-CALL
-    CALL "in-place-merge-sort-x-merge" USING BY REFERENCE t-a BY VALUE v-lo BY VALUE v-mid BY VALUE v-hi
+    CALL "ipms433-merge" USING BY REFERENCE t-a BY CONTENT v-lo BY CONTENT v-mid BY CONTENT v-hi
     END-CALL
     GOBACK.
-END PROGRAM in-place-merge-sort-x-rec.
+END PROGRAM ipms433-rec.
 
 IDENTIFICATION DIVISION.
 PROGRAM-ID. in-place-merge-sort IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
+01 w-1 USAGE BINARY-DOUBLE SIGNED.
 LINKAGE SECTION.
 01 t-a.
     05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-n USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
-    CALL "in-place-merge-sort-x-rec" USING BY REFERENCE t-a BY VALUE 0 BY VALUE v-n
+PROCEDURE DIVISION USING t-a v-n.
+    MOVE 0 TO w-1
+    CALL "ipms433-rec" USING BY REFERENCE t-a BY CONTENT w-1 BY CONTENT v-n
     END-CALL
     GOBACK.
 END PROGRAM in-place-merge-sort.

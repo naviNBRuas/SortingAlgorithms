@@ -197,9 +197,9 @@ def emit_support(meta):
     calls = []
     caps = []
     for i, (stem, extras) in enumerate(meta, 1):
-        extra = "".join(f" BY VALUE {EXTRA_DEFAULT}" for _ in extras)
-        calls.append(f"        WHEN {i}\n            CALL \"{stem.replace('_', '-')}\" USING BY REFERENCE tbl BY VALUE nsz{extra}")
-        caps.append(f"        WHEN {i} MOVE {CAP.get(stem, 0)} TO cap")
+        extra = "".join(" BY CONTENT ws-extra" for _ in extras)
+        calls.append(f"        WHEN {i}\n            CALL \"{stem.replace('_', '-')}\" USING BY REFERENCE ws-tbl BY CONTENT ws-nsz{extra}")
+        caps.append(f"        WHEN {i} MOVE {CAP.get(stem, 0)} TO ws-cap")
     put("cobol/test.cob", COBOL_TEST.replace("@N@", str(len(meta))).replace("@CALLS@", "\n".join(calls)).replace("@CAPS@", "\n".join(caps)))
 
     # C++
@@ -291,114 +291,115 @@ IDENTIFICATION DIVISION.
 PROGRAM-ID. cobol-sort-tests.
 DATA DIVISION.
 WORKING-STORAGE SECTION.
-01 tbl.
-    05 tbl-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
-01 ref.
-    05 ref-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
-01 algo USAGE BINARY-DOUBLE SIGNED.
-01 sz USAGE BINARY-DOUBLE SIGNED.
-01 mode USAGE BINARY-DOUBLE SIGNED.
-01 nsz USAGE BINARY-DOUBLE SIGNED.
-01 cap USAGE BINARY-DOUBLE SIGNED.
-01 i USAGE BINARY-DOUBLE SIGNED.
-01 j USAGE BINARY-DOUBLE SIGNED.
-01 state USAGE BINARY-DOUBLE SIGNED VALUE 12345.
-01 r USAGE BINARY-DOUBLE SIGNED.
-01 key USAGE BINARY-DOUBLE SIGNED.
-01 fails USAGE BINARY-DOUBLE SIGNED VALUE 0.
-01 bad USAGE BINARY-DOUBLE SIGNED.
+01 ws-tbl.
+    05 ws-tbl-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 ws-ref.
+    05 ws-ref-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 ws-algo USAGE BINARY-DOUBLE SIGNED.
+01 ws-sz USAGE BINARY-DOUBLE SIGNED.
+01 ws-mode USAGE BINARY-DOUBLE SIGNED.
+01 ws-nsz USAGE BINARY-DOUBLE SIGNED.
+01 ws-cap USAGE BINARY-DOUBLE SIGNED.
+01 ws-i USAGE BINARY-DOUBLE SIGNED.
+01 ws-j USAGE BINARY-DOUBLE SIGNED.
+01 ws-state USAGE BINARY-DOUBLE SIGNED VALUE 12345.
+01 ws-r USAGE BINARY-DOUBLE SIGNED.
+01 ws-key USAGE BINARY-DOUBLE SIGNED.
+01 ws-fails USAGE BINARY-DOUBLE SIGNED VALUE 0.
+01 ws-extra USAGE BINARY-DOUBLE SIGNED VALUE 5000000.
+01 ws-bad USAGE BINARY-DOUBLE SIGNED.
 PROCEDURE DIVISION.
 main-para.
-    PERFORM VARYING algo FROM 1 BY 1 UNTIL algo > @N@
+    PERFORM VARYING ws-algo FROM 1 BY 1 UNTIL ws-algo > @N@
         PERFORM set-cap
-        PERFORM VARYING sz FROM 1 BY 1 UNTIL sz > 14
+        PERFORM VARYING ws-sz FROM 1 BY 1 UNTIL ws-sz > 14
             PERFORM set-size
-            IF cap = 0 OR nsz <= cap
-                PERFORM VARYING mode FROM 0 BY 1 UNTIL mode > 4
+            IF ws-cap = 0 OR ws-nsz <= ws-cap
+                PERFORM VARYING ws-mode FROM 0 BY 1 UNTIL ws-mode > 4
                     PERFORM run-case
                 END-PERFORM
             END-IF
         END-PERFORM
     END-PERFORM
-    IF fails = 0
+    IF ws-fails = 0
         DISPLAY "all COBOL sorts ok"
     ELSE
-        DISPLAY fails " failures"
+        DISPLAY ws-fails " failures"
     END-IF
     STOP RUN.
 
 set-cap.
-    EVALUATE algo
+    EVALUATE ws-algo
 @CAPS@
     END-EVALUATE.
 
 set-size.
-    EVALUATE sz
-        WHEN 1 MOVE 0 TO nsz
-        WHEN 2 MOVE 1 TO nsz
-        WHEN 3 MOVE 2 TO nsz
-        WHEN 4 MOVE 3 TO nsz
-        WHEN 5 MOVE 4 TO nsz
-        WHEN 6 MOVE 5 TO nsz
-        WHEN 7 MOVE 6 TO nsz
-        WHEN 8 MOVE 9 TO nsz
-        WHEN 9 MOVE 12 TO nsz
-        WHEN 10 MOVE 17 TO nsz
-        WHEN 11 MOVE 30 TO nsz
-        WHEN 12 MOVE 64 TO nsz
-        WHEN 13 MOVE 100 TO nsz
-        WHEN 14 MOVE 257 TO nsz
+    EVALUATE ws-sz
+        WHEN 1 MOVE 0 TO ws-nsz
+        WHEN 2 MOVE 1 TO ws-nsz
+        WHEN 3 MOVE 2 TO ws-nsz
+        WHEN 4 MOVE 3 TO ws-nsz
+        WHEN 5 MOVE 4 TO ws-nsz
+        WHEN 6 MOVE 5 TO ws-nsz
+        WHEN 7 MOVE 6 TO ws-nsz
+        WHEN 8 MOVE 9 TO ws-nsz
+        WHEN 9 MOVE 12 TO ws-nsz
+        WHEN 10 MOVE 17 TO ws-nsz
+        WHEN 11 MOVE 30 TO ws-nsz
+        WHEN 12 MOVE 64 TO ws-nsz
+        WHEN 13 MOVE 100 TO ws-nsz
+        WHEN 14 MOVE 257 TO ws-nsz
     END-EVALUATE.
 
 next-random.
-    COMPUTE state = FUNCTION MOD(state * 1103515245 + 12345, 2147483648)
-    COMPUTE r = FUNCTION INTEGER-PART(state / 16).
+    COMPUTE ws-state = FUNCTION MOD(ws-state * 1103515245 + 12345, 2147483648)
+    COMPUTE ws-r = FUNCTION INTEGER-PART(ws-state / 16).
 
 run-case.
-    PERFORM VARYING i FROM 1 BY 1 UNTIL i > nsz
-        EVALUATE mode
+    PERFORM VARYING ws-i FROM 1 BY 1 UNTIL ws-i > ws-nsz
+        EVALUATE ws-mode
             WHEN 0
                 PERFORM next-random
-                COMPUTE tbl-e(i) = FUNCTION MOD(r, 21) - 10
+                COMPUTE ws-tbl-e(ws-i) = FUNCTION MOD(ws-r, 21) - 10
             WHEN 1
                 PERFORM next-random
-                COMPUTE tbl-e(i) = FUNCTION MOD(r, 2000001) - 1000000
+                COMPUTE ws-tbl-e(ws-i) = FUNCTION MOD(ws-r, 2000001) - 1000000
             WHEN 2
-                COMPUTE tbl-e(i) = i - 1
+                COMPUTE ws-tbl-e(ws-i) = ws-i - 1
             WHEN 3
-                COMPUTE tbl-e(i) = nsz - i + 1
+                COMPUTE ws-tbl-e(ws-i) = ws-nsz - ws-i + 1
             WHEN OTHER
-                MOVE 7 TO tbl-e(i)
+                MOVE 7 TO ws-tbl-e(ws-i)
         END-EVALUATE
-        MOVE tbl-e(i) TO ref-e(i)
+        MOVE ws-tbl-e(ws-i) TO ws-ref-e(ws-i)
     END-PERFORM
-    PERFORM VARYING i FROM 2 BY 1 UNTIL i > nsz
-        MOVE ref-e(i) TO key
-        COMPUTE j = i - 1
-        PERFORM UNTIL j < 1
-            IF ref-e(j) > key
-                MOVE ref-e(j) TO ref-e(j + 1)
-                COMPUTE j = j - 1
+    PERFORM VARYING ws-i FROM 2 BY 1 UNTIL ws-i > ws-nsz
+        MOVE ws-ref-e(ws-i) TO ws-key
+        COMPUTE ws-j = ws-i - 1
+        PERFORM UNTIL ws-j < 1
+            IF ws-ref-e(ws-j) > ws-key
+                MOVE ws-ref-e(ws-j) TO ws-ref-e(ws-j + 1)
+                COMPUTE ws-j = ws-j - 1
             ELSE
                 EXIT PERFORM
             END-IF
         END-PERFORM
-        MOVE key TO ref-e(j + 1)
+        MOVE ws-key TO ws-ref-e(ws-j + 1)
     END-PERFORM
     PERFORM call-algo
-    MOVE 0 TO bad
-    PERFORM VARYING i FROM 1 BY 1 UNTIL i > nsz
-        IF tbl-e(i) NOT = ref-e(i)
-            MOVE 1 TO bad
+    MOVE 0 TO ws-bad
+    PERFORM VARYING ws-i FROM 1 BY 1 UNTIL ws-i > ws-nsz
+        IF ws-tbl-e(ws-i) NOT = ws-ref-e(ws-i)
+            MOVE 1 TO ws-bad
         END-IF
     END-PERFORM
-    IF bad = 1
-        ADD 1 TO fails
-        DISPLAY "FAIL algorithm " algo " n=" nsz
+    IF ws-bad = 1
+        ADD 1 TO ws-fails
+        DISPLAY "FAIL algorithm " ws-algo " n=" ws-nsz
     END-IF.
 
 call-algo.
-    EVALUATE algo
+    EVALUATE ws-algo
 @CALLS@
     END-EVALUATE.
 

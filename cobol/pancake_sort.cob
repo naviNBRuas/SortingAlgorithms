@@ -2,7 +2,7 @@
 >>SOURCE FORMAT FREE
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. pancake-sort-x-flip IS RECURSIVE.
+PROGRAM-ID. ps97f-flip IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 v-i USAGE BINARY-DOUBLE SIGNED.
@@ -16,7 +16,7 @@ LINKAGE SECTION.
 01 t-a.
     05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-k USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-k.
+PROCEDURE DIVISION USING t-a v-k.
     MOVE 0 TO v-i
     PERFORM UNTIL 1 = 2
         IF v-i < v-k
@@ -38,7 +38,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-k.
         MOVE w-5 TO v-k
     END-PERFORM
     GOBACK.
-END PROGRAM pancake-sort-x-flip.
+END PROGRAM ps97f-flip.
 
 IDENTIFICATION DIVISION.
 PROGRAM-ID. pancake-sort IS RECURSIVE.
@@ -64,7 +64,7 @@ LINKAGE SECTION.
 01 t-a.
     05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-n USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+PROCEDURE DIVISION USING t-a v-n.
     MOVE v-n TO v-size
     PERFORM UNTIL 1 = 2
         IF v-size > 1
@@ -114,11 +114,11 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
                 MOVE 0 TO f-5
             END-IF
             IF f-5 = 1
-                CALL "pancake-sort-x-flip" USING BY REFERENCE t-a BY VALUE v-mx
+                CALL "ps97f-flip" USING BY REFERENCE t-a BY CONTENT v-mx
                 END-CALL
             END-IF
             COMPUTE w-7 = v-size - 1
-            CALL "pancake-sort-x-flip" USING BY REFERENCE t-a BY VALUE w-7
+            CALL "ps97f-flip" USING BY REFERENCE t-a BY CONTENT w-7
             END-CALL
         END-IF
         COMPUTE w-8 = v-size - 1

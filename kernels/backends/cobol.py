@@ -3,11 +3,11 @@
 COBOL has no expressions in subscripts, no break/continue and no dynamic arrays, so the kernel AST is lowered to
 straight-line COMPUTE/MOVE statements over fresh temporaries; short-circuit conditions become flag variables;
 `while` becomes an infinite inline PERFORM with EXIT PERFORM. Every kernel function becomes a RECURSIVE
-program: integers are passed BY VALUE, arrays BY REFERENCE, results via RETURNING. Arrays are fixed-capacity
-tables (65536 elements, or the literal size for constant-size arrays); the very wide-range fallbacks in the
+program: integers are passed BY CONTENT (copies), arrays BY REFERENCE, results through a trailing output parameter. Arrays are fixed-capacity
+tables (65536 elements each); the very wide-range fallbacks in the
 distribution sorts use a smaller threshold (60000 instead of 4000000) so their tables fit.
 
-NOTE: generated without access to a COBOL compiler in the authoring environment - see cobol/README.md.
+Verified with GnuCOBOL 3.2.0 (see cobol/README.md).
 """
 from __future__ import annotations
 
@@ -21,6 +21,19 @@ COBOL_CMP = {"==": "=", "!=": "NOT =", "<": "<", "<=": "<=", ">": ">", ">=": ">=
 
 def hy(s: str) -> str:
     return s.replace("_", "-")
+
+
+def short(mangled: str) -> str:
+    """COBOL program names are limited to 31 characters: <stem initials><3 hex of stem hash>-<helper>."""
+    import hashlib
+    if "_x_" not in mangled:
+        return hy(mangled)
+    stem, raw = mangled.split("_x_", 1)
+    initials = "".join(w[0] for w in stem.split("_"))
+    h = hashlib.sha1(stem.encode()).hexdigest()[:3]
+    name = f"{initials}{h}-{hy(raw)}"
+    assert len(name) <= 31, name
+    return name
 
 
 class Cobol:
@@ -102,10 +115,16 @@ class Cobol:
             if isinstance(a, ast.Name) and a.id in fn.arrays:
                 parts.append("BY REFERENCE " + self.t(a.id))
             else:
-                parts.append("BY VALUE " + self.cx(a, fn, out, ind))
+                o = self.cx(a, fn, out, ind)
+                if not o.startswith(("v-", "w-", "f-")):  # literals are 4 bytes: pass an 8-byte item instead
+                    w0 = self.new_w()
+                    out.append(f"{ind}MOVE {o} TO {w0}")
+                    o = w0
+                parts.append("BY CONTENT " + o)
         w = self.new_w() if want else None
-        ret = f" RETURNING {w}" if want else ""
-        out.append(f'{ind}CALL "{hy(self.fnmap[n.func.id])}" USING {" ".join(parts)}{ret}')
+        if want:
+            parts.append("BY REFERENCE " + w)
+        out.append(f'{ind}CALL "{short(self.fnmap[n.func.id])}" USING {" ".join(parts)}')
         out.append(f"{ind}END-CALL")
         return None, w
 
@@ -223,7 +242,7 @@ class Cobol:
         self.nf = 0
         body: list[str] = []
         self.stmts(fn.body, fn, body, "    ")
-        name = hy(fn.stem) if is_entry else hy(fn.name)
+        name = hy(fn.stem) if is_entry else short(fn.name)
         out = ["IDENTIFICATION DIVISION.", f"PROGRAM-ID. {name} IS RECURSIVE.", "DATA DIVISION.", "LOCAL-STORAGE SECTION."]
         for n in fn.scalars:
             out.append(f"01 {self.v(n)} USAGE BINARY-DOUBLE SIGNED.")
@@ -235,7 +254,7 @@ class Cobol:
         for s in fn.body:
             if isinstance(s, ast.Assign) and isinstance(s.value, ast.Call) and getattr(s.value.func, "id", "") == "new_array":
                 a0 = s.value.args[0]
-                sizes[s.targets[0].id] = a0.value if isinstance(a0, ast.Constant) else CAP
+                sizes[s.targets[0].id] = CAP  # every table has the same capacity so BY REFERENCE sizes always match
         for n in fn.local_arrays:
             out.append(f"01 {self.t(n)}.")
             out.append(f"    05 {self.te(n)} USAGE BINARY-LONG SIGNED OCCURS {sizes.get(n, CAP)} TIMES.")
@@ -245,14 +264,15 @@ class Cobol:
             if kind == "arr":
                 out.append(f"01 {self.t(n)}.")
                 out.append(f"    05 {self.te(n)} USAGE BINARY-LONG SIGNED OCCURS {CAP} TIMES.")
-                using.append("BY REFERENCE " + self.t(n))
+                using.append(self.t(n))
             else:
                 out.append(f"01 {self.v(n)} USAGE BINARY-DOUBLE SIGNED.")
-                using.append("BY VALUE " + self.v(n))
+                using.append(self.v(n))
         if fn.returns_int:
             out.append("01 r-val USAGE BINARY-DOUBLE SIGNED.")
-        ret = " RETURNING r-val" if fn.returns_int else ""
-        out.append(f"PROCEDURE DIVISION USING {' '.join(using)}{ret}.")
+        if fn.returns_int:
+            using.append("r-val")
+        out.append(f"PROCEDURE DIVISION USING {' '.join(using)}.")
         out += body
         out.append("    GOBACK.")
         out.append(f"END PROGRAM {name}.")

@@ -2,7 +2,7 @@
 >>SOURCE FORMAT FREE
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. avl-tree-sort-x-height IS RECURSIVE.
+PROGRAM-ID. atsffa-height IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 w-1 USAGE BINARY-DOUBLE SIGNED.
@@ -14,7 +14,7 @@ LINKAGE SECTION.
     05 t-ht-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-t USAGE BINARY-DOUBLE SIGNED.
 01 r-val USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-ht BY VALUE v-t RETURNING r-val.
+PROCEDURE DIVISION USING t-ht v-t r-val.
     IF v-t = 0
         MOVE 1 TO f-1
     ELSE
@@ -30,10 +30,10 @@ PROCEDURE DIVISION USING BY REFERENCE t-ht BY VALUE v-t RETURNING r-val.
     MOVE w-3 TO r-val
     GOBACK
     GOBACK.
-END PROGRAM avl-tree-sort-x-height.
+END PROGRAM atsffa-height.
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. avl-tree-sort-x-fix IS RECURSIVE.
+PROGRAM-ID. atsffa-fix IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 w-1 USAGE BINARY-DOUBLE SIGNED.
@@ -56,16 +56,16 @@ LINKAGE SECTION.
 01 t-ht.
     05 t-ht-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-t USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-t.
+PROCEDURE DIVISION USING t-lc t-rc t-ht v-t.
     COMPUTE w-1 = v-t - 1
     COMPUTE w-2 = w-1 + 1
     MOVE t-lc-e(w-2) TO w-3
-    CALL "avl-tree-sort-x-height" USING BY REFERENCE t-ht BY VALUE w-3 RETURNING w-4
+    CALL "atsffa-height" USING BY REFERENCE t-ht BY CONTENT w-3 BY REFERENCE w-4
     END-CALL
     COMPUTE w-5 = v-t - 1
     COMPUTE w-6 = w-5 + 1
     MOVE t-rc-e(w-6) TO w-7
-    CALL "avl-tree-sort-x-height" USING BY REFERENCE t-ht BY VALUE w-7 RETURNING w-8
+    CALL "atsffa-height" USING BY REFERENCE t-ht BY CONTENT w-7 BY REFERENCE w-8
     END-CALL
     IF w-4 > w-8
         MOVE w-4 TO w-9
@@ -77,10 +77,10 @@ PROCEDURE DIVISION USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht B
     COMPUTE w-12 = w-11 + 1
     MOVE w-10 TO t-ht-e(w-12)
     GOBACK.
-END PROGRAM avl-tree-sort-x-fix.
+END PROGRAM atsffa-fix.
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. avl-tree-sort-x-rot-right IS RECURSIVE.
+PROGRAM-ID. atsffa-rot-right IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 v-x USAGE BINARY-DOUBLE SIGNED.
@@ -103,7 +103,7 @@ LINKAGE SECTION.
     05 t-ht-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-y USAGE BINARY-DOUBLE SIGNED.
 01 r-val USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-y RETURNING r-val.
+PROCEDURE DIVISION USING t-lc t-rc t-ht v-y r-val.
     COMPUTE w-1 = v-y - 1
     COMPUTE w-2 = w-1 + 1
     MOVE t-lc-e(w-2) TO w-3
@@ -117,17 +117,17 @@ PROCEDURE DIVISION USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht B
     COMPUTE w-9 = v-x - 1
     COMPUTE w-10 = w-9 + 1
     MOVE v-y TO t-rc-e(w-10)
-    CALL "avl-tree-sort-x-fix" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-y
+    CALL "atsffa-fix" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY CONTENT v-y
     END-CALL
-    CALL "avl-tree-sort-x-fix" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-x
+    CALL "atsffa-fix" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY CONTENT v-x
     END-CALL
     MOVE v-x TO r-val
     GOBACK
     GOBACK.
-END PROGRAM avl-tree-sort-x-rot-right.
+END PROGRAM atsffa-rot-right.
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. avl-tree-sort-x-rot-left IS RECURSIVE.
+PROGRAM-ID. atsffa-rot-left IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 v-y USAGE BINARY-DOUBLE SIGNED.
@@ -150,7 +150,7 @@ LINKAGE SECTION.
     05 t-ht-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-x USAGE BINARY-DOUBLE SIGNED.
 01 r-val USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-x RETURNING r-val.
+PROCEDURE DIVISION USING t-lc t-rc t-ht v-x r-val.
     COMPUTE w-1 = v-x - 1
     COMPUTE w-2 = w-1 + 1
     MOVE t-rc-e(w-2) TO w-3
@@ -164,17 +164,17 @@ PROCEDURE DIVISION USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht B
     COMPUTE w-9 = v-y - 1
     COMPUTE w-10 = w-9 + 1
     MOVE v-x TO t-lc-e(w-10)
-    CALL "avl-tree-sort-x-fix" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-x
+    CALL "atsffa-fix" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY CONTENT v-x
     END-CALL
-    CALL "avl-tree-sort-x-fix" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-y
+    CALL "atsffa-fix" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY CONTENT v-y
     END-CALL
     MOVE v-y TO r-val
     GOBACK
     GOBACK.
-END PROGRAM avl-tree-sort-x-rot-left.
+END PROGRAM atsffa-rot-left.
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. avl-tree-sort-x-insert IS RECURSIVE.
+PROGRAM-ID. atsffa-insert IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 v-bal USAGE BINARY-DOUBLE SIGNED.
@@ -257,7 +257,7 @@ LINKAGE SECTION.
 01 v-t USAGE BINARY-DOUBLE SIGNED.
 01 v-v USAGE BINARY-DOUBLE SIGNED.
 01 r-val USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-t BY VALUE v-v RETURNING r-val.
+PROCEDURE DIVISION USING t-vals t-lc t-rc t-ht v-t v-v r-val.
     IF v-t = 0
         MOVE 1 TO f-1
     ELSE
@@ -284,7 +284,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc
         COMPUTE w-8 = v-t - 1
         COMPUTE w-9 = w-8 + 1
         MOVE t-lc-e(w-9) TO w-10
-        CALL "avl-tree-sort-x-insert" USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE w-10 BY VALUE v-v RETURNING w-11
+        CALL "atsffa-insert" USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY CONTENT w-10 BY CONTENT v-v BY REFERENCE w-11
         END-CALL
         COMPUTE w-12 = v-t - 1
         COMPUTE w-13 = w-12 + 1
@@ -293,23 +293,23 @@ PROCEDURE DIVISION USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc
         COMPUTE w-14 = v-t - 1
         COMPUTE w-15 = w-14 + 1
         MOVE t-rc-e(w-15) TO w-16
-        CALL "avl-tree-sort-x-insert" USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE w-16 BY VALUE v-v RETURNING w-17
+        CALL "atsffa-insert" USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY CONTENT w-16 BY CONTENT v-v BY REFERENCE w-17
         END-CALL
         COMPUTE w-18 = v-t - 1
         COMPUTE w-19 = w-18 + 1
         MOVE w-17 TO t-rc-e(w-19)
     END-IF
-    CALL "avl-tree-sort-x-fix" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-t
+    CALL "atsffa-fix" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY CONTENT v-t
     END-CALL
     COMPUTE w-20 = v-t - 1
     COMPUTE w-21 = w-20 + 1
     MOVE t-lc-e(w-21) TO w-22
-    CALL "avl-tree-sort-x-height" USING BY REFERENCE t-ht BY VALUE w-22 RETURNING w-23
+    CALL "atsffa-height" USING BY REFERENCE t-ht BY CONTENT w-22 BY REFERENCE w-23
     END-CALL
     COMPUTE w-24 = v-t - 1
     COMPUTE w-25 = w-24 + 1
     MOVE t-rc-e(w-25) TO w-26
-    CALL "avl-tree-sort-x-height" USING BY REFERENCE t-ht BY VALUE w-26 RETURNING w-27
+    CALL "atsffa-height" USING BY REFERENCE t-ht BY CONTENT w-26 BY REFERENCE w-27
     END-CALL
     COMPUTE w-28 = w-23 - w-27
     MOVE w-28 TO v-bal
@@ -326,12 +326,12 @@ PROCEDURE DIVISION USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc
         COMPUTE w-32 = v-l - 1
         COMPUTE w-33 = w-32 + 1
         MOVE t-lc-e(w-33) TO w-34
-        CALL "avl-tree-sort-x-height" USING BY REFERENCE t-ht BY VALUE w-34 RETURNING w-35
+        CALL "atsffa-height" USING BY REFERENCE t-ht BY CONTENT w-34 BY REFERENCE w-35
         END-CALL
         COMPUTE w-36 = v-l - 1
         COMPUTE w-37 = w-36 + 1
         MOVE t-rc-e(w-37) TO w-38
-        CALL "avl-tree-sort-x-height" USING BY REFERENCE t-ht BY VALUE w-38 RETURNING w-39
+        CALL "atsffa-height" USING BY REFERENCE t-ht BY CONTENT w-38 BY REFERENCE w-39
         END-CALL
         IF w-35 < w-39
             MOVE 1 TO f-4
@@ -339,13 +339,13 @@ PROCEDURE DIVISION USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc
             MOVE 0 TO f-4
         END-IF
         IF f-4 = 1
-            CALL "avl-tree-sort-x-rot-left" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-l RETURNING w-40
+            CALL "atsffa-rot-left" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY CONTENT v-l BY REFERENCE w-40
             END-CALL
             COMPUTE w-41 = v-t - 1
             COMPUTE w-42 = w-41 + 1
             MOVE w-40 TO t-lc-e(w-42)
         END-IF
-        CALL "avl-tree-sort-x-rot-right" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-t RETURNING w-43
+        CALL "atsffa-rot-right" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY CONTENT v-t BY REFERENCE w-43
         END-CALL
         MOVE w-43 TO r-val
         GOBACK
@@ -364,12 +364,12 @@ PROCEDURE DIVISION USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc
         COMPUTE w-48 = v-r - 1
         COMPUTE w-49 = w-48 + 1
         MOVE t-rc-e(w-49) TO w-50
-        CALL "avl-tree-sort-x-height" USING BY REFERENCE t-ht BY VALUE w-50 RETURNING w-51
+        CALL "atsffa-height" USING BY REFERENCE t-ht BY CONTENT w-50 BY REFERENCE w-51
         END-CALL
         COMPUTE w-52 = v-r - 1
         COMPUTE w-53 = w-52 + 1
         MOVE t-lc-e(w-53) TO w-54
-        CALL "avl-tree-sort-x-height" USING BY REFERENCE t-ht BY VALUE w-54 RETURNING w-55
+        CALL "atsffa-height" USING BY REFERENCE t-ht BY CONTENT w-54 BY REFERENCE w-55
         END-CALL
         IF w-51 < w-55
             MOVE 1 TO f-6
@@ -377,13 +377,13 @@ PROCEDURE DIVISION USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc
             MOVE 0 TO f-6
         END-IF
         IF f-6 = 1
-            CALL "avl-tree-sort-x-rot-right" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-r RETURNING w-56
+            CALL "atsffa-rot-right" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY CONTENT v-r BY REFERENCE w-56
             END-CALL
             COMPUTE w-57 = v-t - 1
             COMPUTE w-58 = w-57 + 1
             MOVE w-56 TO t-rc-e(w-58)
         END-IF
-        CALL "avl-tree-sort-x-rot-left" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-t RETURNING w-59
+        CALL "atsffa-rot-left" USING BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY CONTENT v-t BY REFERENCE w-59
         END-CALL
         MOVE w-59 TO r-val
         GOBACK
@@ -391,7 +391,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc
     MOVE v-t TO r-val
     GOBACK
     GOBACK.
-END PROGRAM avl-tree-sort-x-insert.
+END PROGRAM atsffa-insert.
 
 IDENTIFICATION DIVISION.
 PROGRAM-ID. avl-tree-sort IS RECURSIVE.
@@ -441,7 +441,7 @@ LINKAGE SECTION.
 01 t-a.
     05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-n USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+PROCEDURE DIVISION USING t-a v-n.
     IF v-n < 2
         MOVE 1 TO f-1
     ELSE
@@ -474,7 +474,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
         IF v-i >= w-5
             EXIT PERFORM
         END-IF
-        CALL "avl-tree-sort-x-insert" USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY VALUE v-root BY VALUE v-i RETURNING w-6
+        CALL "atsffa-insert" USING BY REFERENCE t-vals BY REFERENCE t-lc BY REFERENCE t-rc BY REFERENCE t-ht BY CONTENT v-root BY CONTENT v-i BY REFERENCE w-6
         END-CALL
         MOVE w-6 TO v-root
         ADD 1 TO v-i

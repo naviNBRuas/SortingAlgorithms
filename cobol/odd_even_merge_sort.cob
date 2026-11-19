@@ -2,7 +2,7 @@
 >>SOURCE FORMAT FREE
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. odd-even-merge-sort-x-cmp-swap IS RECURSIVE.
+PROGRAM-ID. oemsfca-cmp-swap IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 w-1 USAGE BINARY-DOUBLE SIGNED.
@@ -18,7 +18,7 @@ LINKAGE SECTION.
     05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-i USAGE BINARY-DOUBLE SIGNED.
 01 v-j USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-i BY VALUE v-j.
+PROCEDURE DIVISION USING t-a v-i v-j.
     COMPUTE w-1 = v-i + 1
     MOVE t-a-e(w-1) TO w-2
     COMPUTE w-3 = v-j + 1
@@ -36,7 +36,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-i BY VALUE v-j.
         MOVE w-7 TO t-a-e(w-6)
     END-IF
     GOBACK.
-END PROGRAM odd-even-merge-sort-x-cmp-swap.
+END PROGRAM oemsfca-cmp-swap.
 
 IDENTIFICATION DIVISION.
 PROGRAM-ID. odd-even-merge-sort IS RECURSIVE.
@@ -75,7 +75,7 @@ LINKAGE SECTION.
 01 t-a.
     05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-n USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+PROCEDURE DIVISION USING t-a v-n.
     MOVE 1 TO v-p
     PERFORM UNTIL 1 = 2
         IF v-p < v-n
@@ -138,7 +138,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
                         COMPUTE w-14 = v-i + v-j
                         COMPUTE w-15 = v-i + v-j
                         COMPUTE w-16 = w-15 + v-k
-                        CALL "odd-even-merge-sort-x-cmp-swap" USING BY REFERENCE t-a BY VALUE w-14 BY VALUE w-16
+                        CALL "oemsfca-cmp-swap" USING BY REFERENCE t-a BY CONTENT w-14 BY CONTENT w-16
                         END-CALL
                     END-IF
                     ADD 1 TO v-i

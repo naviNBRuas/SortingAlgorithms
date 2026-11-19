@@ -821,7 +821,7 @@ All 56 algorithms exist in every language below. Each non-Python edition is gene
 | Rust | `rust/` | `cd rust && cargo test` | Bounds-checked, no `unsafe`. |
 | x86-64 assembly | `assembly/` | `cd assembly && make test freestanding` | **28 hand-written** + 28 compiled from kernels; no libc (see below). |
 | Machine code | `machine-code/` | `cd machine-code && make test` | **56 raw x86-64 images** (about 37 KB), loaded into executable memory and run. |
-| COBOL | `cobol/` | `cd cobol && make test` | 56 GnuCOBOL programs. **Generated but not yet compiled**, see [cobol/README.md](cobol/README.md). |
+| COBOL | `cobol/` | `cd cobol && make test` | 56 GnuCOBOL programs, verified with GnuCOBOL 3.2.0 (see [cobol/README.md](cobol/README.md)). |
 
 * **Assembly** is GNU `as` Intel syntax with no C and no libc: only two raw `mmap`/`munmap` system calls. The 28 original
   algorithms are hand-written; the other 28 are output of the kernel compiler (`kernels/backends/x86.py`) and are labelled as such.

@@ -2,7 +2,7 @@
 >>SOURCE FORMAT FREE
 
 IDENTIFICATION DIVISION.
-PROGRAM-ID. pairwise-sorting-network-x-cmp-swap IS RECURSIVE.
+PROGRAM-ID. psnd28-cmp-swap IS RECURSIVE.
 DATA DIVISION.
 LOCAL-STORAGE SECTION.
 01 w-1 USAGE BINARY-DOUBLE SIGNED.
@@ -20,7 +20,7 @@ LINKAGE SECTION.
 01 v-i USAGE BINARY-DOUBLE SIGNED.
 01 v-j USAGE BINARY-DOUBLE SIGNED.
 01 v-n USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-i BY VALUE v-j BY VALUE v-n.
+PROCEDURE DIVISION USING t-a v-i v-j v-n.
     IF v-j < v-n
         MOVE 1 TO f-1
     ELSE
@@ -45,7 +45,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-i BY VALUE v-j BY VALUE v-n
         END-IF
     END-IF
     GOBACK.
-END PROGRAM pairwise-sorting-network-x-cmp-swap.
+END PROGRAM psnd28-cmp-swap.
 
 IDENTIFICATION DIVISION.
 PROGRAM-ID. pairwise-sorting-network IS RECURSIVE.
@@ -87,7 +87,7 @@ LINKAGE SECTION.
 01 t-a.
     05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
 01 v-n USAGE BINARY-DOUBLE SIGNED.
-PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+PROCEDURE DIVISION USING t-a v-n.
     MOVE 1 TO v-size
     PERFORM UNTIL 1 = 2
         IF v-size < v-n
@@ -123,7 +123,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
                 EXIT PERFORM
             END-IF
             COMPUTE w-2 = v-b - v-step
-            CALL "pairwise-sorting-network-x-cmp-swap" USING BY REFERENCE t-a BY VALUE w-2 BY VALUE v-b BY VALUE v-n
+            CALL "psnd28-cmp-swap" USING BY REFERENCE t-a BY CONTENT w-2 BY CONTENT v-b BY CONTENT v-n
             END-CALL
             COMPUTE w-3 = v-b + 1
             MOVE w-3 TO v-b
@@ -180,7 +180,7 @@ PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
                 END-IF
                 COMPUTE w-10 = v-d * v-step
                 COMPUTE w-11 = v-b - w-10
-                CALL "pairwise-sorting-network-x-cmp-swap" USING BY REFERENCE t-a BY VALUE w-11 BY VALUE v-b BY VALUE v-n
+                CALL "psnd28-cmp-swap" USING BY REFERENCE t-a BY CONTENT w-11 BY CONTENT v-b BY CONTENT v-n
                 END-CALL
                 COMPUTE w-12 = v-b + 1
                 MOVE w-12 TO v-b

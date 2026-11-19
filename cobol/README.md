@@ -4,22 +4,26 @@
 Each file holds the algorithm's entry program (`PROGRAM-ID. bubble-sort`) and its helper programs; all are `RECURSIVE`.
 
 ```cobol
-CALL "bubble-sort" USING BY REFERENCE tbl BY VALUE n
+CALL "bubble-sort" USING BY REFERENCE tbl BY CONTENT n
 ```
 
 `tbl` is a table of `USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES` (signed 32-bit integers) and `n` a `BINARY-DOUBLE SIGNED`.
-`bogo-sort` / `bozo-sort` take a third `BY VALUE` argument (attempt budget).
+`bogo-sort` / `bozo-sort` take a third `BY CONTENT` argument (attempt budget), also an 8-byte item.
 
 ```sh
 cd cobol && make test        # cobc -x -free test.cob *.cob && ./test_runner
 ```
 
-## Status: generated, **not yet compiled**
+## Status: verified
 
-These files are produced by `kernels/backends/cobol.py` from the same verified kernels as every other language, but the
-environment that generated them had no COBOL compiler, so they have **not been compiled or run**. Expect that a first
-`make test` may surface syntax or runtime-semantics issues in the generator (not in the algorithms, which are verified in the
-kernels). CI has a job that installs GnuCOBOL and runs the suite.
+All 56 programs compile cleanly and pass `make test` with **GnuCOBOL 3.2.0**, including a run built with `-debug` (runtime
+subscript and argument-size checks). The test driver checks every sort against a reference insertion sort on random,
+sorted, reversed and all-equal inputs of many lengths.
+
+Notes on the COBOL calling convention used (found by testing): integers are passed `BY CONTENT` as 8-byte data items (never
+literals, which are only 4 bytes), arrays `BY REFERENCE`, and results come back through a trailing output parameter, because
+`PROCEDURE DIVISION RETURNING` is not fully implemented in 3.2. Program names are limited to 31 characters, so helper programs
+are named `<stem initials><3-hex hash>-<helper>`.
 
 Limits of this edition: tables are fixed-capacity (65,536 elements), so `n` must stay below that; the wide-range fallbacks in
 counting/pigeonhole/sleep sorts trigger at a key range of 60,000 (instead of 4,000,000 elsewhere).
