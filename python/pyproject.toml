@@ -1,18 +1,23 @@
 [project]
 name = "sorting-algorithms"
-version = "0.1.0"
-description = "Comprehensive collection of sorting algorithms with tracing and visualization utilities"
-authors = [{name = "naviNBRuas"}]
+version = "1.1.0"
+description = "Traced, instrumented implementations of 48 sorting algorithms with animation and benchmark tooling"
+authors = [{name = "Navin B. Ruas"}]
+license = {text = "MIT"}
 requires-python = ">=3.9"
-dependencies = [
-  "matplotlib>=3.8",
-  "imageio>=2.34",
-  "numpy>=1.26",
-]
+dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=7.4"]
+viz = ["matplotlib>=3.8", "numpy>=1.26", "pillow>=10.1"]
+dev = ["pytest>=7.4", "matplotlib>=3.8", "numpy>=1.26", "pillow>=10.1"]
 
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["sorting_algorithms*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

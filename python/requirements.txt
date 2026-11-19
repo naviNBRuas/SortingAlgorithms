@@ -1,4 +1,4 @@
 matplotlib>=3.8
-imageio>=2.34
 numpy>=1.26
+pillow>=10.1
 pytest>=7.4
