@@ -1,0 +1,235 @@
+      *> GENERATED from kernels/algos/permutation_sort.py by kernels/generate.py - do not edit; edit the kernel and regenerate.
+>>SOURCE FORMAT FREE
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. permutation-sort IS RECURSIVE.
+DATA DIVISION.
+LOCAL-STORAGE SECTION.
+01 v-i USAGE BINARY-DOUBLE SIGNED.
+01 v-found USAGE BINARY-DOUBLE SIGNED.
+01 v-ok USAGE BINARY-DOUBLE SIGNED.
+01 v-j USAGE BINARY-DOUBLE SIGNED.
+01 v-lo USAGE BINARY-DOUBLE SIGNED.
+01 v-hi USAGE BINARY-DOUBLE SIGNED.
+01 w-1 USAGE BINARY-DOUBLE SIGNED.
+01 w-2 USAGE BINARY-DOUBLE SIGNED.
+01 w-3 USAGE BINARY-DOUBLE SIGNED.
+01 w-4 USAGE BINARY-DOUBLE SIGNED.
+01 w-5 USAGE BINARY-DOUBLE SIGNED.
+01 w-6 USAGE BINARY-DOUBLE SIGNED.
+01 w-7 USAGE BINARY-DOUBLE SIGNED.
+01 w-8 USAGE BINARY-DOUBLE SIGNED.
+01 w-9 USAGE BINARY-DOUBLE SIGNED.
+01 w-10 USAGE BINARY-DOUBLE SIGNED.
+01 w-11 USAGE BINARY-DOUBLE SIGNED.
+01 w-12 USAGE BINARY-DOUBLE SIGNED.
+01 w-13 USAGE BINARY-DOUBLE SIGNED.
+01 w-14 USAGE BINARY-DOUBLE SIGNED.
+01 w-15 USAGE BINARY-DOUBLE SIGNED.
+01 w-16 USAGE BINARY-DOUBLE SIGNED.
+01 w-17 USAGE BINARY-DOUBLE SIGNED.
+01 w-18 USAGE BINARY-DOUBLE SIGNED.
+01 w-19 USAGE BINARY-DOUBLE SIGNED.
+01 w-20 USAGE BINARY-DOUBLE SIGNED.
+01 w-21 USAGE BINARY-DOUBLE SIGNED.
+01 w-22 USAGE BINARY-DOUBLE SIGNED.
+01 w-23 USAGE BINARY-DOUBLE SIGNED.
+01 w-24 USAGE BINARY-DOUBLE SIGNED.
+01 w-25 USAGE BINARY-DOUBLE SIGNED.
+01 w-26 USAGE BINARY-DOUBLE SIGNED.
+01 w-27 USAGE BINARY-DOUBLE SIGNED.
+01 w-28 USAGE BINARY-DOUBLE SIGNED.
+01 w-29 USAGE BINARY-DOUBLE SIGNED.
+01 w-30 USAGE BINARY-DOUBLE SIGNED.
+01 w-31 USAGE BINARY-DOUBLE SIGNED.
+01 w-32 USAGE BINARY-DOUBLE SIGNED.
+01 w-33 USAGE BINARY-DOUBLE SIGNED.
+01 w-34 USAGE BINARY-DOUBLE SIGNED.
+01 w-35 USAGE BINARY-DOUBLE SIGNED.
+01 w-36 USAGE BINARY-DOUBLE SIGNED.
+01 w-37 USAGE BINARY-DOUBLE SIGNED.
+01 w-38 USAGE BINARY-DOUBLE SIGNED.
+01 w-39 USAGE BINARY-DOUBLE SIGNED.
+01 w-40 USAGE BINARY-DOUBLE SIGNED.
+01 w-41 USAGE BINARY-DOUBLE SIGNED.
+01 w-42 USAGE BINARY-DOUBLE SIGNED.
+01 w-43 USAGE BINARY-DOUBLE SIGNED.
+01 w-44 USAGE BINARY-DOUBLE SIGNED.
+01 w-45 USAGE BINARY-DOUBLE SIGNED.
+01 f-1 USAGE BINARY-DOUBLE SIGNED.
+01 f-2 USAGE BINARY-DOUBLE SIGNED.
+01 f-3 USAGE BINARY-DOUBLE SIGNED.
+01 f-4 USAGE BINARY-DOUBLE SIGNED.
+01 f-5 USAGE BINARY-DOUBLE SIGNED.
+01 f-6 USAGE BINARY-DOUBLE SIGNED.
+01 f-7 USAGE BINARY-DOUBLE SIGNED.
+01 t-vals.
+    05 t-vals-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 t-idx.
+    05 t-idx-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+LINKAGE SECTION.
+01 t-a.
+    05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 v-n USAGE BINARY-DOUBLE SIGNED.
+PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+    INITIALIZE t-vals
+    INITIALIZE t-idx
+    MOVE 0 TO v-i
+    MOVE v-n TO w-1
+    PERFORM UNTIL 1 = 2
+        IF v-i >= w-1
+            EXIT PERFORM
+        END-IF
+        COMPUTE w-2 = v-i + 1
+        MOVE t-a-e(w-2) TO w-3
+        COMPUTE w-4 = v-i + 1
+        MOVE w-3 TO t-vals-e(w-4)
+        COMPUTE w-5 = v-i + 1
+        MOVE v-i TO t-idx-e(w-5)
+        ADD 1 TO v-i
+    END-PERFORM
+    MOVE 0 TO v-found
+    PERFORM UNTIL 1 = 2
+        IF v-found = 0
+            MOVE 1 TO f-1
+        ELSE
+            MOVE 0 TO f-1
+        END-IF
+        IF f-1 = 0
+            EXIT PERFORM
+        END-IF
+        MOVE 1 TO v-ok
+        COMPUTE w-6 = v-n - 1
+        MOVE 0 TO v-i
+        MOVE w-6 TO w-7
+        PERFORM UNTIL 1 = 2
+            IF v-i >= w-7
+                EXIT PERFORM
+            END-IF
+            COMPUTE w-8 = v-i + 1
+            COMPUTE w-9 = w-8 + 1
+            MOVE t-idx-e(w-9) TO w-10
+            COMPUTE w-11 = w-10 + 1
+            MOVE t-vals-e(w-11) TO w-12
+            COMPUTE w-13 = v-i + 1
+            MOVE t-idx-e(w-13) TO w-14
+            COMPUTE w-15 = w-14 + 1
+            MOVE t-vals-e(w-15) TO w-16
+            IF w-12 < w-16
+                MOVE 1 TO f-2
+            ELSE
+                MOVE 0 TO f-2
+            END-IF
+            IF f-2 = 1
+                MOVE 0 TO v-ok
+            END-IF
+            ADD 1 TO v-i
+        END-PERFORM
+        IF v-ok = 1
+            MOVE 1 TO f-3
+        ELSE
+            MOVE 0 TO f-3
+        END-IF
+        IF f-3 = 1
+            MOVE 1 TO v-found
+        ELSE
+            COMPUTE w-17 = v-n - 2
+            MOVE w-17 TO v-i
+            PERFORM UNTIL 1 = 2
+                IF v-i >= 0
+                    MOVE 1 TO f-4
+                ELSE
+                    MOVE 0 TO f-4
+                END-IF
+                IF f-4 = 1
+                    COMPUTE w-18 = v-i + 1
+                    MOVE t-idx-e(w-18) TO w-19
+                    COMPUTE w-20 = v-i + 1
+                    COMPUTE w-21 = w-20 + 1
+                    MOVE t-idx-e(w-21) TO w-22
+                    IF w-19 > w-22
+                        MOVE 1 TO f-4
+                    ELSE
+                        MOVE 0 TO f-4
+                    END-IF
+                END-IF
+                IF f-4 = 0
+                    EXIT PERFORM
+                END-IF
+                COMPUTE w-23 = v-i - 1
+                MOVE w-23 TO v-i
+            END-PERFORM
+            IF v-i < 0
+                MOVE 1 TO f-5
+            ELSE
+                MOVE 0 TO f-5
+            END-IF
+            IF f-5 = 1
+                MOVE 1 TO v-found
+            ELSE
+                COMPUTE w-24 = v-n - 1
+                MOVE w-24 TO v-j
+                PERFORM UNTIL 1 = 2
+                    COMPUTE w-25 = v-j + 1
+                    MOVE t-idx-e(w-25) TO w-26
+                    COMPUTE w-27 = v-i + 1
+                    MOVE t-idx-e(w-27) TO w-28
+                    IF w-26 < w-28
+                        MOVE 1 TO f-6
+                    ELSE
+                        MOVE 0 TO f-6
+                    END-IF
+                    IF f-6 = 0
+                        EXIT PERFORM
+                    END-IF
+                    COMPUTE w-29 = v-j - 1
+                    MOVE w-29 TO v-j
+                END-PERFORM
+                COMPUTE w-30 = v-i + 1
+                COMPUTE w-31 = v-j + 1
+                MOVE t-idx-e(w-30) TO w-32
+                MOVE t-idx-e(w-31) TO t-idx-e(w-30)
+                MOVE w-32 TO t-idx-e(w-31)
+                COMPUTE w-33 = v-i + 1
+                MOVE w-33 TO v-lo
+                COMPUTE w-34 = v-n - 1
+                MOVE w-34 TO v-hi
+                PERFORM UNTIL 1 = 2
+                    IF v-lo < v-hi
+                        MOVE 1 TO f-7
+                    ELSE
+                        MOVE 0 TO f-7
+                    END-IF
+                    IF f-7 = 0
+                        EXIT PERFORM
+                    END-IF
+                    COMPUTE w-35 = v-lo + 1
+                    COMPUTE w-36 = v-hi + 1
+                    MOVE t-idx-e(w-35) TO w-37
+                    MOVE t-idx-e(w-36) TO t-idx-e(w-35)
+                    MOVE w-37 TO t-idx-e(w-36)
+                    COMPUTE w-38 = v-lo + 1
+                    MOVE w-38 TO v-lo
+                    COMPUTE w-39 = v-hi - 1
+                    MOVE w-39 TO v-hi
+                END-PERFORM
+            END-IF
+        END-IF
+    END-PERFORM
+    MOVE 0 TO v-i
+    MOVE v-n TO w-40
+    PERFORM UNTIL 1 = 2
+        IF v-i >= w-40
+            EXIT PERFORM
+        END-IF
+        COMPUTE w-41 = v-i + 1
+        MOVE t-idx-e(w-41) TO w-42
+        COMPUTE w-43 = w-42 + 1
+        MOVE t-vals-e(w-43) TO w-44
+        COMPUTE w-45 = v-i + 1
+        MOVE w-44 TO t-a-e(w-45)
+        ADD 1 TO v-i
+    END-PERFORM
+    GOBACK.
+END PROGRAM permutation-sort.
+

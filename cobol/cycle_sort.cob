@@ -1,0 +1,162 @@
+      *> GENERATED from kernels/algos/cycle_sort.py by kernels/generate.py - do not edit; edit the kernel and regenerate.
+>>SOURCE FORMAT FREE
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. cycle-sort-x-rank-of IS RECURSIVE.
+DATA DIVISION.
+LOCAL-STORAGE SECTION.
+01 v-pos USAGE BINARY-DOUBLE SIGNED.
+01 v-i USAGE BINARY-DOUBLE SIGNED.
+01 w-1 USAGE BINARY-DOUBLE SIGNED.
+01 w-2 USAGE BINARY-DOUBLE SIGNED.
+01 w-3 USAGE BINARY-DOUBLE SIGNED.
+01 w-4 USAGE BINARY-DOUBLE SIGNED.
+01 w-5 USAGE BINARY-DOUBLE SIGNED.
+01 f-1 USAGE BINARY-DOUBLE SIGNED.
+LINKAGE SECTION.
+01 t-a.
+    05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 v-n USAGE BINARY-DOUBLE SIGNED.
+01 v-start USAGE BINARY-DOUBLE SIGNED.
+01 v-item USAGE BINARY-DOUBLE SIGNED.
+01 r-val USAGE BINARY-DOUBLE SIGNED.
+PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n BY VALUE v-start BY VALUE v-item RETURNING r-val.
+    MOVE v-start TO v-pos
+    COMPUTE w-1 = v-start + 1
+    MOVE w-1 TO v-i
+    MOVE v-n TO w-2
+    PERFORM UNTIL 1 = 2
+        IF v-i >= w-2
+            EXIT PERFORM
+        END-IF
+        COMPUTE w-3 = v-i + 1
+        MOVE t-a-e(w-3) TO w-4
+        IF w-4 < v-item
+            MOVE 1 TO f-1
+        ELSE
+            MOVE 0 TO f-1
+        END-IF
+        IF f-1 = 1
+            COMPUTE w-5 = v-pos + 1
+            MOVE w-5 TO v-pos
+        END-IF
+        ADD 1 TO v-i
+    END-PERFORM
+    MOVE v-pos TO r-val
+    GOBACK
+    GOBACK.
+END PROGRAM cycle-sort-x-rank-of.
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. cycle-sort IS RECURSIVE.
+DATA DIVISION.
+LOCAL-STORAGE SECTION.
+01 v-start USAGE BINARY-DOUBLE SIGNED.
+01 v-item USAGE BINARY-DOUBLE SIGNED.
+01 v-pos USAGE BINARY-DOUBLE SIGNED.
+01 v-tmp USAGE BINARY-DOUBLE SIGNED.
+01 w-1 USAGE BINARY-DOUBLE SIGNED.
+01 w-2 USAGE BINARY-DOUBLE SIGNED.
+01 w-3 USAGE BINARY-DOUBLE SIGNED.
+01 w-4 USAGE BINARY-DOUBLE SIGNED.
+01 w-5 USAGE BINARY-DOUBLE SIGNED.
+01 w-6 USAGE BINARY-DOUBLE SIGNED.
+01 w-7 USAGE BINARY-DOUBLE SIGNED.
+01 w-8 USAGE BINARY-DOUBLE SIGNED.
+01 w-9 USAGE BINARY-DOUBLE SIGNED.
+01 w-10 USAGE BINARY-DOUBLE SIGNED.
+01 w-11 USAGE BINARY-DOUBLE SIGNED.
+01 w-12 USAGE BINARY-DOUBLE SIGNED.
+01 w-13 USAGE BINARY-DOUBLE SIGNED.
+01 w-14 USAGE BINARY-DOUBLE SIGNED.
+01 w-15 USAGE BINARY-DOUBLE SIGNED.
+01 w-16 USAGE BINARY-DOUBLE SIGNED.
+01 w-17 USAGE BINARY-DOUBLE SIGNED.
+01 w-18 USAGE BINARY-DOUBLE SIGNED.
+01 f-1 USAGE BINARY-DOUBLE SIGNED.
+01 f-2 USAGE BINARY-DOUBLE SIGNED.
+01 f-3 USAGE BINARY-DOUBLE SIGNED.
+01 f-4 USAGE BINARY-DOUBLE SIGNED.
+LINKAGE SECTION.
+01 t-a.
+    05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 v-n USAGE BINARY-DOUBLE SIGNED.
+PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+    COMPUTE w-1 = v-n - 1
+    MOVE 0 TO v-start
+    MOVE w-1 TO w-2
+    PERFORM UNTIL 1 = 2
+        IF v-start >= w-2
+            EXIT PERFORM
+        END-IF
+        COMPUTE w-3 = v-start + 1
+        MOVE t-a-e(w-3) TO w-4
+        MOVE w-4 TO v-item
+        CALL "cycle-sort-x-rank-of" USING BY REFERENCE t-a BY VALUE v-n BY VALUE v-start BY VALUE v-item RETURNING w-5
+        END-CALL
+        MOVE w-5 TO v-pos
+        IF v-pos NOT = v-start
+            MOVE 1 TO f-1
+        ELSE
+            MOVE 0 TO f-1
+        END-IF
+        IF f-1 = 1
+            PERFORM UNTIL 1 = 2
+                COMPUTE w-6 = v-pos + 1
+                MOVE t-a-e(w-6) TO w-7
+                IF v-item = w-7
+                    MOVE 1 TO f-2
+                ELSE
+                    MOVE 0 TO f-2
+                END-IF
+                IF f-2 = 0
+                    EXIT PERFORM
+                END-IF
+                COMPUTE w-8 = v-pos + 1
+                MOVE w-8 TO v-pos
+            END-PERFORM
+            COMPUTE w-9 = v-pos + 1
+            MOVE t-a-e(w-9) TO w-10
+            MOVE w-10 TO v-tmp
+            COMPUTE w-11 = v-pos + 1
+            MOVE v-item TO t-a-e(w-11)
+            MOVE v-tmp TO v-item
+            PERFORM UNTIL 1 = 2
+                IF v-pos NOT = v-start
+                    MOVE 1 TO f-3
+                ELSE
+                    MOVE 0 TO f-3
+                END-IF
+                IF f-3 = 0
+                    EXIT PERFORM
+                END-IF
+                CALL "cycle-sort-x-rank-of" USING BY REFERENCE t-a BY VALUE v-n BY VALUE v-start BY VALUE v-item RETURNING w-12
+                END-CALL
+                MOVE w-12 TO v-pos
+                PERFORM UNTIL 1 = 2
+                    COMPUTE w-13 = v-pos + 1
+                    MOVE t-a-e(w-13) TO w-14
+                    IF v-item = w-14
+                        MOVE 1 TO f-4
+                    ELSE
+                        MOVE 0 TO f-4
+                    END-IF
+                    IF f-4 = 0
+                        EXIT PERFORM
+                    END-IF
+                    COMPUTE w-15 = v-pos + 1
+                    MOVE w-15 TO v-pos
+                END-PERFORM
+                COMPUTE w-16 = v-pos + 1
+                MOVE t-a-e(w-16) TO w-17
+                MOVE w-17 TO v-tmp
+                COMPUTE w-18 = v-pos + 1
+                MOVE v-item TO t-a-e(w-18)
+                MOVE v-tmp TO v-item
+            END-PERFORM
+        END-IF
+        ADD 1 TO v-start
+    END-PERFORM
+    GOBACK.
+END PROGRAM cycle-sort.
+

@@ -1,0 +1,92 @@
+      *> GENERATED from kernels/algos/odd_even_sort.py by kernels/generate.py - do not edit; edit the kernel and regenerate.
+>>SOURCE FORMAT FREE
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. odd-even-sort IS RECURSIVE.
+DATA DIVISION.
+LOCAL-STORAGE SECTION.
+01 v-done USAGE BINARY-DOUBLE SIGNED.
+01 v-start USAGE BINARY-DOUBLE SIGNED.
+01 v-i USAGE BINARY-DOUBLE SIGNED.
+01 w-1 USAGE BINARY-DOUBLE SIGNED.
+01 w-2 USAGE BINARY-DOUBLE SIGNED.
+01 w-3 USAGE BINARY-DOUBLE SIGNED.
+01 w-4 USAGE BINARY-DOUBLE SIGNED.
+01 w-5 USAGE BINARY-DOUBLE SIGNED.
+01 w-6 USAGE BINARY-DOUBLE SIGNED.
+01 w-7 USAGE BINARY-DOUBLE SIGNED.
+01 w-8 USAGE BINARY-DOUBLE SIGNED.
+01 w-9 USAGE BINARY-DOUBLE SIGNED.
+01 w-10 USAGE BINARY-DOUBLE SIGNED.
+01 w-11 USAGE BINARY-DOUBLE SIGNED.
+01 w-12 USAGE BINARY-DOUBLE SIGNED.
+01 f-1 USAGE BINARY-DOUBLE SIGNED.
+01 f-2 USAGE BINARY-DOUBLE SIGNED.
+01 f-3 USAGE BINARY-DOUBLE SIGNED.
+01 f-4 USAGE BINARY-DOUBLE SIGNED.
+LINKAGE SECTION.
+01 t-a.
+    05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 v-n USAGE BINARY-DOUBLE SIGNED.
+PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+    MOVE 0 TO v-done
+    PERFORM UNTIL 1 = 2
+        IF v-done = 0
+            MOVE 1 TO f-1
+        ELSE
+            MOVE 0 TO f-1
+        END-IF
+        IF f-1 = 0
+            EXIT PERFORM
+        END-IF
+        MOVE 1 TO v-done
+        MOVE 1 TO v-start
+        PERFORM UNTIL 1 = 2
+            IF v-start >= 0
+                MOVE 1 TO f-2
+            ELSE
+                MOVE 0 TO f-2
+            END-IF
+            IF f-2 = 0
+                EXIT PERFORM
+            END-IF
+            MOVE v-start TO v-i
+            PERFORM UNTIL 1 = 2
+                COMPUTE w-1 = v-i + 1
+                IF w-1 < v-n
+                    MOVE 1 TO f-3
+                ELSE
+                    MOVE 0 TO f-3
+                END-IF
+                IF f-3 = 0
+                    EXIT PERFORM
+                END-IF
+                COMPUTE w-2 = v-i + 1
+                MOVE t-a-e(w-2) TO w-3
+                COMPUTE w-4 = v-i + 1
+                COMPUTE w-5 = w-4 + 1
+                MOVE t-a-e(w-5) TO w-6
+                IF w-3 > w-6
+                    MOVE 1 TO f-4
+                ELSE
+                    MOVE 0 TO f-4
+                END-IF
+                IF f-4 = 1
+                    COMPUTE w-7 = v-i + 1
+                    COMPUTE w-8 = v-i + 1
+                    COMPUTE w-9 = w-7 + 1
+                    MOVE t-a-e(w-8) TO w-10
+                    MOVE t-a-e(w-9) TO t-a-e(w-8)
+                    MOVE w-10 TO t-a-e(w-9)
+                    MOVE 0 TO v-done
+                END-IF
+                COMPUTE w-11 = v-i + 2
+                MOVE w-11 TO v-i
+            END-PERFORM
+            COMPUTE w-12 = v-start - 1
+            MOVE w-12 TO v-start
+        END-PERFORM
+    END-PERFORM
+    GOBACK.
+END PROGRAM odd-even-sort.
+

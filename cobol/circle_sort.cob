@@ -1,0 +1,188 @@
+      *> GENERATED from kernels/algos/circle_sort.py by kernels/generate.py - do not edit; edit the kernel and regenerate.
+>>SOURCE FORMAT FREE
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. circle-sort-x-circle-pass IS RECURSIVE.
+DATA DIVISION.
+LOCAL-STORAGE SECTION.
+01 v-m USAGE BINARY-DOUBLE SIGNED.
+01 v-swaps USAGE BINARY-DOUBLE SIGNED.
+01 v-half USAGE BINARY-DOUBLE SIGNED.
+01 v-i USAGE BINARY-DOUBLE SIGNED.
+01 w-1 USAGE BINARY-DOUBLE SIGNED.
+01 w-2 USAGE BINARY-DOUBLE SIGNED.
+01 w-3 USAGE BINARY-DOUBLE SIGNED.
+01 w-4 USAGE BINARY-DOUBLE SIGNED.
+01 w-5 USAGE BINARY-DOUBLE SIGNED.
+01 w-6 USAGE BINARY-DOUBLE SIGNED.
+01 w-7 USAGE BINARY-DOUBLE SIGNED.
+01 w-8 USAGE BINARY-DOUBLE SIGNED.
+01 w-9 USAGE BINARY-DOUBLE SIGNED.
+01 w-10 USAGE BINARY-DOUBLE SIGNED.
+01 w-11 USAGE BINARY-DOUBLE SIGNED.
+01 w-12 USAGE BINARY-DOUBLE SIGNED.
+01 w-13 USAGE BINARY-DOUBLE SIGNED.
+01 w-14 USAGE BINARY-DOUBLE SIGNED.
+01 w-15 USAGE BINARY-DOUBLE SIGNED.
+01 w-16 USAGE BINARY-DOUBLE SIGNED.
+01 w-17 USAGE BINARY-DOUBLE SIGNED.
+01 w-18 USAGE BINARY-DOUBLE SIGNED.
+01 w-19 USAGE BINARY-DOUBLE SIGNED.
+01 w-20 USAGE BINARY-DOUBLE SIGNED.
+01 w-21 USAGE BINARY-DOUBLE SIGNED.
+01 w-22 USAGE BINARY-DOUBLE SIGNED.
+01 w-23 USAGE BINARY-DOUBLE SIGNED.
+01 w-24 USAGE BINARY-DOUBLE SIGNED.
+01 w-25 USAGE BINARY-DOUBLE SIGNED.
+01 w-26 USAGE BINARY-DOUBLE SIGNED.
+01 w-27 USAGE BINARY-DOUBLE SIGNED.
+01 w-28 USAGE BINARY-DOUBLE SIGNED.
+01 w-29 USAGE BINARY-DOUBLE SIGNED.
+01 w-30 USAGE BINARY-DOUBLE SIGNED.
+01 w-31 USAGE BINARY-DOUBLE SIGNED.
+01 w-32 USAGE BINARY-DOUBLE SIGNED.
+01 w-33 USAGE BINARY-DOUBLE SIGNED.
+01 w-34 USAGE BINARY-DOUBLE SIGNED.
+01 w-35 USAGE BINARY-DOUBLE SIGNED.
+01 w-36 USAGE BINARY-DOUBLE SIGNED.
+01 w-37 USAGE BINARY-DOUBLE SIGNED.
+01 w-38 USAGE BINARY-DOUBLE SIGNED.
+01 f-1 USAGE BINARY-DOUBLE SIGNED.
+01 f-2 USAGE BINARY-DOUBLE SIGNED.
+01 f-3 USAGE BINARY-DOUBLE SIGNED.
+01 f-4 USAGE BINARY-DOUBLE SIGNED.
+01 f-5 USAGE BINARY-DOUBLE SIGNED.
+LINKAGE SECTION.
+01 t-a.
+    05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 v-lo USAGE BINARY-DOUBLE SIGNED.
+01 v-hi USAGE BINARY-DOUBLE SIGNED.
+01 r-val USAGE BINARY-DOUBLE SIGNED.
+PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-lo BY VALUE v-hi RETURNING r-val.
+    COMPUTE w-1 = v-hi - v-lo
+    MOVE w-1 TO v-m
+    IF v-m < 2
+        MOVE 1 TO f-1
+    ELSE
+        MOVE 0 TO f-1
+    END-IF
+    IF f-1 = 1
+        MOVE 0 TO r-val
+        GOBACK
+    END-IF
+    MOVE 0 TO v-swaps
+    COMPUTE w-2 = FUNCTION INTEGER-PART(v-m / 2)
+    MOVE w-2 TO v-half
+    MOVE 0 TO v-i
+    PERFORM UNTIL 1 = 2
+        IF v-i < v-half
+            MOVE 1 TO f-2
+        ELSE
+            MOVE 0 TO f-2
+        END-IF
+        IF f-2 = 0
+            EXIT PERFORM
+        END-IF
+        COMPUTE w-3 = v-hi - 1
+        COMPUTE w-4 = w-3 - v-i
+        COMPUTE w-5 = w-4 + 1
+        MOVE t-a-e(w-5) TO w-6
+        COMPUTE w-7 = v-lo + v-i
+        COMPUTE w-8 = w-7 + 1
+        MOVE t-a-e(w-8) TO w-9
+        IF w-6 < w-9
+            MOVE 1 TO f-3
+        ELSE
+            MOVE 0 TO f-3
+        END-IF
+        IF f-3 = 1
+            COMPUTE w-10 = v-hi - 1
+            COMPUTE w-11 = w-10 - v-i
+            COMPUTE w-12 = v-lo + v-i
+            COMPUTE w-13 = w-11 + 1
+            COMPUTE w-14 = w-12 + 1
+            MOVE t-a-e(w-13) TO w-15
+            MOVE t-a-e(w-14) TO t-a-e(w-13)
+            MOVE w-15 TO t-a-e(w-14)
+            COMPUTE w-16 = v-swaps + 1
+            MOVE w-16 TO v-swaps
+        END-IF
+        COMPUTE w-17 = v-i + 1
+        MOVE w-17 TO v-i
+    END-PERFORM
+    COMPUTE w-18 = FUNCTION MOD(v-m, 2)
+    IF w-18 = 1
+        MOVE 1 TO f-4
+    ELSE
+        MOVE 0 TO f-4
+    END-IF
+    IF f-4 = 1
+        COMPUTE w-19 = v-lo + v-half
+        COMPUTE w-20 = w-19 + 1
+        MOVE t-a-e(w-20) TO w-21
+        COMPUTE w-22 = v-lo + v-half
+        COMPUTE w-23 = w-22 - 1
+        COMPUTE w-24 = w-23 + 1
+        MOVE t-a-e(w-24) TO w-25
+        IF w-21 < w-25
+            MOVE 1 TO f-5
+        ELSE
+            MOVE 0 TO f-5
+        END-IF
+        IF f-5 = 1
+            COMPUTE w-26 = v-lo + v-half
+            COMPUTE w-27 = w-26 - 1
+            COMPUTE w-28 = v-lo + v-half
+            COMPUTE w-29 = w-27 + 1
+            COMPUTE w-30 = w-28 + 1
+            MOVE t-a-e(w-29) TO w-31
+            MOVE t-a-e(w-30) TO t-a-e(w-29)
+            MOVE w-31 TO t-a-e(w-30)
+            COMPUTE w-32 = v-swaps + 1
+            MOVE w-32 TO v-swaps
+        END-IF
+    END-IF
+    COMPUTE w-33 = v-lo + v-half
+    CALL "circle-sort-x-circle-pass" USING BY REFERENCE t-a BY VALUE v-lo BY VALUE w-33 RETURNING w-34
+    END-CALL
+    COMPUTE w-35 = v-swaps + w-34
+    MOVE w-35 TO v-swaps
+    COMPUTE w-36 = v-lo + v-half
+    CALL "circle-sort-x-circle-pass" USING BY REFERENCE t-a BY VALUE w-36 BY VALUE v-hi RETURNING w-37
+    END-CALL
+    COMPUTE w-38 = v-swaps + w-37
+    MOVE w-38 TO v-swaps
+    MOVE v-swaps TO r-val
+    GOBACK
+    GOBACK.
+END PROGRAM circle-sort-x-circle-pass.
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. circle-sort IS RECURSIVE.
+DATA DIVISION.
+LOCAL-STORAGE SECTION.
+01 v-s USAGE BINARY-DOUBLE SIGNED.
+01 w-1 USAGE BINARY-DOUBLE SIGNED.
+01 f-1 USAGE BINARY-DOUBLE SIGNED.
+LINKAGE SECTION.
+01 t-a.
+    05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 v-n USAGE BINARY-DOUBLE SIGNED.
+PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+    MOVE 1 TO v-s
+    PERFORM UNTIL 1 = 2
+        IF v-s > 0
+            MOVE 1 TO f-1
+        ELSE
+            MOVE 0 TO f-1
+        END-IF
+        IF f-1 = 0
+            EXIT PERFORM
+        END-IF
+        CALL "circle-sort-x-circle-pass" USING BY REFERENCE t-a BY VALUE 0 BY VALUE v-n RETURNING w-1
+        END-CALL
+        MOVE w-1 TO v-s
+    END-PERFORM
+    GOBACK.
+END PROGRAM circle-sort.
+

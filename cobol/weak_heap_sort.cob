@@ -1,0 +1,219 @@
+      *> GENERATED from kernels/algos/weak_heap_sort.py by kernels/generate.py - do not edit; edit the kernel and regenerate.
+>>SOURCE FORMAT FREE
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. weak-heap-sort-x-gparent IS RECURSIVE.
+DATA DIVISION.
+LOCAL-STORAGE SECTION.
+01 w-1 USAGE BINARY-DOUBLE SIGNED.
+01 w-2 USAGE BINARY-DOUBLE SIGNED.
+01 w-3 USAGE BINARY-DOUBLE SIGNED.
+01 w-4 USAGE BINARY-DOUBLE SIGNED.
+01 w-5 USAGE BINARY-DOUBLE SIGNED.
+01 w-6 USAGE BINARY-DOUBLE SIGNED.
+01 f-1 USAGE BINARY-DOUBLE SIGNED.
+LINKAGE SECTION.
+01 t-r.
+    05 t-r-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 v-j USAGE BINARY-DOUBLE SIGNED.
+01 r-val USAGE BINARY-DOUBLE SIGNED.
+PROCEDURE DIVISION USING BY REFERENCE t-r BY VALUE v-j RETURNING r-val.
+    PERFORM UNTIL 1 = 2
+        COMPUTE w-1 = FUNCTION MOD(v-j, 2)
+        COMPUTE w-2 = FUNCTION INTEGER-PART(v-j / 2)
+        COMPUTE w-3 = w-2 + 1
+        MOVE t-r-e(w-3) TO w-4
+        IF w-1 = w-4
+            MOVE 1 TO f-1
+        ELSE
+            MOVE 0 TO f-1
+        END-IF
+        IF f-1 = 0
+            EXIT PERFORM
+        END-IF
+        COMPUTE w-5 = FUNCTION INTEGER-PART(v-j / 2)
+        MOVE w-5 TO v-j
+    END-PERFORM
+    COMPUTE w-6 = FUNCTION INTEGER-PART(v-j / 2)
+    MOVE w-6 TO r-val
+    GOBACK
+    GOBACK.
+END PROGRAM weak-heap-sort-x-gparent.
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. weak-heap-sort-x-join IS RECURSIVE.
+DATA DIVISION.
+LOCAL-STORAGE SECTION.
+01 w-1 USAGE BINARY-DOUBLE SIGNED.
+01 w-2 USAGE BINARY-DOUBLE SIGNED.
+01 w-3 USAGE BINARY-DOUBLE SIGNED.
+01 w-4 USAGE BINARY-DOUBLE SIGNED.
+01 w-5 USAGE BINARY-DOUBLE SIGNED.
+01 w-6 USAGE BINARY-DOUBLE SIGNED.
+01 w-7 USAGE BINARY-DOUBLE SIGNED.
+01 w-8 USAGE BINARY-DOUBLE SIGNED.
+01 w-9 USAGE BINARY-DOUBLE SIGNED.
+01 w-10 USAGE BINARY-DOUBLE SIGNED.
+01 w-11 USAGE BINARY-DOUBLE SIGNED.
+01 f-1 USAGE BINARY-DOUBLE SIGNED.
+LINKAGE SECTION.
+01 t-a.
+    05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 t-r.
+    05 t-r-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 v-i USAGE BINARY-DOUBLE SIGNED.
+01 v-j USAGE BINARY-DOUBLE SIGNED.
+PROCEDURE DIVISION USING BY REFERENCE t-a BY REFERENCE t-r BY VALUE v-i BY VALUE v-j.
+    COMPUTE w-1 = v-i + 1
+    MOVE t-a-e(w-1) TO w-2
+    COMPUTE w-3 = v-j + 1
+    MOVE t-a-e(w-3) TO w-4
+    IF w-2 < w-4
+        MOVE 1 TO f-1
+    ELSE
+        MOVE 0 TO f-1
+    END-IF
+    IF f-1 = 1
+        COMPUTE w-5 = v-i + 1
+        COMPUTE w-6 = v-j + 1
+        MOVE t-a-e(w-5) TO w-7
+        MOVE t-a-e(w-6) TO t-a-e(w-5)
+        MOVE w-7 TO t-a-e(w-6)
+        COMPUTE w-8 = v-j + 1
+        MOVE t-r-e(w-8) TO w-9
+        COMPUTE w-10 = 1 - w-9
+        COMPUTE w-11 = v-j + 1
+        MOVE w-10 TO t-r-e(w-11)
+    END-IF
+    GOBACK.
+END PROGRAM weak-heap-sort-x-join.
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. weak-heap-sort IS RECURSIVE.
+DATA DIVISION.
+LOCAL-STORAGE SECTION.
+01 v-j USAGE BINARY-DOUBLE SIGNED.
+01 v-g USAGE BINARY-DOUBLE SIGNED.
+01 v-m USAGE BINARY-DOUBLE SIGNED.
+01 v-x USAGE BINARY-DOUBLE SIGNED.
+01 w-1 USAGE BINARY-DOUBLE SIGNED.
+01 w-2 USAGE BINARY-DOUBLE SIGNED.
+01 w-3 USAGE BINARY-DOUBLE SIGNED.
+01 w-4 USAGE BINARY-DOUBLE SIGNED.
+01 w-5 USAGE BINARY-DOUBLE SIGNED.
+01 w-6 USAGE BINARY-DOUBLE SIGNED.
+01 w-7 USAGE BINARY-DOUBLE SIGNED.
+01 w-8 USAGE BINARY-DOUBLE SIGNED.
+01 w-9 USAGE BINARY-DOUBLE SIGNED.
+01 w-10 USAGE BINARY-DOUBLE SIGNED.
+01 w-11 USAGE BINARY-DOUBLE SIGNED.
+01 w-12 USAGE BINARY-DOUBLE SIGNED.
+01 w-13 USAGE BINARY-DOUBLE SIGNED.
+01 w-14 USAGE BINARY-DOUBLE SIGNED.
+01 w-15 USAGE BINARY-DOUBLE SIGNED.
+01 w-16 USAGE BINARY-DOUBLE SIGNED.
+01 w-17 USAGE BINARY-DOUBLE SIGNED.
+01 w-18 USAGE BINARY-DOUBLE SIGNED.
+01 w-19 USAGE BINARY-DOUBLE SIGNED.
+01 w-20 USAGE BINARY-DOUBLE SIGNED.
+01 f-1 USAGE BINARY-DOUBLE SIGNED.
+01 f-2 USAGE BINARY-DOUBLE SIGNED.
+01 f-3 USAGE BINARY-DOUBLE SIGNED.
+01 f-4 USAGE BINARY-DOUBLE SIGNED.
+01 f-5 USAGE BINARY-DOUBLE SIGNED.
+01 t-r.
+    05 t-r-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+LINKAGE SECTION.
+01 t-a.
+    05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 v-n USAGE BINARY-DOUBLE SIGNED.
+PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+    IF v-n < 2
+        MOVE 1 TO f-1
+    ELSE
+        MOVE 0 TO f-1
+    END-IF
+    IF f-1 = 1
+        GOBACK
+    END-IF
+    INITIALIZE t-r
+    COMPUTE w-1 = v-n - 1
+    MOVE w-1 TO v-j
+    PERFORM UNTIL 1 = 2
+        IF v-j > 0
+            MOVE 1 TO f-2
+        ELSE
+            MOVE 0 TO f-2
+        END-IF
+        IF f-2 = 0
+            EXIT PERFORM
+        END-IF
+        CALL "weak-heap-sort-x-gparent" USING BY REFERENCE t-r BY VALUE v-j RETURNING w-2
+        END-CALL
+        MOVE w-2 TO v-g
+        CALL "weak-heap-sort-x-join" USING BY REFERENCE t-a BY REFERENCE t-r BY VALUE v-g BY VALUE v-j
+        END-CALL
+        COMPUTE w-3 = v-j - 1
+        MOVE w-3 TO v-j
+    END-PERFORM
+    COMPUTE w-4 = v-n - 1
+    MOVE w-4 TO v-m
+    PERFORM UNTIL 1 = 2
+        IF v-m > 1
+            MOVE 1 TO f-3
+        ELSE
+            MOVE 0 TO f-3
+        END-IF
+        IF f-3 = 0
+            EXIT PERFORM
+        END-IF
+        COMPUTE w-5 = 0 + 1
+        COMPUTE w-6 = v-m + 1
+        MOVE t-a-e(w-5) TO w-7
+        MOVE t-a-e(w-6) TO t-a-e(w-5)
+        MOVE w-7 TO t-a-e(w-6)
+        MOVE 1 TO v-x
+        PERFORM UNTIL 1 = 2
+            COMPUTE w-8 = 2 * v-x
+            COMPUTE w-9 = v-x + 1
+            MOVE t-r-e(w-9) TO w-10
+            COMPUTE w-11 = w-8 + w-10
+            IF w-11 < v-m
+                MOVE 1 TO f-4
+            ELSE
+                MOVE 0 TO f-4
+            END-IF
+            IF f-4 = 0
+                EXIT PERFORM
+            END-IF
+            COMPUTE w-12 = 2 * v-x
+            COMPUTE w-13 = v-x + 1
+            MOVE t-r-e(w-13) TO w-14
+            COMPUTE w-15 = w-12 + w-14
+            MOVE w-15 TO v-x
+        END-PERFORM
+        PERFORM UNTIL 1 = 2
+            IF v-x > 0
+                MOVE 1 TO f-5
+            ELSE
+                MOVE 0 TO f-5
+            END-IF
+            IF f-5 = 0
+                EXIT PERFORM
+            END-IF
+            CALL "weak-heap-sort-x-join" USING BY REFERENCE t-a BY REFERENCE t-r BY VALUE 0 BY VALUE v-x
+            END-CALL
+            COMPUTE w-16 = FUNCTION INTEGER-PART(v-x / 2)
+            MOVE w-16 TO v-x
+        END-PERFORM
+        COMPUTE w-17 = v-m - 1
+        MOVE w-17 TO v-m
+    END-PERFORM
+    COMPUTE w-18 = 0 + 1
+    COMPUTE w-19 = 1 + 1
+    MOVE t-a-e(w-18) TO w-20
+    MOVE t-a-e(w-19) TO t-a-e(w-18)
+    MOVE w-20 TO t-a-e(w-19)
+    GOBACK.
+END PROGRAM weak-heap-sort.
+

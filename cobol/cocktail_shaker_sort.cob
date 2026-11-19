@@ -1,0 +1,137 @@
+      *> GENERATED from kernels/algos/cocktail_shaker_sort.py by kernels/generate.py - do not edit; edit the kernel and regenerate.
+>>SOURCE FORMAT FREE
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. cocktail-shaker-sort IS RECURSIVE.
+DATA DIVISION.
+LOCAL-STORAGE SECTION.
+01 v-lo USAGE BINARY-DOUBLE SIGNED.
+01 v-hi USAGE BINARY-DOUBLE SIGNED.
+01 v-swapped USAGE BINARY-DOUBLE SIGNED.
+01 v-i USAGE BINARY-DOUBLE SIGNED.
+01 w-1 USAGE BINARY-DOUBLE SIGNED.
+01 w-2 USAGE BINARY-DOUBLE SIGNED.
+01 w-3 USAGE BINARY-DOUBLE SIGNED.
+01 w-4 USAGE BINARY-DOUBLE SIGNED.
+01 w-5 USAGE BINARY-DOUBLE SIGNED.
+01 w-6 USAGE BINARY-DOUBLE SIGNED.
+01 w-7 USAGE BINARY-DOUBLE SIGNED.
+01 w-8 USAGE BINARY-DOUBLE SIGNED.
+01 w-9 USAGE BINARY-DOUBLE SIGNED.
+01 w-10 USAGE BINARY-DOUBLE SIGNED.
+01 w-11 USAGE BINARY-DOUBLE SIGNED.
+01 w-12 USAGE BINARY-DOUBLE SIGNED.
+01 w-13 USAGE BINARY-DOUBLE SIGNED.
+01 w-14 USAGE BINARY-DOUBLE SIGNED.
+01 w-15 USAGE BINARY-DOUBLE SIGNED.
+01 w-16 USAGE BINARY-DOUBLE SIGNED.
+01 w-17 USAGE BINARY-DOUBLE SIGNED.
+01 w-18 USAGE BINARY-DOUBLE SIGNED.
+01 w-19 USAGE BINARY-DOUBLE SIGNED.
+01 w-20 USAGE BINARY-DOUBLE SIGNED.
+01 w-21 USAGE BINARY-DOUBLE SIGNED.
+01 w-22 USAGE BINARY-DOUBLE SIGNED.
+01 w-23 USAGE BINARY-DOUBLE SIGNED.
+01 f-1 USAGE BINARY-DOUBLE SIGNED.
+01 f-2 USAGE BINARY-DOUBLE SIGNED.
+01 f-3 USAGE BINARY-DOUBLE SIGNED.
+01 f-4 USAGE BINARY-DOUBLE SIGNED.
+01 f-5 USAGE BINARY-DOUBLE SIGNED.
+LINKAGE SECTION.
+01 t-a.
+    05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 v-n USAGE BINARY-DOUBLE SIGNED.
+PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+    MOVE 0 TO v-lo
+    COMPUTE w-1 = v-n - 1
+    MOVE w-1 TO v-hi
+    MOVE 1 TO v-swapped
+    PERFORM UNTIL 1 = 2
+        IF v-lo < v-hi
+            MOVE 1 TO f-1
+        ELSE
+            MOVE 0 TO f-1
+        END-IF
+        IF f-1 = 1
+            IF v-swapped = 1
+                MOVE 1 TO f-1
+            ELSE
+                MOVE 0 TO f-1
+            END-IF
+        END-IF
+        IF f-1 = 0
+            EXIT PERFORM
+        END-IF
+        MOVE 0 TO v-swapped
+        MOVE v-lo TO v-i
+        PERFORM UNTIL 1 = 2
+            IF v-i < v-hi
+                MOVE 1 TO f-2
+            ELSE
+                MOVE 0 TO f-2
+            END-IF
+            IF f-2 = 0
+                EXIT PERFORM
+            END-IF
+            COMPUTE w-2 = v-i + 1
+            MOVE t-a-e(w-2) TO w-3
+            COMPUTE w-4 = v-i + 1
+            COMPUTE w-5 = w-4 + 1
+            MOVE t-a-e(w-5) TO w-6
+            IF w-3 > w-6
+                MOVE 1 TO f-3
+            ELSE
+                MOVE 0 TO f-3
+            END-IF
+            IF f-3 = 1
+                COMPUTE w-7 = v-i + 1
+                COMPUTE w-8 = v-i + 1
+                COMPUTE w-9 = w-7 + 1
+                MOVE t-a-e(w-8) TO w-10
+                MOVE t-a-e(w-9) TO t-a-e(w-8)
+                MOVE w-10 TO t-a-e(w-9)
+                MOVE 1 TO v-swapped
+            END-IF
+            COMPUTE w-11 = v-i + 1
+            MOVE w-11 TO v-i
+        END-PERFORM
+        COMPUTE w-12 = v-hi - 1
+        MOVE w-12 TO v-hi
+        MOVE v-hi TO v-i
+        PERFORM UNTIL 1 = 2
+            IF v-i > v-lo
+                MOVE 1 TO f-4
+            ELSE
+                MOVE 0 TO f-4
+            END-IF
+            IF f-4 = 0
+                EXIT PERFORM
+            END-IF
+            COMPUTE w-13 = v-i - 1
+            COMPUTE w-14 = w-13 + 1
+            MOVE t-a-e(w-14) TO w-15
+            COMPUTE w-16 = v-i + 1
+            MOVE t-a-e(w-16) TO w-17
+            IF w-15 > w-17
+                MOVE 1 TO f-5
+            ELSE
+                MOVE 0 TO f-5
+            END-IF
+            IF f-5 = 1
+                COMPUTE w-18 = v-i - 1
+                COMPUTE w-19 = w-18 + 1
+                COMPUTE w-20 = v-i + 1
+                MOVE t-a-e(w-19) TO w-21
+                MOVE t-a-e(w-20) TO t-a-e(w-19)
+                MOVE w-21 TO t-a-e(w-20)
+                MOVE 1 TO v-swapped
+            END-IF
+            COMPUTE w-22 = v-i - 1
+            MOVE w-22 TO v-i
+        END-PERFORM
+        COMPUTE w-23 = v-lo + 1
+        MOVE w-23 TO v-lo
+    END-PERFORM
+    GOBACK.
+END PROGRAM cocktail-shaker-sort.
+

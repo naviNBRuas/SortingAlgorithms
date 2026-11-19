@@ -1,0 +1,179 @@
+      *> GENERATED from kernels/algos/merge_sort_bottom_up.py by kernels/generate.py - do not edit; edit the kernel and regenerate.
+>>SOURCE FORMAT FREE
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. merge-sort-bottom-up IS RECURSIVE.
+DATA DIVISION.
+LOCAL-STORAGE SECTION.
+01 v-width USAGE BINARY-DOUBLE SIGNED.
+01 v-lo USAGE BINARY-DOUBLE SIGNED.
+01 v-mid USAGE BINARY-DOUBLE SIGNED.
+01 v-hi USAGE BINARY-DOUBLE SIGNED.
+01 v-x USAGE BINARY-DOUBLE SIGNED.
+01 v-i USAGE BINARY-DOUBLE SIGNED.
+01 v-j USAGE BINARY-DOUBLE SIGNED.
+01 v-k USAGE BINARY-DOUBLE SIGNED.
+01 w-1 USAGE BINARY-DOUBLE SIGNED.
+01 w-2 USAGE BINARY-DOUBLE SIGNED.
+01 w-3 USAGE BINARY-DOUBLE SIGNED.
+01 w-4 USAGE BINARY-DOUBLE SIGNED.
+01 w-5 USAGE BINARY-DOUBLE SIGNED.
+01 w-6 USAGE BINARY-DOUBLE SIGNED.
+01 w-7 USAGE BINARY-DOUBLE SIGNED.
+01 w-8 USAGE BINARY-DOUBLE SIGNED.
+01 w-9 USAGE BINARY-DOUBLE SIGNED.
+01 w-10 USAGE BINARY-DOUBLE SIGNED.
+01 w-11 USAGE BINARY-DOUBLE SIGNED.
+01 w-12 USAGE BINARY-DOUBLE SIGNED.
+01 w-13 USAGE BINARY-DOUBLE SIGNED.
+01 w-14 USAGE BINARY-DOUBLE SIGNED.
+01 w-15 USAGE BINARY-DOUBLE SIGNED.
+01 w-16 USAGE BINARY-DOUBLE SIGNED.
+01 w-17 USAGE BINARY-DOUBLE SIGNED.
+01 w-18 USAGE BINARY-DOUBLE SIGNED.
+01 w-19 USAGE BINARY-DOUBLE SIGNED.
+01 w-20 USAGE BINARY-DOUBLE SIGNED.
+01 w-21 USAGE BINARY-DOUBLE SIGNED.
+01 w-22 USAGE BINARY-DOUBLE SIGNED.
+01 w-23 USAGE BINARY-DOUBLE SIGNED.
+01 w-24 USAGE BINARY-DOUBLE SIGNED.
+01 w-25 USAGE BINARY-DOUBLE SIGNED.
+01 w-26 USAGE BINARY-DOUBLE SIGNED.
+01 w-27 USAGE BINARY-DOUBLE SIGNED.
+01 w-28 USAGE BINARY-DOUBLE SIGNED.
+01 w-29 USAGE BINARY-DOUBLE SIGNED.
+01 w-30 USAGE BINARY-DOUBLE SIGNED.
+01 f-1 USAGE BINARY-DOUBLE SIGNED.
+01 f-2 USAGE BINARY-DOUBLE SIGNED.
+01 f-3 USAGE BINARY-DOUBLE SIGNED.
+01 f-4 USAGE BINARY-DOUBLE SIGNED.
+01 f-5 USAGE BINARY-DOUBLE SIGNED.
+01 t-tmp.
+    05 t-tmp-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+LINKAGE SECTION.
+01 t-a.
+    05 t-a-e USAGE BINARY-LONG SIGNED OCCURS 65536 TIMES.
+01 v-n USAGE BINARY-DOUBLE SIGNED.
+PROCEDURE DIVISION USING BY REFERENCE t-a BY VALUE v-n.
+    INITIALIZE t-tmp
+    MOVE 1 TO v-width
+    PERFORM UNTIL 1 = 2
+        IF v-width < v-n
+            MOVE 1 TO f-1
+        ELSE
+            MOVE 0 TO f-1
+        END-IF
+        IF f-1 = 0
+            EXIT PERFORM
+        END-IF
+        MOVE 0 TO v-lo
+        PERFORM UNTIL 1 = 2
+            IF v-lo < v-n
+                MOVE 1 TO f-2
+            ELSE
+                MOVE 0 TO f-2
+            END-IF
+            IF f-2 = 0
+                EXIT PERFORM
+            END-IF
+            COMPUTE w-1 = v-lo + v-width
+            IF w-1 < v-n
+                MOVE w-1 TO w-2
+            ELSE
+                MOVE v-n TO w-2
+            END-IF
+            MOVE w-2 TO v-mid
+            COMPUTE w-3 = 2 * v-width
+            COMPUTE w-4 = v-lo + w-3
+            IF w-4 < v-n
+                MOVE w-4 TO w-5
+            ELSE
+                MOVE v-n TO w-5
+            END-IF
+            MOVE w-5 TO v-hi
+            MOVE v-lo TO v-x
+            MOVE v-mid TO w-6
+            PERFORM UNTIL 1 = 2
+                IF v-x >= w-6
+                    EXIT PERFORM
+                END-IF
+                COMPUTE w-7 = v-x + 1
+                MOVE t-a-e(w-7) TO w-8
+                COMPUTE w-9 = v-x + 1
+                MOVE w-8 TO t-tmp-e(w-9)
+                ADD 1 TO v-x
+            END-PERFORM
+            MOVE v-lo TO v-i
+            MOVE v-mid TO v-j
+            MOVE v-lo TO v-k
+            PERFORM UNTIL 1 = 2
+                IF v-i < v-mid
+                    MOVE 1 TO f-3
+                ELSE
+                    MOVE 0 TO f-3
+                END-IF
+                IF f-3 = 1
+                    IF v-j < v-hi
+                        MOVE 1 TO f-3
+                    ELSE
+                        MOVE 0 TO f-3
+                    END-IF
+                END-IF
+                IF f-3 = 0
+                    EXIT PERFORM
+                END-IF
+                COMPUTE w-10 = v-j + 1
+                MOVE t-a-e(w-10) TO w-11
+                COMPUTE w-12 = v-i + 1
+                MOVE t-tmp-e(w-12) TO w-13
+                IF w-11 < w-13
+                    MOVE 1 TO f-4
+                ELSE
+                    MOVE 0 TO f-4
+                END-IF
+                IF f-4 = 1
+                    COMPUTE w-14 = v-j + 1
+                    MOVE t-a-e(w-14) TO w-15
+                    COMPUTE w-16 = v-k + 1
+                    MOVE w-15 TO t-a-e(w-16)
+                    COMPUTE w-17 = v-j + 1
+                    MOVE w-17 TO v-j
+                ELSE
+                    COMPUTE w-18 = v-i + 1
+                    MOVE t-tmp-e(w-18) TO w-19
+                    COMPUTE w-20 = v-k + 1
+                    MOVE w-19 TO t-a-e(w-20)
+                    COMPUTE w-21 = v-i + 1
+                    MOVE w-21 TO v-i
+                END-IF
+                COMPUTE w-22 = v-k + 1
+                MOVE w-22 TO v-k
+            END-PERFORM
+            PERFORM UNTIL 1 = 2
+                IF v-i < v-mid
+                    MOVE 1 TO f-5
+                ELSE
+                    MOVE 0 TO f-5
+                END-IF
+                IF f-5 = 0
+                    EXIT PERFORM
+                END-IF
+                COMPUTE w-23 = v-i + 1
+                MOVE t-tmp-e(w-23) TO w-24
+                COMPUTE w-25 = v-k + 1
+                MOVE w-24 TO t-a-e(w-25)
+                COMPUTE w-26 = v-i + 1
+                MOVE w-26 TO v-i
+                COMPUTE w-27 = v-k + 1
+                MOVE w-27 TO v-k
+            END-PERFORM
+            COMPUTE w-28 = 2 * v-width
+            COMPUTE w-29 = v-lo + w-28
+            MOVE w-29 TO v-lo
+        END-PERFORM
+        COMPUTE w-30 = v-width * 2
+        MOVE w-30 TO v-width
+    END-PERFORM
+    GOBACK.
+END PROGRAM merge-sort-bottom-up.
+
