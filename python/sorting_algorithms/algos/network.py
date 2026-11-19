@@ -17,6 +17,7 @@ def bitonic_sort(a):
         size *= 2
     k = 2
     while k <= size:
+        a.label = f"stage: build bitonic sequences of length {k}"
         for blk in range(0, size, k):
             for t in range(k // 2):
                 i, j = blk + t, blk + k - 1 - t
@@ -40,6 +41,7 @@ def odd_even_merge_sort(a):
     while p < n:
         k = p
         while k >= 1:
+            a.label = f"merge sorted blocks of {p}: compare distance {k}"
             for j in range(k % p, n - k, 2 * k):
                 for i in range(min(k, n - j - k)):
                     if (i + j) // (2 * p) == (i + j + k) // (2 * p):
@@ -58,6 +60,7 @@ def pairwise_sorting_network(a):
         size *= 2
     step = 1
     while step < size:
+        a.label = f"compare elements {step} apart"
         b, c = step, 0
         while b < size:
             if b < n:

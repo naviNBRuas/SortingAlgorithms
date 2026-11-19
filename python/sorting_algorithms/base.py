@@ -45,6 +45,14 @@ class TraceFrame:
     note: str = ""
     comparisons: int = 0
     writes: int = 0
+    # --- optional presentation metadata used by the GIF renderer ---------------------------------
+    focus: Optional[Tuple[int, int]] = None          # active sub-range (inclusive); everything else is dimmed
+    done: Tuple[Tuple[int, int], ...] = ()           # ranges known to be in their final position
+    pivot: Optional[int] = None                      # index of the pivot / current minimum / key being placed
+    label: str = ""                                  # short phase caption, e.g. "gap = 5"
+    aux: Optional[List[int]] = None                  # auxiliary structure (counts, bucket sizes, pile heights, ...)
+    aux_label: str = ""
+    aux_hl: Tuple[int, ...] = ()
 
 
 class SortTracer:
@@ -70,11 +78,12 @@ class SortTracer:
         note: str = "",
         comparisons: int = 0,
         writes: int = 0,
+        **extra,
     ) -> None:
         if len(self.frames) >= self.max_frames and note != "sorted":
             self.truncated = True
             return
-        self.frames.append(TraceFrame(list(arr), tuple(highlights), note, comparisons, writes))
+        self.frames.append(TraceFrame(list(arr), tuple(highlights), note, comparisons, writes, **extra))
 
     def __len__(self) -> int:
         return len(self.frames)
@@ -146,6 +155,14 @@ class Tracked:
         self.stats = Stats()
         self._recent: Tuple[int, ...] = ()
         self.items: List[Any] = list(data) if raw else [_Key(x, self) for x in data]
+        # presentation hints (cheap attribute writes; only read when a tracer is attached)
+        self.focus: Optional[Tuple[int, int]] = None
+        self.done: Tuple[Tuple[int, int], ...] = ()
+        self.pivot: Optional[int] = None
+        self.label: str = ""
+        self.aux: Optional[List[int]] = None
+        self.aux_label: str = ""
+        self.aux_hl: Tuple[int, ...] = ()
 
     # -- basic container protocol ------------------------------------------
     def __len__(self) -> int:
@@ -188,6 +205,7 @@ class Tracked:
                 note,
                 self.stats.comparisons,
                 self.stats.writes,
+                **self._extra(),
             )
 
     def commit(self, values: Sequence[Any], note: str = "commit") -> None:
@@ -200,18 +218,28 @@ class Tracked:
     def mark(self, highlights: Tuple[int, ...] = (), note: str = "") -> None:
         self._frame(tuple(highlights), note)
 
+    def set_aux(self, values: Optional[Sequence[int]], label: str = "", hl: Tuple[int, ...] = ()) -> None:
+        """Attach an auxiliary structure to subsequent frames (None removes the panel)."""
+        self.aux = None if values is None else list(values)
+        self.aux_label = label
+        self.aux_hl = tuple(hl)
+
+    def _extra(self) -> dict:
+        return dict(focus=self.focus, done=self.done, pivot=self.pivot, label=self.label,
+                    aux=None if self.aux is None else list(self.aux), aux_label=self.aux_label, aux_hl=self.aux_hl)
+
     # -- internals -----------------------------------------------------------
     def _compare(self) -> None:
         self.stats.comparisons += 1
         if self.tracer is not None and self._recent:
             hl = self._recent
             self._recent = ()
-            self.tracer.record(self.values(), hl, "compare", self.stats.comparisons, self.stats.writes)
+            self.tracer.record(self.values(), hl, "compare", self.stats.comparisons, self.stats.writes, **self._extra())
 
     def _frame(self, hl: Tuple[int, ...], note: str) -> None:
         if self.tracer is not None:
             self._recent = ()
-            self.tracer.record(self.values(), hl, note, self.stats.comparisons, self.stats.writes)
+            self.tracer.record(self.values(), hl, note, self.stats.comparisons, self.stats.writes, **self._extra())
 
 
 # --------------------------------------------------------------------------- #
@@ -279,7 +307,7 @@ def _execute(info: AlgoInfo, impl: Callable, data: Sequence[Any], tracer: Option
         sys.setrecursionlimit(old_limit)
     out = arr.values()
     if tracer is not None:
-        tracer.record(out, (), "sorted", arr.stats.comparisons, arr.stats.writes)
+        tracer.record(out, (), "sorted", arr.stats.comparisons, arr.stats.writes, done=((0, len(out) - 1),) if out else ())
     return out, arr.stats
 
 

@@ -1,4 +1,7 @@
-"""Non-comparison sorts that look at key values (digits, ranges, counts)."""
+"""Non-comparison sorts that look at key values (digits, ranges, counts).
+
+Each publishes its auxiliary structure (counters, buckets, ...) through `a.set_aux` so the animation can show it.
+"""
 from ..base import algorithm
 
 
@@ -21,17 +24,25 @@ def counting_sort(a):
     vals = [a[i] for i in range(n)]
     lo, hi = min(vals), max(vals)
     count = [0] * (hi - lo + 2)
-    for v in vals:
+    a.label = "1. count how many times each key occurs"
+    for t, v in enumerate(vals):
         count[v - lo + 1] += 1
+        a.set_aux(count[1:], "count[key]", hl=(v - lo,))
+        a.show(vals, (t,), "count")
+    a.label = "2. prefix sums turn counts into start positions"
     for i in range(1, len(count)):
         count[i] += count[i - 1]
-    out = [0] * n
-    placements = []
-    for v in vals:
-        out[count[v - lo]] = v
-        placements.append((count[v - lo], v))
+    a.set_aux(count[:-1], "start position of each key")
+    a.show(vals, (), "prefix")
+    a.label = "3. place every element at its key's next free slot"
+    cur = list(vals)
+    for t, v in enumerate(vals):
+        pos = count[v - lo]
+        cur[pos] = v
         count[v - lo] += 1
-    cur = _place(a, vals, placements)
+        a.set_aux(count[:-1], "next free slot of each key", hl=(v - lo,))
+        a.show(cur, (pos,), "place")
+    a.done = ((0, n - 1),)
     a.commit(cur)
 
 
@@ -45,14 +56,21 @@ def pigeonhole_sort(a):
     vals = [a[i] for i in range(n)]
     lo, hi = min(vals), max(vals)
     holes = [[] for _ in range(hi - lo + 1)]
-    for v in vals:
+    a.label = "drop every element into the hole for its key"
+    for t, v in enumerate(vals):
         holes[v - lo].append(v)
-    pos, placements = 0, []
-    for h in holes:
+        a.set_aux([len(h) for h in holes], "pigeons per hole", hl=(v - lo,))
+        a.show(vals, (t,), "drop")
+    a.label = "read the holes back, smallest key first"
+    cur, pos = list(vals), 0
+    for h_idx, h in enumerate(holes):
         for v in h:
-            placements.append((pos, v))
+            cur[pos] = v
+            a.set_aux([len(x) if k >= h_idx else 0 for k, x in enumerate(holes)], "pigeons per hole", hl=(h_idx,))
+            a.show(cur, (pos,), "gather")
             pos += 1
-    a.commit(_place(a, vals, placements, "gather"))
+    a.done = ((0, n - 1),)
+    a.commit(cur)
 
 
 def _digit(v, exp):
@@ -69,21 +87,28 @@ def radix_sort_lsd(a):
     vals = [a[i] for i in range(n)]
     off = min(vals)
     cur = [v - off for v in vals]
-    exp = 1
+    exp, p = 1, 0
     while max(cur) // exp > 0:
+        a.label = f"pass {p + 1}: stable sort by the 10^{p} digit"
         count = [0] * 11
-        for v in cur:
+        for t, v in enumerate(cur):
             count[_digit(v, exp) + 1] += 1
+            a.set_aux(count[1:], f"digit-{p} histogram", hl=(_digit(v, exp),))
+            a.show([x + off for x in cur], (t,), "count")
         for i in range(1, 11):
             count[i] += count[i - 1]
-        placements = []
-        for v in cur:
+        nxt = list(cur)
+        for t, v in enumerate(cur):
             d = _digit(v, exp)
-            placements.append((count[d], v))
+            nxt[count[d]] = v
+            a.set_aux(count[:10], "next free slot per digit", hl=(d,))
             count[d] += 1
-        cur = _place(a, [x + off for x in cur], [(p, v + off) for p, v in placements], f"pass 10^{len(str(exp)) - 1}")
-        cur = [x - off for x in cur]
+            a.show([x + off for x in nxt], (count[d] - 1,), "place")
+        cur = nxt
         exp *= 10
+        p += 1
+    a.set_aux(None)
+    a.done = ((0, n - 1),)
     a.commit([x + off for x in cur])
 
 
@@ -103,9 +128,12 @@ def radix_sort_msd(a):
     def rec(lo, hi, exp):
         if hi - lo < 2 or exp == 0:
             return
+        a.focus = (lo, hi - 1)
+        a.label = f"bucket [{lo}, {hi}) by the 10^{len(str(exp)) - 1} digit"
         buckets = [[] for _ in range(10)]
         for v in cur[lo:hi]:
             buckets[_digit(v, exp)].append(v)
+        a.set_aux([len(b) for b in buckets], "bucket sizes")
         pos = lo
         starts = []
         for b in buckets:
@@ -118,6 +146,9 @@ def radix_sort_msd(a):
             rec(s, e, exp // 10)
 
     rec(0, n, top)
+    a.focus = None
+    a.set_aux(None)
+    a.done = ((0, n - 1),)
     a.commit([x + off for x in cur])
 
 
@@ -138,9 +169,12 @@ def american_flag_sort(a):
     def rec(lo, hi, exp):
         if hi - lo < 2 or exp == 0:
             return
+        a.focus = (lo, hi - 1)
+        a.label = f"permute [{lo}, {hi}) into digit buckets (in place)"
         count = [0] * 10
         for i in range(lo, hi):
             count[_digit(a.items[i], exp)] += 1
+        a.set_aux(count, "bucket sizes")
         starts, s = [], lo
         for c in count:
             starts.append(s)
@@ -161,6 +195,9 @@ def american_flag_sort(a):
     rec(0, n, top)
     for i in range(n):
         a.items[i] += off
+    a.focus = None
+    a.set_aux(None)
+    a.done = ((0, n - 1),)
     a.mark((), "restore offset")
 
 
@@ -177,10 +214,15 @@ def bucket_sort(a):
         return
     buckets = [[] for _ in range(n)]
     scale = (n - 1) / (hi - lo)
-    for v in vals:
-        buckets[int((v - lo) * scale)].append(v)
+    a.label = "scatter each key into the bucket for its range"
+    for t, v in enumerate(vals):
+        b = int((v - lo) * scale)
+        buckets[b].append(v)
+        a.set_aux([len(x) for x in buckets], "bucket sizes", hl=(b,))
+        a.show(vals, (t,), "scatter")
     out = []
-    for b in buckets:
+    a.label = "insertion-sort each bucket, then concatenate"
+    for bi, b in enumerate(buckets):
         for i in range(1, len(b)):
             key, j = b[i], i - 1
             while j >= 0 and b[j] > key:
@@ -188,6 +230,8 @@ def bucket_sort(a):
                 j -= 1
             b[j + 1] = key
         out.extend(b)
+        a.done = ((0, len(out) - 1),) if out else ()
+        a.set_aux([len(x) if k > bi else 0 for k, x in enumerate(buckets)], "buckets left", hl=(bi,))
         a.show(out + vals[len(out):], (len(out) - 1,) if out else (), "gather")
     a.commit(out)
 
@@ -203,6 +247,7 @@ def bead_sort(a):
     off = min(vals)
     h = [v - off for v in vals]
     mx = max(h)
+    a.label = "each number is a row of beads on the rods"
     a.show(vals, (), "load beads")
     view = [off] * n
     ge = [0] * (mx + 2)
@@ -210,11 +255,14 @@ def bead_sort(a):
         ge[v] += 1
     for r in range(mx - 1, -1, -1):
         ge[r] += ge[r + 1]
+    a.label = "gravity: beads fall onto beads or the floor"
     for level in range(1, mx + 1):
         c = ge[level]
         for k in range(c):
             view[n - 1 - k] = off + level
-        a.show(view, tuple(range(n - c, n)), "beads fall")
+        a.set_aux(ge[1:mx + 1], "beads at each level", hl=(level - 1,))
+        a.show(view, (n - c,), "beads fall")
+    a.done = ((0, n - 1),)
     a.commit(view)
 
 
@@ -241,14 +289,18 @@ def flash_sort(a):
         return int(c1 * (v - mn))
 
     count = [0] * m
+    a.label = "classify keys into classes by linear interpolation"
     for i in range(n):
         count[cls(a[i])] += 1
+    a.set_aux(count, "class sizes")
+    a.mark((), "classified")
     starts, s = [], 0
     for c in count:
         starts.append(s)
         s += c
     ends = [starts[k] + count[k] for k in range(m)]
     nxt = list(starts)
+    a.label = "permute every element into its class (cycle leader)"
     for b in range(m):
         while nxt[b] < ends[b]:
             d = cls(a[nxt[b]])
@@ -257,6 +309,8 @@ def flash_sort(a):
             else:
                 a.swap(nxt[b], nxt[d])
                 nxt[d] += 1
+    a.set_aux(None)
+    a.label = "classes are in order: finish with insertion sort"
     for i in range(1, n):
         key, j = a[i], i - 1
         if a[j] > key:
@@ -278,9 +332,14 @@ def sleep_sort(a):
     wake = {}
     for i, v in enumerate(vals):
         wake.setdefault(v - off, []).append(v)
+    span = max(v - off for v in vals) + 1
     out = []
-    for t in range(max(v - off for v in vals) + 1):
+    a.label = "every element is asleep"
+    for t in range(span):
         if t in wake:
             out.extend(wake[t])
+            a.done = ((0, len(out) - 1),)
+            a.label = f"clock tick {t}: {len(wake[t])} element(s) wake up"
+            a.set_aux([len(wake.get(k, [])) if k > t else 0 for k in range(span)], "sleepers per wake-up tick", hl=(t,))
             a.show(out + [v for v in vals if v - off > t], (len(out) - 1,), f"t={t}")
     a.commit(out)

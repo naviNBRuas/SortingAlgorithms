@@ -7,6 +7,8 @@ from ..base import algorithm
            "John von Neumann, 1945 (EDVAC) — one of the first programs ever written for a stored-program computer.")
 def merge_sort(a):
     def merge(lo, mid, hi):
+        a.focus = (lo, hi - 1)
+        a.label = f"merge [{lo}, {mid}) and [{mid}, {hi})"
         left = [a[k] for k in range(lo, mid)]
         i, j, k = 0, mid, lo
         while i < len(left) and j < hi:
@@ -44,6 +46,8 @@ def merge_sort_bottom_up(a):
             mid, hi = min(lo + width, n), min(lo + 2 * width, n)
             if mid >= hi:
                 continue
+            a.focus = (lo, hi - 1)
+            a.label = f"merge runs of width {width}"
             left = [a[k] for k in range(lo, mid)]
             i, j, k = 0, mid, lo
             while i < len(left) and j < hi:
@@ -80,6 +84,8 @@ def in_place_merge_sort(a):
     def merge(lo, mid, hi):
         if lo >= mid or mid >= hi:
             return
+        a.focus = (lo, hi - 1)
+        a.label = "rotate blocks around a binary-searched split point"
         if hi - lo == 2:
             if a[mid] < a[lo]:
                 a.swap(lo, mid)
@@ -135,11 +141,14 @@ def strand_sort(a):
     out = []
     while rest:
         strand, keep = [rest[0]], []
-        for x in rest[1:]:
+        for idx, x in enumerate(rest[1:], 1):
             if x >= strand[-1]:
                 strand.append(x)
             else:
                 keep.append(x)
+            a.done = ((0, len(out) - 1),) if out else ()
+            a.label = "pulling an ascending strand out of the input"
+            a.show(out + strand + keep + rest[idx + 1:], (len(out) + len(strand) - 1,), "pull")
         merged, i, j = [], 0, 0
         while i < len(out) and j < len(strand):
             if strand[j] < out[i]:
@@ -150,6 +159,8 @@ def strand_sort(a):
                 i += 1
         merged += out[i:] + strand[j:]
         out, rest = merged, keep
+        a.done = ((0, len(out) - 1),) if out else ()
+        a.label = f"pulled a strand of {len(strand)}, merged into the output"
         a.show(out + rest, (len(out) - 1,) if out else (), "merge strand")
     a.commit(out)
 
@@ -180,6 +191,8 @@ def tim_sort(a):
             j -= 1
 
     def binary_insert(lo, start, hi):
+        a.focus = (lo, hi - 1)
+        a.label = "extend a short run with binary insertion"
         for i in range(start, hi):
             key = a[i]
             l, h = lo, i
@@ -198,6 +211,8 @@ def tim_sort(a):
 
     def merge_at(i):
         (s1, l1), (s2, l2) = runs[i], runs[i + 1]
+        a.focus = (s1, s2 + l2 - 1)
+        a.label = f"merge two adjacent runs ({l1} + {l2})"
         left = [a[k] for k in range(s1, s1 + l1)]
         x, j, k, end = 0, s2, s1, s2 + l2
         while x < len(left) and j < end:
@@ -231,6 +246,8 @@ def tim_sort(a):
     lo = 0
     while lo < n:
         r = lo + 1
+        a.label = "detect the next natural run"
+        a.focus = None
         if r < n:
             if a[r] < a[r - 1]:
                 while r < n and a[r] < a[r - 1]:
@@ -260,6 +277,9 @@ def intro_sort(a):
     from .selection import _sift_down
 
     def insertion(lo, hi):
+        a.focus = (lo, hi)
+        a.pivot = None
+        a.label = "small range: insertion sort"
         for i in range(lo + 1, hi + 1):
             key = a[i]
             j = i - 1
@@ -279,9 +299,12 @@ def intro_sort(a):
 
     def sort(lo, hi, depth):
         while hi - lo + 1 > 12:
+            a.focus = (lo, hi)
             if depth == 0:
+                a.label = "depth limit reached: switch to heap sort"
                 heap(lo, hi)
                 return
+            a.label = "quicksort partition (median of three)"
             depth -= 1
             mid = (lo + hi) // 2
             if a[mid] < a[lo]:
@@ -290,6 +313,7 @@ def intro_sort(a):
                 a.swap(hi, lo)
             if a[hi] < a[mid]:
                 a.swap(hi, mid)
+            a.pivot = mid
             pivot = a[mid]
             i, j = lo, hi
             while i <= j:

@@ -7,6 +7,7 @@ from ..base import algorithm
            "Ancient (card-sorting by hand); analysed in Knuth TAOCP vol. 3.", adaptive=True)
 def insertion_sort(a):
     for i in range(1, len(a)):
+        a.done = ((0, i - 1),)
         key = a[i]
         j = i - 1
         while j >= 0 and a[j] > key:
@@ -21,14 +22,17 @@ def insertion_sort(a):
            "Mauchly 1946 described binary insertion; used inside TimSort for short runs.")
 def binary_insertion_sort(a):
     for i in range(1, len(a)):
+        a.done = ((0, i - 1),)
         key = a[i]
         lo, hi = 0, i
         while lo < hi:
+            a.focus = (lo, hi - 1)
             mid = (lo + hi) // 2
             if key < a[mid]:
                 hi = mid
             else:
                 lo = mid + 1
+        a.focus = None
         if lo != i:
             for j in range(i, lo, -1):
                 a[j] = a[j - 1]
@@ -53,6 +57,7 @@ def _gapped_insertion(a, gap):
 def shell_sort(a):
     gap = len(a) // 2
     while gap > 0:
+        a.label = f"gapped insertion sort, gap = {gap}"
         _gapped_insertion(a, gap)
         gap //= 2
 
@@ -69,6 +74,7 @@ def shell_sort_ciura(a):
         gaps.insert(0, g)
     for gap in gaps:
         if gap < n:
+            a.label = f"gapped insertion sort, gap = {gap} (Ciura)"
             _gapped_insertion(a, gap)
 
 
@@ -115,6 +121,8 @@ def tree_sort(a):
                     node.right = _Node(v)
                     break
                 node = node.right
+        a.done = ((0, k),)
+        a.label = f"insert element {k + 1} into the search tree"
         a.show(_inorder(root) + vals[k + 1:], (), "insert")
     a.commit(_inorder(root))
 
@@ -174,6 +182,8 @@ def avl_tree_sort(a):
     root = None
     for k, v in enumerate(vals):
         root = _avl_insert(root, v)
+        a.done = ((0, k),)
+        a.label = f"insert element {k + 1}, rebalance (AVL rotations)"
         a.show(_inorder(root) + vals[k + 1:], (), "insert")
     a.commit(_inorder(root))
 
@@ -200,6 +210,8 @@ def patience_sort(a):
             piles.append([x])
         else:
             piles[lo].append(x)
+        a.set_aux([len(p) for p in piles], "pile heights", hl=(lo,))
+        a.label = f"deal {x} onto pile {lo + 1}"
         a.show([v for p in piles for v in p] + vals[k + 1:], (), "deal")
 
     class _Top:
@@ -219,6 +231,9 @@ def patience_sort(a):
         out.append(piles[t.p][t.i])
         if t.i:
             heapq.heappush(heap, _Top(t.p, t.i - 1))
+        a.done = ((0, len(out) - 1),)
+        a.label = "take the smallest pile top"
+        a.set_aux([len(p) for p in piles], "pile heights")
         a.show(out + [v for p in piles for v in p][: n - len(out)], (len(out) - 1,), "collect")
     a.commit(out)
 
@@ -234,6 +249,10 @@ def _ford_johnson(items, a=None):
             x, y = y, x
         pairs.append((x, y))
     straggler = items[-1] if n % 2 else None
+    if a is not None:
+        view = [x for pair in pairs for x in pair] + ([straggler] if straggler is not None else [])
+        a.label = "1. pair up neighbours: compare each pair, the larger goes right"
+        a.show(view, tuple(range(1, 2 * len(pairs), 2)), "pair")
     partner = {id(big): small for small, big in pairs}
     sorted_big = _ford_johnson([big for _, big in pairs])
     b = [None] + [partner[id(big)] for big in sorted_big]      # b[i] is the partner of sorted_big[i-1]
@@ -243,6 +262,10 @@ def _ford_johnson(items, a=None):
     if straggler is not None:
         b.append(straggler)
         total += 1
+    if a is not None:
+        a.done = ((0, m),)
+        a.label = "2. winners sorted recursively: main chain = b1 + sorted winners"
+        a.show(chain + [b[j] for j in range(2, total + 1)], (), "chain")
     prev, k = 1, 2
     while prev < total:
         top = min((2 ** (k + 1) + (-1) ** k) // 3, total)      # Jacobsthal-number group boundary
@@ -261,6 +284,8 @@ def _ford_johnson(items, a=None):
             chain.insert(lo, b[i])
             if a is not None:
                 pending = [b[j] for j in range(2, total + 1) if j < i or (j > top)]
+                a.done = ((0, len(chain) - 1),)
+                a.label = f"binary-insert loser b{i} into the main chain"
                 a.show(chain + pending, (lo,), "insert")
         prev, k = top, k + 1
     return chain
@@ -337,6 +362,8 @@ def library_sort(a):
                 for j in range(g, p):
                     S[j] = S[j + 1]
                 S[p] = x
+        a.done = ((0, k),)
+        a.label = "insert into the gapped array (shift to nearest gap)"
         a.show([y for y in S if y is not None] + vals[k + 1:], (), "insert")
     a.commit([y for y in S if y is not None])
 
@@ -378,5 +405,7 @@ def cartesian_tree_sort(a):
         for c in (left[node.i], right[node.i]):
             if c >= 0:
                 heapq.heappush(heap, _Node(c))
+        a.done = ((0, len(out) - 1),)
+        a.label = "pop the smallest node of the Cartesian-tree frontier"
         a.show(out + [vals[j] for j in range(n) if not done[j]], (len(out) - 1,), "extract")
     a.commit(out)

@@ -9,11 +9,15 @@ def selection_sort(a):
     n = len(a)
     for i in range(n - 1):
         m = i
+        a.pivot = m
         for j in range(i + 1, n):
             if a[j] < a[m]:
                 m = j
+                a.pivot = m
+        a.pivot = None
         if m != i:
             a.swap(i, m)
+        a.done = ((0, i),)
 
 
 @algorithm("double_selection_sort", "Double Selection Sort", "Selection", "O(n²)", "O(n²)", "O(n²)", "O(1)", False, True,
@@ -32,6 +36,7 @@ def double_selection_sort(a):
         if mx == lo:
             mx = mn
         a.swap(hi, mx)
+        a.done = ((0, lo), (hi, len(a) - 1))
         lo += 1
         hi -= 1
 
@@ -61,6 +66,7 @@ def bingo_sort(a):
                 nxt = a[i]
         while mx > 0 and a[mx] == nxt:
             mx -= 1
+        a.done = ((mx + 1, n - 1),)
 
 
 @algorithm("cycle_sort", "Cycle Sort", "Selection", "O(n²)", "O(n²)", "O(n²)", "O(1)", False, True,
@@ -69,6 +75,8 @@ def bingo_sort(a):
 def cycle_sort(a):
     n = len(a)
     for start in range(n - 1):
+        a.done = ((0, start - 1),) if start else ()
+        a.label = f"rotating the cycle that starts at position {start}"
         item = a[start]
         pos = start
         for i in range(start + 1, n):
@@ -112,10 +120,15 @@ def _sift_down(a, root, end, base=0):
            "J. W. J. Williams 1964; Floyd's linear-time heap construction the same year.")
 def heap_sort(a):
     n = len(a)
+    a.label = "heapify: build a max-heap"
+    a.focus = (0, n - 1)
     for s in range((n - 2) // 2, -1, -1):
         _sift_down(a, s, n - 1)
+    a.label = "extract the maximum, restore the heap"
     for end in range(n - 1, 0, -1):
         a.swap(0, end)
+        a.done = ((end, n - 1),)
+        a.focus = (0, end - 1)
         _sift_down(a, 0, end - 1)
 
 
@@ -170,6 +183,7 @@ def smooth_sort(a):
     if n < 2:
         return
     hi = n - 1
+    a.label = "grow the Leonardo heap forest left to right"
     head, p, pshift = 0, 1, 1
     while head < hi:
         if (p & 3) == 3:
@@ -190,6 +204,7 @@ def smooth_sort(a):
         p |= 1
         head += 1
     trinkle(head, p, pshift, False)
+    a.label = "dismantle the forest, emitting maxima"
     while pshift != 1 or p != 1:
         if pshift <= 1:
             trail = ((p & ~1) & -(p & ~1)).bit_length() - 1
@@ -202,6 +217,7 @@ def smooth_sort(a):
             trinkle(head - _LP[pshift] - 1, p >> 1, pshift + 1, True)
             trinkle(head - 1, p, pshift, True)
         head -= 1
+        a.done = ((head + 1, n - 1),)
 
 
 @algorithm("tournament_sort", "Tournament Sort", "Selection", "O(n log n)", "O(n log n)", "O(n log n)", "O(n)", True, False,
@@ -233,6 +249,8 @@ def tournament_sort(a):
         w = tree[1]
         out.append(vals[w])
         view = out + [vals[i] for i in range(n) if tree[size + i] >= 0 and i != w]
+        a.done = ((0, len(out) - 1),)
+        a.label = "play the tournament, extract the winner"
         a.show(view, (len(out) - 1,), "extract")
         node = size + w
         tree[node] = -1
@@ -264,8 +282,11 @@ def weak_heap_sort(a):
 
     for j in range(n - 1, 0, -1):
         join(gparent(j), j)
+    a.label = "build the weak heap"
     for m in range(n - 1, 1, -1):
+        a.label = "extract the maximum"
         a.swap(0, m)
+        a.done = ((m, n - 1),)
         x = 1
         while 2 * x + r[x] < m:
             x = 2 * x + r[x]
@@ -300,10 +321,15 @@ def bottom_up_heap_sort(a):
             a[prev] = x
 
     n = len(a)
+    a.label = "heapify (bottom-up sift)"
+    a.focus = (0, n - 1)
     for s in range(n // 2 - 1, -1, -1):
         sift(s, n)
+    a.label = "extract the maximum"
     for end in range(n - 1, 0, -1):
         a.swap(0, end)
+        a.done = ((end, n - 1),)
+        a.focus = (0, end - 1)
         sift(0, end)
 
 
@@ -327,10 +353,15 @@ def ternary_heap_sort(a):
                 return
 
     n = len(a)
+    a.label = "heapify (3-ary heap)"
+    a.focus = (0, n - 1)
     for s in range((n - 2) // 3, -1, -1):
         sift(s, n)
+    a.label = "extract the maximum"
     for end in range(n - 1, 0, -1):
         a.swap(0, end)
+        a.done = ((end, n - 1),)
+        a.focus = (0, end - 1)
         sift(0, end)
 
 
@@ -347,6 +378,7 @@ def enumeration_sort(a):
             if vals[j] < vals[i] or (j < i and not vals[i] < vals[j]):
                 rank += 1
         out[rank] = vals[i]
+        a.label = f"element {i}: count smaller ones = rank {rank}"
         a.show(out, (rank,), "place")
     if n:
         a.commit(out)

@@ -146,3 +146,10 @@ def test_every_algorithm_has_a_kernel_and_all_language_editions():
         asm = ROOT / "assembly" / f"{name}.s"
         gen = ROOT / "assembly" / "generated" / f"{name}.s"
         assert asm.exists() or gen.exists(), name
+
+
+def test_every_algorithm_has_teaching_notes():
+    from sorting_algorithms.notes import NOTES
+    assert set(NOTES) == set(REGISTRY)
+    for name, (how, use) in NOTES.items():
+        assert len(how) > 40 and len(use) > 40, name

@@ -15,6 +15,7 @@ def bubble_sort(a):
             if a[j] > a[j + 1]:
                 a.swap(j, j + 1)
                 swapped = True
+        a.done = ((n - 1 - i, n - 1),)
         if not swapped:
             break
 
@@ -31,11 +32,13 @@ def cocktail_shaker_sort(a):
                 a.swap(i, i + 1)
                 swapped = True
         hi -= 1
+        a.done = ((0, lo - 1), (hi + 1, len(a) - 1))
         for i in range(hi, lo, -1):
             if a[i - 1] > a[i]:
                 a.swap(i - 1, i)
                 swapped = True
         lo += 1
+        a.done = ((0, lo - 1), (hi + 1, len(a) - 1))
         if not swapped:
             break
 
@@ -49,6 +52,7 @@ def odd_even_sort(a):
     while not done:
         done = True
         for start in (1, 0):
+            a.label = "odd pairs (1,2) (3,4)…" if start else "even pairs (0,1) (2,3)…"
             for i in range(start, n - 1, 2):
                 if a[i] > a[i + 1]:
                     a.swap(i, i + 1)
@@ -63,6 +67,7 @@ def comb_sort(a):
     gap, swapped = n, True
     while gap > 1 or swapped:
         gap = max(1, int(gap / 1.3))
+        a.label = f"gap = {gap}"
         swapped = False
         for i in range(n - gap):
             if a[i] > a[i + gap]:
@@ -92,12 +97,14 @@ def exchange_sort(a):
         for j in range(i + 1, n):
             if a[j] < a[i]:
                 a.swap(i, j)
+        a.done = ((0, i),)
 
 
 def _circle_pass(a, lo, hi):
     n = hi - lo
     if n < 2:
         return 0
+    a.focus = (lo, hi - 1)
     swaps, m = 0, n // 2
     for i in range(m):
         if a[hi - 1 - i] < a[lo + i]:
@@ -124,6 +131,8 @@ def quick_sort(a):
     def qs(lo, hi):
         if lo >= hi:
             return
+        a.focus = (lo, hi)
+        a.pivot = hi
         pivot = a[hi]
         i = lo
         for j in range(lo, hi):
@@ -131,6 +140,8 @@ def quick_sort(a):
                 a.swap(i, j)
                 i += 1
         a.swap(i, hi)
+        a.pivot = None
+        a.done = a.done + ((i, i),)
         qs(lo, i - 1)
         qs(i + 1, hi)
 
@@ -143,6 +154,8 @@ def quick_sort(a):
 def quick_sort_hoare(a):
     def qs(lo, hi):
         while lo < hi:
+            a.focus = (lo, hi)
+            a.pivot = (lo + hi) // 2
             pivot = a[(lo + hi) // 2]
             i, j = lo - 1, hi + 1
             while True:
@@ -171,6 +184,8 @@ def quick_sort_hoare(a):
 def quick_sort_3way(a):
     def qs(lo, hi):
         while lo < hi:
+            a.focus = (lo, hi)
+            a.pivot = (lo + hi) // 2
             pivot = a[(lo + hi) // 2]
             lt, i, gt = lo, lo, hi
             while i <= gt:
@@ -183,6 +198,8 @@ def quick_sort_3way(a):
                     gt -= 1
                 else:
                     i += 1
+            a.pivot = None
+            a.done = a.done + ((lt, gt),)
             if lt - lo < hi - gt:
                 qs(lo, lt - 1)
                 lo = gt + 1
@@ -200,8 +217,10 @@ def quick_sort_dual_pivot(a):
     def qs(lo, hi):
         if lo >= hi:
             return
+        a.focus = (lo, hi)
         if a[lo] > a[hi]:
             a.swap(lo, hi)
+        a.pivot = lo
         p, q = a[lo], a[hi]
         lt, gt, k = lo + 1, hi - 1, lo + 1
         while k <= gt:
@@ -221,6 +240,8 @@ def quick_sort_dual_pivot(a):
         gt += 1
         a.swap(lo, lt)
         a.swap(hi, gt)
+        a.pivot = None
+        a.done = a.done + ((lt, lt), (gt, gt))
         qs(lo, lt - 1)
         qs(lt + 1, gt - 1)
         qs(gt + 1, hi)
@@ -234,6 +255,7 @@ def quick_sort_dual_pivot(a):
            viz_n=18, bench_max_n=128)
 def stooge_sort(a):
     def st(i, j):
+        a.focus = (i, j)
         if a[i] > a[j]:
             a.swap(i, j)
         if j - i + 1 > 2:
@@ -254,6 +276,7 @@ def slow_sort(a):
     def slow(i, j):
         if i >= j:
             return
+        a.focus = (i, j)
         m = (i + j) // 2
         slow(i, m)
         slow(m + 1, j)
@@ -269,6 +292,7 @@ def slow_sort(a):
            "Gates & Papadimitriou 1979 (their only joint paper; Gates co-founded Microsoft).", adaptive=True)
 def pancake_sort(a):
     def flip(k):
+        a.label = f"flip the top {k + 1} pancakes"
         i = 0
         while i < k:
             a.swap(i, k)
@@ -285,6 +309,7 @@ def pancake_sort(a):
         if mx:
             flip(mx)
         flip(size - 1)
+        a.done = ((size - 1, len(a) - 1),)
 
 
 def _sorted_check(a):
@@ -301,7 +326,8 @@ def _sorted_check(a):
 def bogo_sort(a, max_shuffles: int = 10_000, seed: int = 0):
     rng = random.Random(seed)
     n = len(a)
-    for _ in range(max_shuffles + 1):
+    for attempt in range(max_shuffles + 1):
+        a.label = f"attempt {attempt + 1}: shuffled?"
         if _sorted_check(a):
             return
         for i in range(n - 1, 0, -1):
@@ -315,7 +341,8 @@ def bogo_sort(a, max_shuffles: int = 10_000, seed: int = 0):
 def bozo_sort(a, max_swaps: int = 100_000, seed: int = 0):
     rng = random.Random(seed)
     n = len(a)
-    for _ in range(max_swaps + 1):
+    for attempt in range(max_swaps + 1):
+        a.label = f"attempt {attempt + 1}: random swap"
         if _sorted_check(a):
             return
         a.swap(rng.randrange(n), rng.randrange(n))
@@ -329,7 +356,10 @@ def permutation_sort(a):
     n = len(a)
     vals = [a[i] for i in range(n)]
     idx = list(range(n))
+    attempt = 0
     while True:
+        attempt += 1
+        a.label = f"permutation #{attempt}"
         view = [vals[i] for i in idx]
         a.show(view, (), "try")
         if all(not view[i + 1] < view[i] for i in range(n - 1)):
