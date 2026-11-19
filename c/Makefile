@@ -12,6 +12,9 @@ example: example.c libsort.a
 	$(CC) $(CFLAGS) example.c -L. -lsort -lm -o $@
 
 clean:
-	rm -f $(OBJ) *.a example
+	rm -f $(OBJ) *.a example test_runner
 
-.PHONY: all clean
+test: libsort.a test.c
+	$(CC) $(CFLAGS) test.c -L. -lsort -lm -o test_runner && ./test_runner
+
+.PHONY: all clean test

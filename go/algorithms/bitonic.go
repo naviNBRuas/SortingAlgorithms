@@ -1,33 +1,33 @@
 package algorithms
 
-// BitonicSort sorts in-place; works best when length is a power of two.
+// BitonicSort is an ascending-only bitonic network (flip-first formulation).
+// Comparators outside the slice are skipped, equivalent to padding with +infinity,
+// so any length works.
 func BitonicSort(arr []int) {
-    if len(arr) == 0 {
-        return
-    }
-    bitonicSortRec(arr, 0, len(arr), true)
-}
-
-func bitonicSortRec(arr []int, low, cnt int, dir bool) {
-    if cnt <= 1 {
-        return
-    }
-    k := cnt / 2
-    bitonicSortRec(arr, low, k, true)
-    bitonicSortRec(arr, low+k, cnt-k, false)
-    bitonicMerge(arr, low, cnt, dir)
-}
-
-func bitonicMerge(arr []int, low, cnt int, dir bool) {
-    if cnt <= 1 {
-        return
-    }
-    k := cnt / 2
-    for i := low; i < low+k && i+k < low+cnt; i++ {
-        if (dir && arr[i] > arr[i+k]) || (!dir && arr[i] < arr[i+k]) {
-            arr[i], arr[i+k] = arr[i+k], arr[i]
-        }
-    }
-    bitonicMerge(arr, low, k, dir)
-    bitonicMerge(arr, low+k, cnt-k, dir)
+	n := len(arr)
+	size := 1
+	for size < n {
+		size <<= 1
+	}
+	cmpSwap := func(i, j int) {
+		if arr[i] > arr[j] {
+			arr[i], arr[j] = arr[j], arr[i]
+		}
+	}
+	for k := 2; k <= size; k <<= 1 {
+		for blk := 0; blk < size; blk += k {
+			for t := 0; t < k/2; t++ {
+				if j := blk + k - 1 - t; j < n {
+					cmpSwap(blk+t, j)
+				}
+			}
+		}
+		for j := k / 4; j >= 1; j >>= 1 {
+			for i := 0; i < size; i++ {
+				if i&j == 0 && i+j < n {
+					cmpSwap(i, i+j)
+				}
+			}
+		}
+	}
 }

@@ -16,6 +16,8 @@ All notable changes to this project will be documented in this file.
 - Corrected stability claims (bubble, cocktail, odd-even and gnome sorts are stable).
 
 ### Fixed
+- C: `heap_sort` had an off-by-one and `smooth_sort` read out of bounds; `bitonic_sort` in C, Go and Rust was wrong for non-power-of-two lengths. All fixed, found by the new per-language test suites.
+- Go/Rust `smooth_sort` was a heap-sort stand-in; now a real Leonardo-heap implementation.
 - Go: duplicate `partition` symbol broke the build. Rust: `lib.rs` exported only 6 of 28 modules, so the demo did not compile. Python: stray diff markers in `__main__.py`.
 - Removed tracked build artifacts (`*.o`, `libsort.a`, binaries) from version control.
 

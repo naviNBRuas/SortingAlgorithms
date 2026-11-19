@@ -54,3 +54,4 @@ __pycache__/
 c/example
 .pytest_cache/
 *.egg-info/
+c/test_runner

@@ -14,16 +14,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cd c && make && ./example
+      - run: cd c && make && ./example && make test
   go:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with: { go-version: "1.22" }
-      - run: cd go && go vet ./... && go run ./cmd
+      - run: cd go && go vet ./... && go test ./... && go run ./cmd
   rust:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cd rust && cargo build --locked && cargo run --quiet
+      - run: cd rust && cargo test --locked && cargo run --quiet

@@ -693,7 +693,7 @@ Swap two random elements, check, repeat. Even less strategic than bogo sort.
 | Rust | `rust/` | 28 algorithms; `cd rust && cargo run`. |
 | x86-64 assembly | `assembly/` | Hand-written cores for 8 algorithms, C tail-calls for the rest (see `assembly/README.md`). |
 
-Heads-up: several of the *original 28* ports in C/Go/Rust/assembly are simplified (for example `smooth_sort` delegates to heap sort and `tim_sort` to a library sort); the Python implementations are the faithful reference. The 20 algorithms added in v1.1 exist in Python only.
+All C, Go and Rust ports are covered by their own test suites (`make test`, `go test ./...`, `cargo test`), which check random, sorted, reversed and duplicate-heavy inputs of many lengths (the C suite is also clean under AddressSanitizer). Some ports are deliberately simplified relative to Python: for example the Go/Rust `tim_sort` is a fixed-minrun bottom-up hybrid rather than a full run-detecting TimSort. The 20 algorithms added in v1.1 exist in Python only.
 
 ## Repository layout
 

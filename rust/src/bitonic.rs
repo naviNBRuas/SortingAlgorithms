@@ -1,34 +1,30 @@
+/// Ascending-only bitonic network (flip-first formulation). Comparators outside the
+/// slice are skipped, equivalent to padding with +infinity, so any length works.
 pub fn bitonic_sort(arr: &mut [i32]) {
     let n = arr.len();
-    if n == 0 {
-        return;
+    let mut size = 1;
+    while size < n {
+        size <<= 1;
     }
-    bitonic_sort_rec(arr, 0, n, true);
-}
-
-fn bitonic_sort_rec(arr: &mut [i32], low: usize, cnt: usize, dir: bool) {
-    if cnt <= 1 {
-        return;
-    }
-    let k = cnt / 2;
-    bitonic_sort_rec(arr, low, k, true);
-    bitonic_sort_rec(arr, low + k, cnt - k, false);
-    bitonic_merge(arr, low, cnt, dir);
-}
-
-fn bitonic_merge(arr: &mut [i32], low: usize, cnt: usize, dir: bool) {
-    if cnt <= 1 {
-        return;
-    }
-    let k = cnt / 2;
-    for i in low..(low + k) {
-        if i + k < low + cnt {
-            let should_swap = (dir && arr[i] > arr[i + k]) || (!dir && arr[i] < arr[i + k]);
-            if should_swap {
-                arr.swap(i, i + k);
+    let mut k = 2;
+    while k <= size {
+        for blk in (0..size).step_by(k) {
+            for t in 0..k / 2 {
+                let j = blk + k - 1 - t;
+                if j < n && arr[blk + t] > arr[j] {
+                    arr.swap(blk + t, j);
+                }
             }
         }
+        let mut j = k / 4;
+        while j >= 1 {
+            for i in 0..size {
+                if i & j == 0 && i + j < n && arr[i] > arr[i + j] {
+                    arr.swap(i, i + j);
+                }
+            }
+            j /= 2;
+        }
+        k <<= 1;
     }
-    bitonic_merge(arr, low, k, dir);
-    bitonic_merge(arr, low + k, cnt - k, dir);
 }
