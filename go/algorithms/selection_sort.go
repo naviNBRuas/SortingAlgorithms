@@ -1,0 +1,48 @@
+// GENERATED from kernels/algos/selection_sort.py by kernels/generate.py - do not edit; edit the kernel and regenerate.
+
+package algorithms
+
+func selection_sort_impl(a []int, n int64) {
+	var i int64
+	_ = i
+	var m int64
+	_ = m
+	var j int64
+	_ = j
+	var _e1 int64
+	_ = _e1
+	var _e2 int64
+	_ = _e2
+	var _i1 int64
+	_ = _i1
+	var _i2 int64
+	_ = _i2
+	var _t1 int64
+	_ = _t1
+	i = 0
+	_e1 = (n - 1)
+	for i < _e1 {
+		m = i
+		j = (i + 1)
+		_e2 = n
+		for j < _e2 {
+			if int64(a[j]) < int64(a[m]) {
+				m = j
+			}
+			j = (j + 1)
+		}
+		if m != i {
+			_i1 = i
+			_i2 = m
+			_t1 = int64(a[_i1])
+			a[_i1] = int(int64(a[_i2]))
+			a[_i2] = int(_t1)
+		}
+		i = (i + 1)
+	}
+}
+
+// SelectionSort sorts a in place.
+func SelectionSort(a []int) {
+	selection_sort_impl(a, int64(len(a)))
+}

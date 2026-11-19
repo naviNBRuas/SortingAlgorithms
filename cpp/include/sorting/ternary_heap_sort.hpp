@@ -1,0 +1,81 @@
+// GENERATED from kernels/algos/ternary_heap_sort.py by kernels/generate.py - do not edit; edit the kernel and regenerate.
+#pragma once
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
+#include "common.hpp"
+namespace sorting {
+namespace detail {
+
+inline void ternary_heap_sort_x_sift(int32_t *a, int64_t root, int64_t size);
+inline void ternary_heap_sort_impl(int32_t *a, int64_t n);
+
+inline void ternary_heap_sort_x_sift(int32_t *a, int64_t root, int64_t size) {
+    int64_t going = 0;
+    int64_t first = 0;
+    int64_t best = 0;
+    int64_t c = 0;
+    int64_t _i1 = 0;
+    int64_t _i2 = 0;
+    int64_t _t1 = 0;
+    going = 1;
+    while ((going == 1)) {
+        first = ((3 * root) + 1);
+        if ((first >= size)) {
+            going = 0;
+        } else {
+            best = first;
+            c = (first + 1);
+            while (((c < (first + 3)) && (c < size))) {
+                if ((((int64_t)a[best]) < ((int64_t)a[c]))) {
+                    best = c;
+                }
+                c = (c + 1);
+            }
+            if ((((int64_t)a[root]) < ((int64_t)a[best]))) {
+                _i1 = root;
+                _i2 = best;
+                _t1 = ((int64_t)a[_i1]);
+                a[_i1] = (int32_t)(((int64_t)a[_i2]));
+                a[_i2] = (int32_t)(_t1);
+                root = best;
+            } else {
+                going = 0;
+            }
+        }
+    }
+}
+
+inline void ternary_heap_sort_impl(int32_t *a, int64_t n) {
+    int64_t s = 0;
+    int64_t end = 0;
+    int64_t _i1 = 0;
+    int64_t _i2 = 0;
+    int64_t _t1 = 0;
+    if ((n < 2)) {
+        return;
+    }
+    s = (((n - 2) / 3) + 1);
+    while ((s > 0)) {
+        s = (s - 1);
+        ternary_heap_sort_x_sift(a, s, n);
+    }
+    end = (n - 1);
+    while ((end > 0)) {
+        _i1 = 0;
+        _i2 = end;
+        _t1 = ((int64_t)a[_i1]);
+        a[_i1] = (int32_t)(((int64_t)a[_i2]));
+        a[_i2] = (int32_t)(_t1);
+        ternary_heap_sort_x_sift(a, 0, end);
+        end = (end - 1);
+    }
+}
+
+}  // namespace detail
+
+inline void ternary_heap_sort(std::vector<int>& v) {
+    detail::ternary_heap_sort_impl(reinterpret_cast<int32_t*>(v.data()), static_cast<int64_t>(v.size()));
+}
+}  // namespace sorting
