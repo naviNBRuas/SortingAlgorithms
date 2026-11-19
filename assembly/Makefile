@@ -1,7 +1,7 @@
 # Pure-assembly sorts (GNU as, Intel syntax, x86-64 Linux, no libc dependency).
 AS=as
 CC=gcc
-SRC=$(filter-out util.s,$(wildcard *.s))
+SRC=$(filter-out util.s,$(wildcard *.s)) $(wildcard generated/*.s)
 OBJ=$(SRC:.s=.o) util.o
 
 all: libsortasm.a
@@ -28,6 +28,6 @@ memcheck: test_runner
 	valgrind -q --error-exitcode=9 ./test_runner
 
 clean:
-	rm -f *.o *.a test_runner freestanding_runner
+	rm -f *.o generated/*.o *.a test_runner freestanding_runner
 
 .PHONY: all test freestanding memcheck clean

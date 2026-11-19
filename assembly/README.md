@@ -1,5 +1,10 @@
 # Pure-assembly sorting algorithms (x86-64, Linux)
 
+> **56 algorithms in total.** The 28 listed below are **hand-written** assembly (`assembly/*.s`). The other 28 (everything added
+> in v1.1: heap/quick/merge variants, library, Ford–Johnson, American flag, ... ) are **compiler output** from the kernel compiler
+> (`kernels/backends/x86.py`) in `assembly/generated/*.s`: still pure assembly with no libc, but unoptimised and not hand-written.
+> All 56 pass `make test`, `make freestanding` and `make memcheck`.
+
 Every one of the 28 algorithms in the original catalogue is hand-written assembly. There is **no C, no libc and no
 delegation**: the only external dependency is the Linux kernel, reached through two raw system calls in `util.s`
 (`mmap`/`munmap`) for the scratch memory some algorithms need.
