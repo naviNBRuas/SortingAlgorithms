@@ -1,6 +1,6 @@
 # SortingAlgorithms
 
-**An executable, animated atlas of <!--N-->56<!--/N--> sorting algorithms** — from bubble sort to Batcher networks, TimSort, smooth sort and Ford–Johnson merge-insertion — each one instrumented, tested, benchmarked and animated from the *same* code. The original 28 also ship in C, Go, Rust and **pure x86-64 assembly**.
+**An executable, animated atlas of <!--N-->56<!--/N--> sorting algorithms** — from bubble sort to Batcher networks, TimSort, smooth sort and Ford–Johnson merge-insertion — each one instrumented, tested, benchmarked and animated from the *same* code. Every one also ships in **C, C++, Java, Go, Rust, x86-64 assembly, raw machine code and COBOL**.
 
 <p align="center">
   <img src="visualizations/gifs/race.gif" alt="Nine sorting algorithms racing on equal operation budgets" width="720">
@@ -13,7 +13,7 @@
 
 ## Contents
 
-[Quick start](#quick-start) · [How it works](#how-it-works) · [Catalogue](#catalogue) · [Gallery](#gallery) · [Benchmarks at a glance](#benchmarks-at-a-glance) · [Coverage and omissions](#coverage-and-omissions) · [Other languages](#other-languages) · [Repository layout](#repository-layout) · [Testing](#testing) · [Contributing](#contributing-a-new-algorithm) · [License](#license--citation)
+[Quick start](#quick-start) · [How it works](#how-it-works) · [Catalogue](#catalogue) · [Gallery](#gallery) · [Benchmarks at a glance](#benchmarks-at-a-glance) · [Coverage and omissions](#coverage-and-omissions) · [Nine editions](#nine-editions-of-every-algorithm) · [Repository layout](#repository-layout) · [Testing](#testing) · [Contributing](#contributing-a-new-algorithm) · [License](#license--citation)
 
 ---
 
@@ -806,48 +806,68 @@ The catalogue covers every major family: exchange, selection/heap, insertion/tre
 
 Contributions of any of these are welcome; see [Contributing](#contributing-a-new-algorithm).
 
-## Other languages
+## Nine editions of every algorithm
 
-The 28 algorithms of the original catalogue are ported to four more languages; the 28 added in v1.1 exist in Python only.
+All 56 algorithms exist in every language below. Each non-Python edition is generated from one verified source of truth, the
+**kernels** in [`kernels/`](kernels/README.md) (a restricted executable Python subset), so they all run the same algorithm.
 
-| Language | Location | Status |
-| --- | --- | --- |
-| Python | `python/` | **Reference.** <!--N-->56<!--/N--> algorithms, tracing, tests, benchmarks. |
-| C | `c/` | 28 algorithms → `libsort.a`; `cd c && make test`. |
-| Go | `go/` | 28 algorithms; `cd go && go test ./...`. |
-| Rust | `rust/` | 28 algorithms; `cd rust && cargo test`. |
-| x86-64 assembly | `assembly/` | **28 algorithms in pure, hand-written assembly** (GNU `as`, Intel syntax). No C, no libc: only two raw `mmap`/`munmap` syscalls. `cd assembly && make test freestanding`. See [assembly/README.md](assembly/README.md). |
+| Language | Location | How to test | Status |
+| --- | --- | --- | --- |
+| Python | `python/` | `cd python && python -m pytest` | **Reference** edition: tracing, animation, stability checks, benchmarks. |
+| C | `c/` | `cd c && make test` | 56 algorithms → `libsort.a`; warning-free, ASan-clean. |
+| C++ | `cpp/` | `cd cpp && make test` | Header-only C++17 (`sorting/all.hpp`). |
+| Java | `java/` | `cd java && make test` | One class per algorithm, JDK 17+. |
+| Go | `go/` | `cd go && go test ./...` | Package `algorithms`. |
+| Rust | `rust/` | `cd rust && cargo test` | Bounds-checked, no `unsafe`. |
+| x86-64 assembly | `assembly/` | `cd assembly && make test freestanding` | **28 hand-written** + 28 compiled from kernels; no libc (see below). |
+| Machine code | `machine-code/` | `cd machine-code && make test` | **56 raw x86-64 images** (about 37 KB), loaded into executable memory and run. |
+| COBOL | `cobol/` | `cd cobol && make test` | 56 GnuCOBOL programs. **Generated but not yet compiled**, see [cobol/README.md](cobol/README.md). |
 
-Each port has its own test suite checking random, sorted, reversed and duplicate-heavy inputs of many lengths; the C suite is clean under AddressSanitizer and the assembly suite under Valgrind, and the assembly sorts also link and pass in a binary built with `-nostdlib` (no libc whatsoever). Some ports are simplified relative to Python, e.g. the Go/Rust `tim_sort` is a fixed-minrun bottom-up hybrid rather than a full run-detecting TimSort.
+* **Assembly** is GNU `as` Intel syntax with no C and no libc: only two raw `mmap`/`munmap` system calls. The 28 original
+  algorithms are hand-written; the other 28 are output of the kernel compiler (`kernels/backends/x86.py`) and are labelled as such.
+  All 56 pass the harness, are Valgrind-clean, and link and run in a `-nostdlib -static` binary.
+* **Machine code** is the assembled bytes of those 56 routines, one self-contained, position-independent file each.
+* Every edition is tested against the language's own sort on random, sorted, reversed, all-equal and `INT_MIN`/`INT_MAX` inputs of many lengths.
+* The super-polynomial algorithms (stooge, slow, bogo, bozo, permutation) are tested on small sizes only.
 
 ## Repository layout
 
 ```
-python/sorting_algorithms/   base.py (tracking array + registry) and algos/<family>.py
-python/tests/                correctness, stability, networks, docs-consistency
+python/sorting_algorithms/   reference: base.py (tracking array + registry) and algos/<family>.py
+python/tests/                correctness, stability, networks, docs consistency
+kernels/                     algos/<name>.py: the single source of truth for all other languages
+                             generate.py + backends/: transpilers to C, C++, Java, Go, Rust, COBOL, x86-64
+c/ cpp/ java/ go/ rust/      generated editions + tests
+assembly/                    28 hand-written + 28 compiled assembly sorts, libc-free
+machine-code/                raw x86-64 images assembled from assembly/
+cobol/                       generated GnuCOBOL programs
 visualizations/              GIF renderer and generated gifs/
-benchmarks/                  measurement + report generator
-report/                      raw data and figures used by REPORT.md
-c/  go/  rust/  assembly/    ports of the original 28 (assembly is pure, libc-free)
+benchmarks/  report/         measurement + report generator, data, figures
 ```
 
 ## Testing
 
 ```sh
-cd python   && python -m pytest          # Python reference: correctness, stability, networks, docs consistency
-cd c        && make test                 # C
-cd go       && go test ./...             # Go
-cd rust     && cargo test                # Rust
-cd assembly && make test freestanding    # assembly (add `make memcheck` for Valgrind)
+cd python    && python -m pytest        # reference: correctness, stability, networks, docs consistency
+python kernels/test_kernels.py          # every kernel, natively
+python kernels/generate.py --check      # generated files are up to date
+cd c         && make test               # C           (also: cpp, java, go, rust, assembly, machine-code, cobol)
+cd cpp       && make test
+cd java      && make test
+cd go        && go test ./...
+cd rust      && cargo test
+cd assembly  && make test freestanding  # add `make memcheck` for Valgrind
+cd machine-code && make test
+cd cobol     && make test               # needs GnuCOBOL
 ```
 
 CI runs all of them (see `.github/workflows/ci.yml`).
 
 ## Contributing a new algorithm
 
-1. Add a function decorated with `@algorithm(...)` in the right `python/sorting_algorithms/algos/<family>.py`, written against the `Tracked` API (`a[i]`, `a[i] = v`, `a.swap(i, j)`, `a.show(...)`, `a.commit(...)`).
-2. `python -m pytest` — it is automatically picked up by every test.
-3. Regenerate its GIF, then `python scripts/build_docs.py`.
+1. Write the kernel `kernels/algos/<name>.py` (see [kernels/README.md](kernels/README.md)) and test it with `python kernels/test_kernels.py <name>`.
+2. Add a function decorated with `@algorithm(...)` in the right `python/sorting_algorithms/algos/<family>.py`, written against the `Tracked` API (`a[i]`, `a[i] = v`, `a.swap(i, j)`, `a.show(...)`, `a.commit(...)`).
+3. `python kernels/generate.py`, `python -m pytest`, regenerate its GIF, then `python scripts/build_docs.py`.
 
 ## License & citation
 

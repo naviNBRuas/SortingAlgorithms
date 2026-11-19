@@ -57,3 +57,10 @@ c/example
 c/test_runner
 assembly/freestanding_runner
 assembly/test_runner
+cpp/test_runner
+java/out/
+*.class
+machine-code/test_runner
+cobol/test_runner
+cobol/*.c
+cobol/*.o

@@ -130,3 +130,19 @@ def test_every_algorithm_has_gif_in_readme():
     for name in REGISTRY:
         assert f"visualizations/gifs/{name}.gif" in readme, name
         assert (ROOT / "visualizations" / "gifs" / f"{name}.gif").exists(), name
+
+
+def test_every_algorithm_has_a_kernel_and_all_language_editions():
+    import os
+    for name in REGISTRY:
+        for rel in (
+            f"kernels/algos/{name}.py", f"c/src/{name}.c", f"cpp/include/sorting/{name}.hpp",
+            f"go/algorithms/{name}.go", f"rust/src/{name}.rs", f"cobol/{name}.cob",
+            f"machine-code/bin/{name}.bin",
+        ):
+            assert (ROOT / rel).exists(), rel
+        java = "".join(p.capitalize() for p in name.split("_"))
+        assert (ROOT / f"java/src/sorting/{java}.java").exists(), java
+        asm = ROOT / "assembly" / f"{name}.s"
+        gen = ROOT / "assembly" / "generated" / f"{name}.s"
+        assert asm.exists() or gen.exists(), name

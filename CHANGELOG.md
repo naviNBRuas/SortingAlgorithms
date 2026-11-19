@@ -15,7 +15,15 @@ All notable changes to this project will be documented in this file.
 - Faithful implementations replace surrogates (smooth sort is now a real Leonardo-heap sort; TimSort implements run detection, minrun and merge-collapse invariants).
 - Corrected stability claims (bubble, cocktail, odd-even and gnome sorts are stable).
 
+### Languages
+- Every one of the 56 algorithms now exists in Python, C, C++, Java, Go, Rust, x86-64 assembly, raw machine code and COBOL.
+- New `kernels/`: each algorithm is written once as a restricted executable Python "kernel", verified natively, then transpiled by `kernels/generate.py` into C, C++, Java, Go, Rust, COBOL and x86-64 assembly. C, Go and Rust sources are now generated (replacing the previous hand-written, partly simplified ports; the full TimSort and smoothsort now exist in every language).
+- New `machine-code/`: 56 self-contained, position-independent raw x86-64 images (about 37 KB) built from the assembly, with a loader test that runs each from executable memory.
+- New `cobol/`: 56 GnuCOBOL programs plus a test driver. **Generated but not yet compiled** (no COBOL compiler was available); see `cobol/README.md`.
+- C++ is header-only C++17; Java has one class per algorithm.
+
 ### Assembly
+- The other 28 algorithms (those without hand-written assembly) are produced by the kernel compiler (`kernels/backends/x86.py`) into `assembly/generated/` and are labelled as compiler output.
 - All 28 assembly sorts are now genuine hand-written assembly (GNU `as`, Intel syntax). Previously 20 of 28 were 6-line stubs that jumped into C. No libc is used: scratch memory comes from raw `mmap`/`munmap` syscalls.
 - New `assembly/Makefile` with `test`, `freestanding` (links with `-nostdlib -static`) and `memcheck` (Valgrind) targets and a C test harness.
 
