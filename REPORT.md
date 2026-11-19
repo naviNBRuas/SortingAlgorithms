@@ -283,3 +283,110 @@ Bogo/Bozo/Permutation factorial), which is why they are capped.
 export PYTHONPATH=$PWD/python
 python benchmarks/run_benchmarks.py && python benchmarks/generate_report.py
 ```
+
+## 10. Cross-language speed comparison
+
+The same algorithms on the same deterministic data (n = 1000 values in 0..9999; smaller n for the super-polynomial sorts) in every edition,
+on AMD Ryzen 7 5700U with Radeon Graphics (Linux-7.2.15+deb14-amd64-x86_64-with-glibc2.43). Each value is the median time of one `sort()` call. Reproduce with `benchmarks/compare_languages.py`
+and `benchmarks/language_charts.py`.
+
+![Geometric-mean slowdown relative to C](report/figures/lang_overall.png)
+
+| Edition | Geometric mean vs C | Median vs C | Fastest on (of 52) | Toolchain |
+|---|:-:|:-:|:-:|---|
+| C | 1.00× | 1.00× | 15 | gcc (Debian 16.2.0-4) 16.2.0 -O2 |
+| C++ | 1.00× | 1.00× | 17 | g++ (Debian 16.2.0-4) 16.2.0 -O2 |
+| Rust | 1.05× | 1.02× | 12 | rustc 1.98.1 (48a229cea 2026-09-01) --release |
+| Go | 1.29× | 1.26× | 5 | go version go1.26.5 linux/amd64 |
+| Java | 1.73× | 1.47× | 0 | openjdk version "25.0.5" 2026-10-20 (JIT, 20 warm-up runs) |
+| Machine code | 2.17× | 2.15× | 2 | raw x86-64 images loaded into executable memory |
+| x86-64 asm | 2.17× | 2.16× | 2 | GNU as (hand-written 28 + compiled 28), timed through a C harness |
+| Python (kernel) | 45.40× | 41.33× | 0 | CPython 3.14.10, plain kernels |
+| COBOL | 351.82× | 307.98× | 0 | cobc (GnuCOBOL) 3.2.0 -O2 (process-timed) |
+| Python (instrumented) | 448.94× | 296.20× | 0 | CPython 3.14.10, tracing reference implementation (counts every compare/write) |
+| ↳ asm, hand-written (27 algorithms) | 1.25× | | | hand-written |
+| ↳ asm, compiler-generated | 3.93× | | | `kernels/backends/x86.py` |
+
+### Representative algorithms (median ms per sort)
+
+| Algorithm | C | C++ | Rust | Go | Java | Machine code | x86-64 asm | Python (kernel) | COBOL | Python (instrumented) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Bubble Sort | 0.553 | 0.557 | 0.593 | 0.584 | 0.737 | 0.985 | 1.041 | 36.1 | 140.9 | 209.2 |
+| Insertion Sort | 0.124 | 0.103 | 0.136 | 0.184 | 0.188 | 0.184 | 0.185 | 11.5 | 68.1 | 139.3 |
+| Selection Sort | 0.926 | 0.926 | 0.411 | 0.404 | 0.324 | 0.285 | 0.287 | 12.2 | 58.9 | 175.5 |
+| Shell Sort | 0.039 | 0.042 | 0.039 | 0.043 | 0.046 | 0.042 | 0.042 | 0.931 | 4.538 | 8.133 |
+| Heap Sort | 0.035 | 0.028 | 0.030 | 0.040 | 0.038 | 0.030 | 0.028 | 1.308 | 6.045 | 8.380 |
+| Merge Sort | 0.023 | 0.018 | 0.034 | 0.033 | 0.072 | 0.027 | 0.029 | 0.926 | 6.876 | 6.038 |
+| Quick Sort (Lomuto) | 0.019 | 0.016 | 0.019 | 0.017 | 0.046 | 0.021 | 0.022 | 0.866 | 3.021 | 4.974 |
+| Intro Sort | 0.010 | 0.011 | 0.015 | 0.017 | 0.040 | 0.016 | 0.016 | 0.529 | 2.898 | 4.146 |
+| Tim Sort | 0.017 | 0.017 | 0.021 | 0.025 | 0.050 | 0.027 | 0.028 | 1.138 | 7.360 | 8.540 |
+| Radix Sort (LSD) | 0.033 | 0.034 | 0.034 | 0.036 | 0.077 | 0.068 | 0.068 | 0.773 | 26.3 | 187.6 |
+| Counting Sort | 0.007 | 0.009 | 0.005 | 0.030 | 0.061 | 0.028 | 0.030 | 0.722 | 4.794 | 46.7 |
+| Bitonic Sort | 0.187 | 0.188 | 0.082 | 0.188 | 0.204 | 0.109 | 0.085 | 4.659 | 101.8 | 14.3 |
+
+
+![Eight algorithms across nine editions](report/figures/lang_selected.png)
+
+![Time relative to the fastest edition, per algorithm](report/figures/lang_heatmap.png)
+
+### All algorithms (median ms per sort; n in parentheses)
+
+| Algorithm (n) | C | C++ | Rust | Go | Java | Machine code | x86-64 asm | Python (kernel) | COBOL | Python (instrumented) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| American Flag Sort (1000) | 0.062 | 0.073 | 0.077 | 0.088 | 0.099 | 6.251 | 7.197 | 1.536 | 302.5 | 2.657 |
+| AVL Tree Sort (1000) | 0.081 | 0.073 | 0.124 | 0.108 | 0.111 | 0.281 | 0.282 | 4.485 | 29.0 | 44.3 |
+| Bead (Gravity) Sort (1000) | 1.172 | 1.178 | 3.232 | 2.670 | 2.987 | 2.505 | 2.494 | 238.9 | 1569.7 | 498.2 |
+| Binary Insertion Sort (1000) | 0.046 | 0.046 | 0.134 | 0.213 | 0.136 | 0.161 | 0.105 | 10.5 | 68.0 | 68.9 |
+| Bingo Sort (1000) | 0.335 | 0.336 | 0.498 | 0.288 | 0.420 | 0.872 | 0.859 | 19.0 | 88.4 | 236.6 |
+| Bitonic Sort (1000) | 0.187 | 0.188 | 0.082 | 0.188 | 0.204 | 0.109 | 0.085 | 4.659 | 101.8 | 14.3 |
+| Bottom-Up Heap Sort (1000) | 0.061 | 0.056 | 0.062 | 0.067 | 0.069 | 0.281 | 0.285 | 2.538 | 99.3 | 7.559 |
+| Bubble Sort (1000) | 0.553 | 0.557 | 0.593 | 0.584 | 0.737 | 0.985 | 1.041 | 36.1 | 140.9 | 209.2 |
+| Bucket Sort (1000) | 0.011 | 0.012 | 0.011 | 0.016 | 0.042 | 0.020 | 0.018 | 0.445 | 4.680 | 61.8 |
+| Cartesian Tree Sort (1000) | 0.042 | 0.039 | 0.021 | 0.057 | 0.078 | 0.128 | 0.129 | 1.525 | 13.9 | 30.9 |
+| Circle Sort (1000) | 0.116 | 0.111 | 0.123 | 0.140 | 0.187 | 0.309 | 0.313 | 6.252 | 50.0 | 26.1 |
+| Cocktail Shaker Sort (1000) | 0.612 | 0.611 | 0.527 | 0.551 | 0.541 | 0.766 | 0.656 | 33.9 | 121.1 | 176.0 |
+| Comb Sort (1000) | 0.035 | 0.037 | 0.031 | 0.033 | 0.050 | 0.040 | 0.040 | 1.543 | 7.553 | 8.880 |
+| Counting Sort (1000) | 0.007 | 0.009 | 0.005 | 0.030 | 0.061 | 0.028 | 0.030 | 0.722 | 4.794 | 46.7 |
+| Cycle Sort (1000) | 0.811 | 0.827 | 0.527 | 1.477 | 1.113 | 1.640 | 1.656 | 38.3 | 118.8 | 381.8 |
+| Double Selection Sort (1000) | 0.165 | 0.213 | 0.280 | 0.320 | 0.222 | 0.611 | 0.605 | 11.6 | 72.3 | 172.4 |
+| Enumeration (Rank) Sort (1000) | 1.766 | 1.680 | 1.526 | 1.850 | 1.744 | 3.120 | 3.020 | 39.2 | 200.3 | 220.1 |
+| Exchange Sort (1000) | 0.808 | 0.801 | 0.731 | 0.720 | 0.759 | 1.399 | 1.316 | 25.8 | 85.3 | 214.2 |
+| Flash Sort (1000) | 0.015 | 0.017 | 0.016 | 0.017 | 0.026 | 0.041 | 0.042 | 0.412 | 4.907 | 1.367 |
+| Merge-Insertion Sort (Ford–Johnson) (1000) | 0.153 | 0.156 | 0.372 | 0.503 | 0.720 | 1.451 | 1.466 | 29.2 | 172.3 | 21.0 |
+| Gnome Sort (1000) | 1.426 | 1.645 | 0.613 | 0.491 | 0.684 | 0.664 | 0.662 | 40.7 | 146.2 | 225.4 |
+| Heap Sort (1000) | 0.035 | 0.028 | 0.030 | 0.040 | 0.038 | 0.030 | 0.028 | 1.308 | 6.045 | 8.380 |
+| In-Place Merge Sort (1000) | 0.081 | 0.079 | 0.093 | 0.100 | 0.103 | 0.224 | 0.224 | 4.022 | 33.0 | 10.3 |
+| Insertion Sort (1000) | 0.124 | 0.103 | 0.136 | 0.184 | 0.188 | 0.184 | 0.185 | 11.5 | 68.1 | 139.3 |
+| Intro Sort (1000) | 0.010 | 0.011 | 0.015 | 0.017 | 0.040 | 0.016 | 0.016 | 0.529 | 2.898 | 4.146 |
+| Library Sort (Gapped Insertion) (1000) | 0.094 | 0.094 | 0.089 | 0.101 | 0.225 | 0.212 | 0.213 | 2.982 | 32.0 | 28.0 |
+| Merge Sort (1000) | 0.023 | 0.018 | 0.034 | 0.033 | 0.072 | 0.027 | 0.029 | 0.926 | 6.876 | 6.038 |
+| Merge Sort (Bottom-Up) (1000) | 0.022 | 0.022 | 0.028 | 0.031 | 0.087 | 0.066 | 0.067 | 0.898 | 4.885 | 5.627 |
+| Batcher Odd–Even Merge Sort (1000) | 0.184 | 0.185 | 0.186 | 0.185 | 0.190 | 0.233 | 0.233 | 5.691 | 99.5 | 14.9 |
+| Odd–Even (Brick) Sort (1000) | 0.623 | 0.574 | 0.493 | 0.444 | 0.580 | 0.454 | 0.420 | 42.3 | 156.9 | 208.9 |
+| Pairwise Sorting Network (1000) | 0.068 | 0.065 | 0.068 | 0.060 | 0.085 | 0.187 | 0.187 | 3.338 | 15.6 | 12.4 |
+| Pancake Sort (1000) | 1.123 | 1.121 | 0.662 | 0.863 | 0.721 | 0.471 | 0.616 | 43.1 | 155.2 | 257.2 |
+| Patience Sort (1000) | 0.096 | 0.090 | 0.105 | 0.127 | 0.135 | 0.095 | 0.130 | 3.913 | 30.9 | 30.8 |
+| Pigeonhole Sort (1000) | 0.010 | 0.012 | 0.007 | 0.019 | 0.051 | 0.028 | 0.031 | 0.373 | 2.050 | 551.9 |
+| Quick Sort (Lomuto) (1000) | 0.019 | 0.016 | 0.019 | 0.017 | 0.046 | 0.021 | 0.022 | 0.866 | 3.021 | 4.974 |
+| Quick Sort (3-way) (1000) | 0.022 | 0.017 | 0.027 | 0.029 | 0.031 | 0.061 | 0.061 | 1.209 | 5.699 | 7.014 |
+| Quick Sort (Dual-Pivot) (1000) | 0.010 | 0.010 | 0.010 | 0.011 | 0.013 | 0.036 | 0.036 | 0.603 | 2.450 | 4.029 |
+| Quick Sort (Hoare) (1000) | 0.024 | 0.016 | 0.020 | 0.032 | 0.030 | 0.054 | 0.054 | 0.733 | 5.045 | 4.834 |
+| Radix Sort (LSD) (1000) | 0.033 | 0.034 | 0.034 | 0.036 | 0.077 | 0.068 | 0.068 | 0.773 | 26.3 | 187.6 |
+| Radix Sort (MSD) (1000) | 0.041 | 0.049 | 0.065 | 0.069 | 0.116 | 4.403 | 4.410 | 1.553 | 194.6 | 91.3 |
+| Selection Sort (1000) | 0.926 | 0.926 | 0.411 | 0.404 | 0.324 | 0.285 | 0.287 | 12.2 | 58.9 | 175.5 |
+| Shell Sort (1000) | 0.039 | 0.042 | 0.039 | 0.043 | 0.046 | 0.042 | 0.042 | 0.931 | 4.538 | 8.133 |
+| Shell Sort (Ciura gaps) (1000) | 0.034 | 0.037 | 0.036 | 0.040 | 0.040 | 0.074 | 0.075 | 0.805 | 4.400 | 7.013 |
+| Sleep Sort (simulated) (1000) | 0.013 | 0.015 | 0.007 | 0.020 | 0.055 | 0.062 | 0.063 | 0.428 | 2.602 | 574.3 |
+| Smooth Sort (1000) | 0.077 | 0.073 | 0.082 | 0.091 | 0.137 | 0.046 | 0.045 | 2.981 | 39.8 | 11.7 |
+| Stooge Sort (200) | 1.183 | 1.048 | 1.603 | 1.633 | 2.335 | 1.663 | 1.528 | 64.0 | 775.4 | 347.6 |
+| Strand Sort (1000) | 0.023 | 0.039 | 0.044 | 0.069 | 0.139 | 0.054 | 0.051 | 3.146 | 19.6 | 123.0 |
+| Ternary Heap Sort (1000) | 0.025 | 0.023 | 0.047 | 0.050 | 0.045 | 0.086 | 0.087 | 1.342 | 6.684 | 8.090 |
+| Tim Sort (1000) | 0.017 | 0.017 | 0.021 | 0.025 | 0.050 | 0.027 | 0.028 | 1.138 | 7.360 | 8.540 |
+| Tournament Sort (1000) | 0.034 | 0.036 | 0.040 | 0.060 | 0.133 | 0.138 | 0.136 | 1.528 | 27.3 | 52.8 |
+| Tree Sort (BST) (1000) | 0.037 | 0.038 | 0.037 | 0.047 | 0.079 | 0.050 | 0.050 | 0.741 | 4.986 | 41.3 |
+| Weak Heap Sort (1000) | 0.045 | 0.045 | 0.044 | 0.042 | 0.045 | 0.126 | 0.131 | 1.512 | 28.5 | 5.907 |
+
+
+Notes: Java is JIT-warmed (20 untimed runs) and excludes JVM start-up; COBOL is timed per process with a data-fill-only baseline
+subtracted (about 1 ms resolution; sub-millisecond results are shown as blank); the two assembly rows and the machine-code row execute identical
+instructions; Python is measured both as plain kernels and as the instrumented reference implementation.

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2026-11-19
+### Added
+- Redesigned animations: every GIF now shows the active range, sorted region, pivot, a phase caption, a legend, a progress bar and, for distribution/patience sorts, an auxiliary-structure panel (counts, digit histograms, bucket sizes, pile heights, bead levels). Ford–Johnson and strand sort now show their real process. Six family race montages (quadratic, n log n, distribution, nearly sorted, sorted input, nine classics).
+- Cross-language speed comparison: generated timing drivers for all nine editions, `benchmarks/compare_languages.py`, charts and tables (README and REPORT §10).
+- Teaching notes ("how it works", "when to use it") for every algorithm; README rewritten with a sorting primer, animation guide, decision table, architecture diagram, FAQ and references.
+- Trace format gained presentation hints (focus, done ranges, pivot, label, auxiliary panel).
+
 ## [1.1.0] - 2026-11-19
 ### Added
 - 28 new algorithms (56 total): Ford–Johnson merge-insertion, library, Cartesian-tree, bottom-up and ternary heap, enumeration, permutation sorts and the pairwise network, plus circle, exchange, slow, bozo, quick-sort Hoare / 3-way / dual-pivot, double selection, bingo, tournament, weak-heap, Ciura-gap Shell, AVL tree sort, in-place and bottom-up merge, MSD radix, American flag, flash and sleep sorts, Batcher odd-even merge sort.

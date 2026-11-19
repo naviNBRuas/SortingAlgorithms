@@ -1,32 +1,31 @@
 cff-version: 1.2.0
 title: SortingAlgorithms
 message: Please cite this software as below.
+abstract: >-
+  An executable, animated and benchmarked atlas of 56 sorting algorithms in nine language editions (Python, C, C++, Java, Go, Rust,
+  x86-64 assembly, raw machine code and COBOL), generated from one verified source. Includes real-trace GIF animations, teaching notes,
+  a research report and a cross-language speed comparison.
 authors:
   - family-names: Ruas
     given-names: Navin B.
     affiliation: Independent
     email: founder@nbr.company
 year: 2026
-version: 1.1.0
+version: 1.2.0
 keywords:
   - sorting algorithms
-  - computer science
-  - data structures
-  - algorithm analysis
-  - C
+  - algorithm visualization
+  - computer science education
+  - benchmarking
+  - sorting networks
+  - cross-language comparison
   - Python
+  - C
+  - C++
+  - Java
   - Go
   - Rust
-  - assembly
-  - educational
-  - reusable
-  - open source
-  - performance
-  - benchmarking
-  - visualization
-  - enterprise
-  - documentation
-  - software engineering
+  - x86-64 assembly
+  - machine code
+  - COBOL
   - reproducibility
-  - library
-  - multi-language

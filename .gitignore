@@ -64,3 +64,4 @@ machine-code/test_runner
 cobol/test_runner
 cobol/*.c
 cobol/*.o
+benchmarks/.build/
