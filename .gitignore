@@ -30,10 +30,7 @@ __pycache__/
 bin/
 *.test
 # Rust
-/target/
-Cargo.lock
-# Visualizations
-visualizations/gifs/
+target/
 # General
 *.cache
 *.report
@@ -52,3 +49,8 @@ visualizations/gifs/
 *.DS_Store
 __pycache__/
 *.pyc
+
+# Build artifacts
+c/example
+.pytest_cache/
+*.egg-info/

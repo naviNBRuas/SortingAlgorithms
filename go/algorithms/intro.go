@@ -20,7 +20,7 @@ func introRec(arr []int, low, high, depth int) {
         heapSortRange(arr, low, high)
         return
     }
-    p := partition(arr, low, high)
+    p := introPartition(arr, low, high)
     if p > low {
         introRec(arr, low, p-1, depth-1)
     }
@@ -29,7 +29,7 @@ func introRec(arr []int, low, high, depth int) {
     }
 }
 
-func partition(arr []int, low, high int) int {
+func introPartition(arr []int, low, high int) int {
     pivot := arr[high]
     i := low
     for j := low; j < high; j++ {
