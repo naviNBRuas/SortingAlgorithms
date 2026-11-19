@@ -5,15 +5,15 @@ Python 3.14.10, Linux-7.2.15+deb14-amd64-x86_64-with-glibc2.43.*
 
 ## 1. Summary
 
-We implemented 48 sorting algorithms in a single instrumented framework, verified them against Python's `sorted()`
+We implemented 56 sorting algorithms in a single instrumented framework, verified them against Python's `sorted()`
 (random, sorted, reversed, duplicate-heavy and tiny inputs; stability; 0-1 principle for networks) and measured each on
 5 input shapes at sizes n = 16 … 2048.
 
 Headline results at n = 1024 (random permutation):
 
-- **Fewest comparisons:** Binary Insertion Sort with 8,839, i.e. 1.01× the information-theoretic minimum ⌈log₂ n!⌉ = 8,770.
+- **Fewest comparisons:** Merge-Insertion Sort (Ford–Johnson) with 8,798, i.e. 1.00× the information-theoretic minimum ⌈log₂ n!⌉ = 8,770.
 - **Fewest writes:** Cycle Sort (1,024 writes).
-- **Fastest wall-clock in Python:** Pigeonhole Sort (0.46 ms); see §5 for why this ranking differs from the operation counts.
+- **Fastest wall-clock in Python:** Pigeonhole Sort (0.53 ms); see §5 for why this ranking differs from the operation counts.
 - **Input shape matters enormously:** Lomuto quicksort uses 11,403 comparisons on random data but 523,776 on sorted data (**46×**), while 3-way quicksort needs 6,400 instead of 55,005 on 10-valued data (**8.6× fewer**).
 
 ## 2. Method
@@ -26,7 +26,7 @@ the final copy-back as writes (n), so *their write counts understate memory traf
 
 **Inputs.** `random` (permutation of 0..n−1), `sorted`, `reversed`, `nearly_sorted` (sorted with n/20 random swaps), `few_unique`
 (10 distinct values). Seeds are fixed. Sizes are powers of two from 16 to 2048; super-polynomial sorts
-(Stooge, Slow, Bogo, Bozo) are capped (Stooge ≤ 128, Slow ≤ 24, Bogo ≤ 7, Bozo ≤ 6) and Bogo/Bozo are averaged over 12 seeds.
+(Stooge, Slow, Bogo, Bozo, Permutation) are capped (Stooge ≤ 128, Slow ≤ 24, Bogo ≤ 7, Bozo ≤ 6, Permutation ≤ 8) and the factorial-time ones are averaged over 12 trials.
 
 **Runtime.** Median of 3 runs of the instrumented-but-untraced code path. This is *Python* time with per-comparison object
 overhead — useful for relative comparison, not a statement about C performance.
@@ -41,18 +41,18 @@ Algorithms are split by measured slope on the log-log axes (left: quadratic, rig
 
 | Rank | Algorithm | Comparisons | × lower bound | Writes |
 |---|:-:|:-:|:-:|:-:|
-| 1 | Binary Insertion Sort | 8,839 | 1.01 | 262,490 |
-| 2 | Tim Sort | 8,929 | 1.02 | 13,983 |
-| 3 | Tournament Sort | 8,938 | 1.02 | 1,024 |
-| 4 | Merge Sort | 8,938 | 1.02 | 9,599 |
-| 5 | Merge Sort (Bottom-Up) | 8,938 | 1.02 | 9,599 |
-| 6 | AVL Tree Sort | 9,010 | 1.03 | 1,024 |
-| 7 | In-Place Merge Sort | 9,375 | 1.07 | 44,502 |
-| 8 | Weak Heap Sort | 9,756 | 1.11 | 12,634 |
-| 9 | Quick Sort (Dual-Pivot) | 10,627 | 1.21 | 7,630 |
-| 10 | Intro Sort | 11,186 | 1.28 | 6,023 |
-| 11 | Quick Sort (Lomuto) | 11,403 | 1.30 | 12,506 |
-| 12 | Tree Sort (BST) | 11,600 | 1.32 | 1,024 |
+| 1 | Merge-Insertion Sort (Ford–Johnson) | 8,798 | 1.00 | 1,024 |
+| 2 | Binary Insertion Sort | 8,839 | 1.01 | 262,490 |
+| 3 | Tim Sort | 8,929 | 1.02 | 13,983 |
+| 4 | Tournament Sort | 8,938 | 1.02 | 1,024 |
+| 5 | Library Sort (Gapped Insertion) | 8,938 | 1.02 | 1,024 |
+| 6 | Merge Sort | 8,938 | 1.02 | 9,599 |
+| 7 | Merge Sort (Bottom-Up) | 8,938 | 1.02 | 9,599 |
+| 8 | AVL Tree Sort | 9,010 | 1.03 | 1,024 |
+| 9 | In-Place Merge Sort | 9,375 | 1.07 | 44,502 |
+| 10 | Weak Heap Sort | 9,756 | 1.11 | 12,634 |
+| 11 | Quick Sort (Dual-Pivot) | 10,627 | 1.21 | 7,630 |
+| 12 | Bottom-Up Heap Sort | 10,709 | 1.22 | 11,781 |
 
 ### Fewest writes at n = 1024 (random), in-place algorithms
 
@@ -94,6 +94,7 @@ dark cells are algorithms that handle that shape gracefully; bright cells indica
 | Strand Sort | 0.05 | 12.03 | 0.33 | 0.18 |
 | Circle Sort | 0.07 | 0.16 | 0.82 | 0.69 |
 | Smooth Sort | 0.09 | 0.90 | 0.21 | 0.89 |
+| Cartesian Tree Sort | 0.16 | 0.16 | 0.94 | 1.00 |
 | Shell Sort | 0.20 | 0.51 | 0.50 | 0.47 |
 | Shell Sort (Ciura gaps) | 0.29 | 0.66 | 0.74 | 0.53 |
 | Cycle Sort | 0.33 | 0.59 | 0.36 | 0.87 |
@@ -101,6 +102,7 @@ dark cells are algorithms that handle that shape gracefully; bright cells indica
 | Pancake Sort | 0.40 | 0.40 | 0.54 | 0.90 |
 | Batcher Odd–Even Merge Sort | 0.47 | 0.67 | 0.76 | 0.75 |
 | Intro Sort | 0.48 | 0.54 | 0.53 | 0.83 |
+| Pairwise Sorting Network | 0.48 | 0.69 | 0.72 | 0.67 |
 | Bitonic Sort | 0.50 | 1.50 | 0.76 | 0.77 |
 | Exchange Sort | 0.50 | 1.50 | 0.56 | 0.51 |
 | Merge Sort | 0.55 | 0.83 | 0.84 | 0.97 |
@@ -110,11 +112,16 @@ dark cells are algorithms that handle that shape gracefully; bright cells indica
 | Tournament Sort | 0.62 | 0.62 | 0.88 | 0.98 |
 | Quick Sort (3-way) | 0.72 | 0.71 | 0.76 | 0.35 |
 | Weak Heap Sort | 0.78 | 0.83 | 0.80 | 0.73 |
+| Enumeration (Rank) Sort | 0.80 | 1.20 | 0.83 | 1.02 |
+| Merge-Insertion Sort (Ford–Johnson) | 0.91 | 0.91 | 0.93 | 0.98 |
 | Selection Sort | 1.00 | 1.00 | 1.00 | 1.00 |
 | Bingo Sort | 1.00 | 1.00 | 1.00 | 0.01 |
 | Double Selection Sort | 1.00 | 0.50 | 1.00 | 1.00 |
 | AVL Tree Sort | 1.02 | 1.02 | 1.09 | 1.04 |
+| Bottom-Up Heap Sort | 1.03 | 0.99 | 1.03 | 1.01 |
 | Heap Sort | 1.06 | 0.93 | 1.05 | 0.92 |
+| Ternary Heap Sort | 1.06 | 0.97 | 1.06 | 0.93 |
+| Library Sort (Gapped Insertion) | 1.31 | 1.21 | 1.18 | 1.15 |
 | Patience Sort | 1.37 | 0.14 | 1.39 | 0.66 |
 | Quick Sort (Lomuto) | 21.91 | 21.95 | 2.31 | 2.46 |
 | Quick Sort (Dual-Pivot) | 28.69 | 28.75 | 2.85 | 3.23 |
@@ -127,50 +134,57 @@ or `reversed` marks an algorithm with a degenerate case (Lomuto and dual-pivot q
 
 | Rank | Algorithm | ms (n=1024) | Comparisons | Writes |
 |---|:-:|:-:|:-:|:-:|
-| 1 | Pigeonhole Sort | 0.46 | 0 | 1,024 |
-| 2 | Counting Sort | 0.51 | 0 | 1,024 |
-| 3 | Flash Sort | 1.36 | 0 | 2,706 |
-| 4 | Radix Sort (LSD) | 1.91 | 0 | 1,024 |
-| 5 | American Flag Sort | 2.26 | 0 | 5,066 |
-| 6 | Bucket Sort | 3.37 | 0 | 1,024 |
-| 7 | Intro Sort | 4.67 | 11,186 | 6,023 |
-| 8 | Quick Sort (Lomuto) | 5.37 | 11,403 | 12,506 |
-| 9 | Quick Sort (Dual-Pivot) | 5.97 | 10,627 | 7,630 |
-| 10 | Merge Sort (Bottom-Up) | 6.13 | 8,938 | 9,599 |
-| 11 | Merge Sort | 6.38 | 8,938 | 9,599 |
-| 12 | Weak Heap Sort | 6.54 | 9,756 | 12,634 |
-| 13 | Tim Sort | 7.47 | 8,929 | 13,983 |
-| 14 | Shell Sort (Ciura gaps) | 8.94 | 13,389 | 10,494 |
-| 15 | Quick Sort (3-way) | 9.14 | 18,020 | 14,110 |
-| 16 | Quick Sort (Hoare) | 9.20 | 14,558 | 4,802 |
-| 17 | Heap Sort | 9.30 | 17,308 | 18,654 |
-| 18 | Strand Sort | 9.61 | 42,690 | 1,024 |
-| 19 | Comb Sort | 10.36 | 22,237 | 9,210 |
-| 20 | In-Place Merge Sort | 11.22 | 9,375 | 44,502 |
-| 21 | Smooth Sort | 12.94 | 22,696 | 13,025 |
-| 22 | Bitonic Sort | 15.78 | 28,160 | 28,186 |
-| 23 | Batcher Odd–Even Merge Sort | 16.14 | 24,063 | 27,338 |
-| 24 | Shell Sort | 17.10 | 25,418 | 20,771 |
-| 25 | Circle Sort | 26.69 | 51,200 | 17,398 |
-| 26 | Patience Sort | 31.17 | 13,755 | 1,024 |
-| 27 | Bead (Gravity) Sort | 31.33 | 0 | 1,024 |
-| 28 | Sleep Sort (simulated) | 32.49 | 0 | 1,024 |
-| 29 | AVL Tree Sort | 46.54 | 9,010 | 1,024 |
-| 30 | Tree Sort (BST) | 52.11 | 11,600 | 1,024 |
-| 31 | Tournament Sort | 58.46 | 8,938 | 1,024 |
-| 32 | Binary Insertion Sort | 81.59 | 8,839 | 262,490 |
-| 33 | Radix Sort (MSD) | 107.37 | 0 | 1,024 |
-| 34 | Insertion Sort | 166.08 | 262,487 | 262,490 |
-| 35 | Cocktail Shaker Sort | 192.72 | 400,023 | 522,942 |
-| 36 | Selection Sort | 208.80 | 523,776 | 2,038 |
-| 37 | Double Selection Sort | 225.39 | 521,378 | 2,038 |
-| 38 | Odd–Even (Brick) Sort | 235.71 | 509,454 | 522,942 |
-| 39 | Gnome Sort | 269.93 | 523,958 | 522,942 |
-| 40 | Pancake Sort | 301.49 | 523,776 | 777,354 |
-| 41 | Exchange Sort | 311.82 | 523,776 | 522,942 |
-| 42 | Bingo Sort | 449.57 | 1,048,574 | 2,038 |
-| 43 | Cycle Sort | 481.29 | 1,564,854 | 1,024 |
-| 44 | Bubble Sort | 498.92 | 523,311 | 522,942 |
+| 1 | Pigeonhole Sort | 0.53 | 0 | 1,024 |
+| 2 | Counting Sort | 0.63 | 0 | 1,024 |
+| 3 | Flash Sort | 1.44 | 0 | 2,706 |
+| 4 | Radix Sort (LSD) | 2.27 | 0 | 1,024 |
+| 5 | Quick Sort (Dual-Pivot) | 5.00 | 10,627 | 7,630 |
+| 6 | Intro Sort | 5.38 | 11,186 | 6,023 |
+| 7 | Weak Heap Sort | 6.50 | 9,756 | 12,634 |
+| 8 | Quick Sort (Hoare) | 6.68 | 14,558 | 4,802 |
+| 9 | Merge Sort (Bottom-Up) | 6.83 | 8,938 | 9,599 |
+| 10 | American Flag Sort | 7.25 | 0 | 5,066 |
+| 11 | Shell Sort (Ciura gaps) | 7.70 | 13,389 | 10,494 |
+| 12 | Tim Sort | 8.02 | 8,929 | 13,983 |
+| 13 | Bottom-Up Heap Sort | 8.46 | 10,709 | 11,781 |
+| 14 | Quick Sort (3-way) | 8.54 | 18,020 | 14,110 |
+| 15 | Ternary Heap Sort | 8.77 | 16,842 | 12,914 |
+| 16 | Bucket Sort | 8.82 | 0 | 1,024 |
+| 17 | Comb Sort | 9.80 | 22,237 | 9,210 |
+| 18 | In-Place Merge Sort | 12.56 | 9,375 | 44,502 |
+| 19 | Strand Sort | 12.77 | 42,690 | 1,024 |
+| 20 | Quick Sort (Lomuto) | 13.26 | 11,403 | 12,506 |
+| 21 | Pairwise Sorting Network | 14.83 | 24,063 | 25,678 |
+| 22 | Shell Sort | 14.92 | 25,418 | 20,771 |
+| 23 | Batcher Odd–Even Merge Sort | 18.16 | 24,063 | 27,338 |
+| 24 | Merge Sort | 21.93 | 8,938 | 9,599 |
+| 25 | Heap Sort | 28.25 | 17,308 | 18,654 |
+| 26 | Sleep Sort (simulated) | 40.68 | 0 | 1,024 |
+| 27 | Smooth Sort | 43.37 | 22,696 | 13,025 |
+| 28 | Bitonic Sort | 45.81 | 28,160 | 28,186 |
+| 29 | Tree Sort (BST) | 45.97 | 11,600 | 1,024 |
+| 30 | Circle Sort | 51.20 | 51,200 | 17,398 |
+| 31 | Merge-Insertion Sort (Ford–Johnson) | 72.52 | 8,798 | 1,024 |
+| 32 | Binary Insertion Sort | 81.18 | 8,839 | 262,490 |
+| 33 | Bead (Gravity) Sort | 118.02 | 0 | 1,024 |
+| 34 | Cartesian Tree Sort | 127.18 | 11,739 | 1,024 |
+| 35 | Radix Sort (MSD) | 127.19 | 0 | 1,024 |
+| 36 | Library Sort (Gapped Insertion) | 127.28 | 8,938 | 1,024 |
+| 37 | Patience Sort | 160.48 | 13,755 | 1,024 |
+| 38 | Selection Sort | 196.87 | 523,776 | 2,038 |
+| 39 | Double Selection Sort | 206.64 | 521,378 | 2,038 |
+| 40 | Cocktail Shaker Sort | 226.45 | 400,023 | 522,942 |
+| 41 | Tournament Sort | 239.17 | 8,938 | 1,024 |
+| 42 | Exchange Sort | 249.20 | 523,776 | 522,942 |
+| 43 | Odd–Even (Brick) Sort | 252.33 | 509,454 | 522,942 |
+| 44 | Bubble Sort | 256.51 | 523,311 | 522,942 |
+| 45 | Gnome Sort | 268.79 | 523,958 | 522,942 |
+| 46 | Enumeration (Rank) Sort | 270.07 | 1,310,047 | 1,024 |
+| 47 | AVL Tree Sort | 288.32 | 9,010 | 1,024 |
+| 48 | Bingo Sort | 294.56 | 1,048,574 | 2,038 |
+| 49 | Pancake Sort | 299.46 | 523,776 | 777,354 |
+| 50 | Cycle Sort | 438.00 | 1,564,854 | 1,024 |
+| 51 | Insertion Sort | 634.48 | 262,487 | 262,490 |
 
 ![Runtime](report/figures/runtime.png)
 
@@ -197,11 +211,16 @@ We fitted ops ≈ c·nᵖ over n = 64 … 2048 on random input.
 | Quick Sort (Hoare) | 1.14 | O(n log n) |
 | Patience Sort | 1.14 | O(n log n) |
 | Tim Sort | 1.15 | O(n log n) |
+| Cartesian Tree Sort | 1.15 | O(n log n) |
 | Weak Heap Sort | 1.16 | O(n log n) |
 | Quick Sort (3-way) | 1.16 | O(n log n) |
+| Bottom-Up Heap Sort | 1.16 | O(n log n) |
 | Intro Sort | 1.18 | O(n log n) |
+| Library Sort (Gapped Insertion) | 1.18 | O(n log n) expected |
 | Tournament Sort | 1.18 | O(n log n) |
+| Merge-Insertion Sort (Ford–Johnson) | 1.18 | O(n log n) |
 | AVL Tree Sort | 1.18 | O(n log n) |
+| Ternary Heap Sort | 1.19 | O(n log n) |
 | American Flag Sort | 1.19 | O(d·n) |
 | Merge Sort | 1.19 | O(n log n) |
 | Merge Sort (Bottom-Up) | 1.19 | O(n log n) |
@@ -214,6 +233,7 @@ We fitted ops ≈ c·nᵖ over n = 64 … 2048 on random input.
 | Quick Sort (Lomuto) | 1.26 | O(n log n) |
 | Bitonic Sort | 1.33 | O(n log² n) |
 | In-Place Merge Sort | 1.33 | O(n log² n) |
+| Pairwise Sorting Network | 1.33 | O(n log² n) |
 | Circle Sort | 1.34 | O(n log² n) |
 | Batcher Odd–Even Merge Sort | 1.34 | O(n log² n) |
 | Shell Sort | 1.45 | ~O(n^1.5) |
@@ -222,6 +242,7 @@ We fitted ops ≈ c·nᵖ over n = 64 … 2048 on random input.
 | Selection Sort | 1.99 | O(n²) |
 | Bingo Sort | 1.99 | O(n·k) |
 | Double Selection Sort | 1.99 | O(n²) |
+| Enumeration (Rank) Sort | 2.00 | O(n²) |
 | Insertion Sort | 2.00 | O(n²) |
 | Cocktail Shaker Sort | 2.01 | O(n²) |
 | Pancake Sort | 2.01 | O(n²) |
@@ -239,13 +260,14 @@ ticking a simulated clock — is not included, so their p ≈ 1 understates thei
 
 | Algorithm | Largest n tried | Comparisons | Writes | ms |
 |---|:-:|:-:|:-:|:-:|
-| Stooge Sort | 128 | 265,720 | 7,448 | 123.0 |
-| Slow Sort | 16 | 406 | 132 | 0.2 |
-| Bogo Sort | 7 | 8,781 | 45,064 | 18.5 |
-| Bozo Sort | 6 | 1,756 | 1,728 | 1.7 |
+| Stooge Sort | 128 | 265,720 | 7,448 | 136.7 |
+| Slow Sort | 16 | 406 | 132 | 0.3 |
+| Bogo Sort | 7 | 8,781 | 45,064 | 16.4 |
+| Bozo Sort | 6 | 1,756 | 1,728 | 1.5 |
+| Permutation Sort | 8 | 27,870 | 8 | 20.1 |
 
 These algorithms are included for completeness: their cost explodes super-polynomially (Stooge ≈ n^2.7, Slow sort worse than any polynomial,
-Bogo/Bozo factorial), which is why they are capped.
+Bogo/Bozo/Permutation factorial), which is why they are capped.
 
 ## 8. Threats to validity
 

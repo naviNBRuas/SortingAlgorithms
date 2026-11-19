@@ -273,3 +273,80 @@ def weak_heap_sort(a):
             join(0, x)
             x >>= 1
     a.swap(0, 1)
+
+
+@algorithm("bottom_up_heap_sort", "Bottom-Up Heap Sort", "Selection", "O(n log n)", "O(n log n)", "O(n log n)", "O(1)", False, True,
+           "Heap sort whose sift-down first descends along larger children to a leaf, then climbs back to the key's slot: ~n log n comparisons instead of 2 n log n.",
+           "Ingo Wegener, 1993 ('Bottom-up heapsort').")
+def bottom_up_heap_sort(a):
+    def sift(root, size):
+        j = root
+        while 2 * j + 2 < size:
+            j = 2 * j + 2 if a[2 * j + 1] < a[2 * j + 2] else 2 * j + 1
+        if 2 * j + 1 < size:
+            j = 2 * j + 1
+        x = a[root]
+        while a[j] < x:
+            j = (j - 1) // 2
+        path, k = [], j
+        while k > root:
+            path.append(k)
+            k = (k - 1) // 2
+        prev = root
+        for k in reversed(path):
+            a[prev] = a[k]
+            prev = k
+        if path:
+            a[prev] = x
+
+    n = len(a)
+    for s in range(n // 2 - 1, -1, -1):
+        sift(s, n)
+    for end in range(n - 1, 0, -1):
+        a.swap(0, end)
+        sift(0, end)
+
+
+@algorithm("ternary_heap_sort", "Ternary Heap Sort", "Selection", "O(n log n)", "O(n log n)", "O(n log n)", "O(1)", False, True,
+           "Heap sort on a 3-ary heap: shallower tree (log₃ n levels), more comparisons per level, better cache locality.",
+           "d-ary heaps: Johnson 1975; ternary heaps minimise the comparison cost for d = 3.")
+def ternary_heap_sort(a):
+    def sift(root, size):
+        while True:
+            first = 3 * root + 1
+            if first >= size:
+                return
+            best = first
+            for c in range(first + 1, min(first + 3, size)):
+                if a[best] < a[c]:
+                    best = c
+            if a[root] < a[best]:
+                a.swap(root, best)
+                root = best
+            else:
+                return
+
+    n = len(a)
+    for s in range((n - 2) // 3, -1, -1):
+        sift(s, n)
+    for end in range(n - 1, 0, -1):
+        a.swap(0, end)
+        sift(0, end)
+
+
+@algorithm("enumeration_sort", "Enumeration (Rank) Sort", "Selection", "O(n²)", "O(n²)", "O(n²)", "O(n)", True, False,
+           "Compute every element's final rank by counting how many elements precede it, then place it directly.",
+           "Folklore; the textbook parallel sort (every rank can be computed independently).")
+def enumeration_sort(a):
+    n = len(a)
+    vals = [a[i] for i in range(n)]
+    out = list(vals)
+    for i in range(n):
+        rank = 0
+        for j in range(n):
+            if vals[j] < vals[i] or (j < i and not vals[i] < vals[j]):
+                rank += 1
+        out[rank] = vals[i]
+        a.show(out, (rank,), "place")
+    if n:
+        a.commit(out)

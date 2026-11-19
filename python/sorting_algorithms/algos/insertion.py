@@ -221,3 +221,162 @@ def patience_sort(a):
             heapq.heappush(heap, _Top(t.p, t.i - 1))
         a.show(out + [v for p in piles for v in p][: n - len(out)], (len(out) - 1,), "collect")
     a.commit(out)
+
+
+def _ford_johnson(items, a=None):
+    n = len(items)
+    if n < 2:
+        return items
+    pairs = []
+    for i in range(0, n - 1, 2):
+        x, y = items[i], items[i + 1]
+        if y < x:
+            x, y = y, x
+        pairs.append((x, y))
+    straggler = items[-1] if n % 2 else None
+    partner = {id(big): small for small, big in pairs}
+    sorted_big = _ford_johnson([big for _, big in pairs])
+    b = [None] + [partner[id(big)] for big in sorted_big]      # b[i] is the partner of sorted_big[i-1]
+    m = len(sorted_big)
+    chain = [b[1]] + sorted_big
+    total = m
+    if straggler is not None:
+        b.append(straggler)
+        total += 1
+    prev, k = 1, 2
+    while prev < total:
+        top = min((2 ** (k + 1) + (-1) ** k) // 3, total)      # Jacobsthal-number group boundary
+        for i in range(top, prev, -1):
+            bound = len(chain)
+            if i <= m:
+                big = sorted_big[i - 1]
+                bound = next(j for j, x in enumerate(chain) if x is big)
+            lo, hi = 0, bound
+            while lo < hi:
+                mid = (lo + hi) // 2
+                if b[i] < chain[mid]:
+                    hi = mid
+                else:
+                    lo = mid + 1
+            chain.insert(lo, b[i])
+            if a is not None:
+                pending = [b[j] for j in range(2, total + 1) if j < i or (j > top)]
+                a.show(chain + pending, (lo,), "insert")
+        prev, k = top, k + 1
+    return chain
+
+
+@algorithm("ford_johnson_sort", "Merge-Insertion Sort (Ford–Johnson)", "Insertion", "O(n log n)", "O(n log n)", "O(n log n)", "O(n)", False, False,
+           "Pair up elements, recursively sort the winners, then binary-insert the losers in Jacobsthal order. "
+           "Uses the fewest comparisons of any known algorithm for small n.",
+           "Lester Ford Jr. & Selmer Johnson, 1959; optimal for n ≤ 22 (Peczarski 2004).", viz_n=40)
+def ford_johnson_sort(a):
+    n = len(a)
+    if n < 2:
+        return
+    a.commit(_ford_johnson([a[i] for i in range(n)], a))
+
+
+@algorithm("library_sort", "Library Sort (Gapped Insertion)", "Insertion", "O(n log n)", "O(n log n) expected", "O(n²)", "O(n)", True, False,
+           "Insertion sort into an array that keeps gaps, like a librarian leaving shelf space; rebalanced as it doubles.",
+           "Bender, Farach-Colton & Mosteiro 2004, 'Insertion Sort is O(n log n)'.", viz_n=48)
+def library_sort(a):
+    n = len(a)
+    if n < 2:
+        return
+    vals = [a[i] for i in range(n)]
+    size = 2 * n + 2
+    S = [None] * size
+
+    def spread(count):
+        items = [x for x in S if x is not None]
+        for i in range(size):
+            S[i] = None
+        for j, x in enumerate(items):
+            S[(j * size) // max(count, 1)] = x
+
+    def locate(x):
+        lo, hi = 0, size - 1
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            m = mid
+            while m <= hi and S[m] is None:
+                m += 1
+            if m > hi:
+                hi = mid - 1
+            elif x < S[m]:
+                hi = mid - 1
+            else:
+                lo = m + 1
+        return lo
+
+    for k, x in enumerate(vals):
+        if k and (k & (k - 1)) == 0:
+            spread(k)                                   # rebalance whenever the count doubles
+        lo = locate(x)
+        p = lo - 1
+        while p >= 0 and S[p] is None:
+            p -= 1
+        q = lo
+        while q < size and S[q] is None:
+            q += 1
+        if q - p > 1:
+            S[(p + q) // 2] = x
+        else:                                           # no gap between neighbours: shift to the nearest gap
+            g = q
+            while g < size and S[g] is not None:
+                g += 1
+            if g < size:
+                for j in range(g, q, -1):
+                    S[j] = S[j - 1]
+                S[q] = x
+            else:
+                g = p
+                while S[g] is not None:
+                    g -= 1
+                for j in range(g, p):
+                    S[j] = S[j + 1]
+                S[p] = x
+        a.show([y for y in S if y is not None] + vals[k + 1:], (), "insert")
+    a.commit([y for y in S if y is not None])
+
+
+@algorithm("cartesian_tree_sort", "Cartesian Tree Sort", "Insertion", "O(n)", "O(n log n)", "O(n log n)", "O(n)", False, False,
+           "Build a Cartesian tree in O(n), then emit minima with a priority queue holding only the tree frontier; adaptive to presortedness.",
+           "Levcopoulos & Petersson, 1989 ('Heapsort — adapted for presorted files').", adaptive=True)
+def cartesian_tree_sort(a):
+    import heapq
+    n = len(a)
+    if n < 2:
+        return
+    vals = [a[i] for i in range(n)]
+    left, right, stack = [-1] * n, [-1] * n, []
+    for i, v in enumerate(vals):
+        last = -1
+        while stack and v < vals[stack[-1]]:
+            last = stack.pop()
+        left[i] = last
+        if stack:
+            right[stack[-1]] = i
+        stack.append(i)
+
+    class _Node:
+        __slots__ = ("i",)
+
+        def __init__(self, i):
+            self.i = i
+
+        def __lt__(self, o):
+            return vals[self.i] < vals[o.i]
+
+    heap = [_Node(stack[0])]
+    out, done = [], [False] * n
+    while heap:
+        node = heapq.heappop(heap)
+        out.append(vals[node.i])
+        done[node.i] = True
+        for c in (left[node.i], right[node.i]):
+            if c >= 0:
+                heapq.heappush(heap, _Node(c))
+        a.show(out + [vals[j] for j in range(n) if not done[j]], (len(out) - 1,), "extract")
+    a.commit(out)

@@ -217,7 +217,7 @@ the final copy-back as writes (n), so *their write counts understate memory traf
 
 **Inputs.** `random` (permutation of 0..n−1), `sorted`, `reversed`, `nearly_sorted` (sorted with n/20 random swaps), `few_unique`
 (10 distinct values). Seeds are fixed. Sizes are powers of two from {meta['sizes'][0]} to {meta['sizes'][-1]}; super-polynomial sorts
-(Stooge, Slow, Bogo, Bozo) are capped (Stooge ≤ 128, Slow ≤ 24, Bogo ≤ 7, Bozo ≤ 6) and Bogo/Bozo are averaged over 12 seeds.
+(Stooge, Slow, Bogo, Bozo, Permutation) are capped (Stooge ≤ 128, Slow ≤ 24, Bogo ≤ 7, Bozo ≤ 6, Permutation ≤ 8) and the factorial-time ones are averaged over 12 trials.
 
 **Runtime.** Median of {meta['repeats']} runs of the instrumented-but-untraced code path. This is *Python* time with per-comparison object
 overhead — useful for relative comparison, not a statement about C performance.
@@ -281,7 +281,7 @@ ticking a simulated clock — is not included, so their p ≈ 1 understates thei
 {tbl(['Algorithm', 'Largest n tried', 'Comparisons', 'Writes', 'ms'], path_rows)}
 
 These algorithms are included for completeness: their cost explodes super-polynomially (Stooge ≈ n^2.7, Slow sort worse than any polynomial,
-Bogo/Bozo factorial), which is why they are capped.
+Bogo/Bozo/Permutation factorial), which is why they are capped.
 
 ## 8. Threats to validity
 

@@ -67,6 +67,7 @@ def main():
     text = README.read_text()
     text = splice(text, "TABLE", table())
     text = splice(text, "GALLERY", gallery())
+    text = re.sub(r"<!--N-->\d+<!--/N-->", f"<!--N-->{len(REGISTRY)}<!--/N-->", text)
     README.write_text(text)
     print(f"README updated: {len(REGISTRY)} algorithms")
 

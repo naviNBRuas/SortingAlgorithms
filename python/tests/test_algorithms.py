@@ -7,7 +7,7 @@ import pytest
 import sorting_algorithms as sa
 from sorting_algorithms import ALGORITHMS, REGISTRY, SortTracer, measure
 
-SLOW_CAP = {"bogo_sort": 5, "bozo_sort": 5, "slow_sort": 12, "stooge_sort": 25}
+SLOW_CAP = {"bogo_sort": 5, "bozo_sort": 5, "slow_sort": 12, "stooge_sort": 25, "permutation_sort": 6}
 NAMES = sorted(ALGORITHMS)
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -19,7 +19,7 @@ def sample(name, rng, n):
 
 def test_registry_matches_exports():
     assert set(ALGORITHMS) == set(REGISTRY)
-    assert len(ALGORITHMS) >= 48
+    assert len(ALGORITHMS) >= 56
     for name in ALGORITHMS:
         assert getattr(sa, name) is ALGORITHMS[name]
 
@@ -75,12 +75,12 @@ def test_declared_stable_algorithms_are_stable(name):
 
     rng = random.Random(99)
     for _ in range(30):
-        items = [Item(rng.randint(0, 5), i) for i in range(rng.randint(2, 40))]
+        items = [Item(rng.randint(0, 5), i) for i in range(rng.randint(2, min(40, SLOW_CAP.get(name, 40))))]
         out = ALGORITHMS[name](items)
         assert [(x.k, x.tag) for x in out] == sorted(((x.k, x.tag) for x in items), key=lambda t: t[0])
 
 
-@pytest.mark.parametrize("name", ["bitonic_sort", "odd_even_merge_sort"])
+@pytest.mark.parametrize("name", ["bitonic_sort", "odd_even_merge_sort", "pairwise_sorting_network"])
 def test_networks_zero_one_principle(name):
     for n in range(1, 15):
         for bits in itertools.product([0, 1], repeat=n):

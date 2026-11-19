@@ -320,3 +320,26 @@ def bozo_sort(a, max_swaps: int = 100_000, seed: int = 0):
             return
         a.swap(rng.randrange(n), rng.randrange(n))
     raise RuntimeError("bozo_sort exceeded maximum swaps; aborting")
+
+
+@algorithm("permutation_sort", "Permutation Sort", "Exchange", "O(n)", "O(n·n!)", "O(n·n!)", "O(n)", True, False,
+           "Enumerate permutations in lexicographic order until one is sorted. Deterministic cousin of bogo sort.",
+           "Folklore ('exhaustive search sort').", viz_n=6, bench_max_n=8, adaptive=True)
+def permutation_sort(a):
+    n = len(a)
+    vals = [a[i] for i in range(n)]
+    idx = list(range(n))
+    while True:
+        view = [vals[i] for i in idx]
+        a.show(view, (), "try")
+        if all(not view[i + 1] < view[i] for i in range(n - 1)):
+            a.commit(view)
+            return
+        i = n - 2
+        while i >= 0 and idx[i] > idx[i + 1]:
+            i -= 1
+        j = n - 1
+        while idx[j] < idx[i]:
+            j -= 1
+        idx[i], idx[j] = idx[j], idx[i]
+        idx[i + 1:] = reversed(idx[i + 1:])

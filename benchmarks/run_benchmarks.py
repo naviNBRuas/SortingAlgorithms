@@ -73,7 +73,10 @@ def main():
                 for t in range(trials):
                     kw = dict(info.bench_kwargs)
                     if cap < SIZES[0]:
-                        kw.update({"seed": t, **({"max_shuffles": 5_000_000} if name == "bogo_sort" else {"max_swaps": 5_000_000})})
+                        if name == "bogo_sort":
+                            kw.update({"seed": t, "max_shuffles": 5_000_000})
+                        elif name == "bozo_sort":
+                            kw.update({"seed": t, "max_swaps": 5_000_000})
                     rows.append(run_one(name, make(dist, n, 1000 + t), kw))
                 results.append({"algorithm": name, "n": n, "distribution": dist,
                                 **{k: statistics.mean(r[k] for r in rows) for k in rows[0]}})

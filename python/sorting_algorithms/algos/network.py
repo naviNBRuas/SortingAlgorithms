@@ -46,3 +46,42 @@ def odd_even_merge_sort(a):
                         _cmp_swap(a, i + j, i + j + k)
             k //= 2
         p *= 2
+
+
+@algorithm("pairwise_sorting_network", "Pairwise Sorting Network", "Network", "O(n log² n)", "O(n log² n)", "O(n log² n)", "O(1)", False, True,
+           "Compare pairs, then pairs of pairs, in a pattern with the same size as Batcher's networks but a simpler structure.",
+           "Ian Parberry, 1992 ('The pairwise sorting network').")
+def pairwise_sorting_network(a):
+    n = len(a)
+    size = 1
+    while size < n:
+        size *= 2
+    step = 1
+    while step < size:
+        b, c = step, 0
+        while b < size:
+            if b < n:
+                _cmp_swap(a, b - step, b)
+            b += 1
+            c += 1
+            if c >= step:
+                c = 0
+                b += step
+        step *= 2
+    step //= 4
+    e = 1
+    while step > 0:
+        d = e
+        while d > 0:
+            b, c = (d + 1) * step, 0
+            while b < size:
+                if b < n:
+                    _cmp_swap(a, b - d * step, b)
+                b += 1
+                c += 1
+                if c >= step:
+                    c = 0
+                    b += step
+            d //= 2
+        step //= 2
+        e = e * 2 + 1

@@ -1,15 +1,19 @@
 # SortingAlgorithms
 
-**An executable, animated atlas of 48 sorting algorithms** — from bubble sort to Batcher networks, TimSort and smooth sort — with every algorithm instrumented, tested, benchmarked and animated from the *same* code.
+**An executable, animated atlas of <!--N-->56<!--/N--> sorting algorithms** — from bubble sort to Batcher networks, TimSort, smooth sort and Ford–Johnson merge-insertion — each one instrumented, tested, benchmarked and animated from the *same* code. The original 28 also ship in C, Go, Rust and **pure x86-64 assembly**.
 
 <p align="center">
   <img src="visualizations/gifs/race.gif" alt="Nine sorting algorithms racing on equal operation budgets" width="720">
 </p>
 
-- 🎞️ **48 animated GIFs**, one per algorithm, rendered from real execution traces (amber = compare, red = write/swap, green = verified).
-- 🧪 **Correctness tests** on random, sorted, reversed, duplicate-heavy and tiny inputs, plus *stability* verification, 0-1-principle proofs for the sorting networks, and docs-consistency checks.
-- 📊 **[REPORT.md](REPORT.md)** — a benchmark study: comparisons, writes and runtime across sizes and input shapes, with empirical growth exponents.
-- 🧬 Registry-driven metadata (complexity, stability, space, history) so the tables below can never drift from the code.
+- 🎞️ **<!--N-->56<!--/N--> animated GIFs** (plus a race), rendered from real execution traces: amber = compare, red = write/swap, green = verified sorted.
+- 🧪 **Correctness tests** on random, sorted, reversed, duplicate-heavy and tiny inputs, plus *stability* verification, 0-1-principle proofs for the sorting networks, and docs-consistency checks. C, Go, Rust and assembly have their own suites.
+- 📊 **[REPORT.md](REPORT.md)**: a benchmark study of comparisons, writes and runtime across sizes and input shapes, with empirical growth exponents.
+- 🧬 Registry-driven metadata (complexity, stability, space, history), so the tables below cannot drift from the code.
+
+## Contents
+
+[Quick start](#quick-start) · [How it works](#how-it-works) · [Catalogue](#catalogue) · [Gallery](#gallery) · [Benchmarks at a glance](#benchmarks-at-a-glance) · [Coverage and omissions](#coverage-and-omissions) · [Other languages](#other-languages) · [Repository layout](#repository-layout) · [Testing](#testing) · [Contributing](#contributing-a-new-algorithm) · [License](#license--citation)
 
 ---
 
@@ -43,7 +47,7 @@ stats.comparisons, stats.writes                  # deterministic, machine-indepe
 
 ```sh
 export PYTHONPATH=$PWD/python
-python visualizations/generate_gifs.py           # all GIFs + race.gif (~1 min)
+python visualizations/generate_gifs.py           # all GIFs + race.gif (about a minute)
 python benchmarks/run_benchmarks.py              # raw measurements -> report/data/benchmarks.json
 python benchmarks/generate_report.py             # figures + REPORT.md
 python scripts/build_docs.py                     # refresh the tables and gallery below
@@ -78,6 +82,7 @@ Out-of-place algorithms (merge, counting, tree, patience, …) additionally emit
 | [Stooge Sort](#stooge_sort) | Exchange | O(n^2.71) | O(n^2.71) | O(n^2.71) | O(log n) | ✗ | ✓ |
 | [Slow Sort](#slow_sort) | Exchange | Ω(n^(log n / 2+ε)) | super-polynomial | super-polynomial | O(n) | ✗ | ✓ |
 | [Pancake Sort](#pancake_sort) | Exchange | O(n) | O(n²) | O(n²) | O(1) | ✗ | ✓ |
+| [Permutation Sort](#permutation_sort) | Exchange | O(n) | O(n·n!) | O(n·n!) | O(n) | ✓ | ✗ |
 | [Selection Sort](#selection_sort) | Selection | O(n²) | O(n²) | O(n²) | O(1) | ✗ | ✓ |
 | [Double Selection Sort](#double_selection_sort) | Selection | O(n²) | O(n²) | O(n²) | O(1) | ✗ | ✓ |
 | [Bingo Sort](#bingo_sort) | Selection | O(n + k·n) | O(n·k) | O(n²) | O(1) | ✗ | ✓ |
@@ -86,6 +91,9 @@ Out-of-place algorithms (merge, counting, tree, patience, …) additionally emit
 | [Smooth Sort](#smooth_sort) | Selection | O(n) | O(n log n) | O(n log n) | O(1) | ✗ | ✓ |
 | [Tournament Sort](#tournament_sort) | Selection | O(n log n) | O(n log n) | O(n log n) | O(n) | ✓ | ✗ |
 | [Weak Heap Sort](#weak_heap_sort) | Selection | O(n log n) | O(n log n) | O(n log n) | O(n) bits | ✗ | ✓ |
+| [Bottom-Up Heap Sort](#bottom_up_heap_sort) | Selection | O(n log n) | O(n log n) | O(n log n) | O(1) | ✗ | ✓ |
+| [Ternary Heap Sort](#ternary_heap_sort) | Selection | O(n log n) | O(n log n) | O(n log n) | O(1) | ✗ | ✓ |
+| [Enumeration (Rank) Sort](#enumeration_sort) | Selection | O(n²) | O(n²) | O(n²) | O(n) | ✓ | ✗ |
 | [Insertion Sort](#insertion_sort) | Insertion | O(n) | O(n²) | O(n²) | O(1) | ✓ | ✓ |
 | [Binary Insertion Sort](#binary_insertion_sort) | Insertion | O(n log n) | O(n²) | O(n²) | O(1) | ✓ | ✓ |
 | [Shell Sort](#shell_sort) | Insertion | O(n log n) | ~O(n^1.5) | O(n²) | O(1) | ✗ | ✓ |
@@ -93,6 +101,9 @@ Out-of-place algorithms (merge, counting, tree, patience, …) additionally emit
 | [Tree Sort (BST)](#tree_sort) | Insertion | O(n log n) | O(n log n) | O(n²) | O(n) | ✓ | ✗ |
 | [AVL Tree Sort](#avl_tree_sort) | Insertion | O(n log n) | O(n log n) | O(n log n) | O(n) | ✓ | ✗ |
 | [Patience Sort](#patience_sort) | Insertion | O(n log n) | O(n log n) | O(n log n) | O(n) | ✗ | ✗ |
+| [Merge-Insertion Sort (Ford–Johnson)](#ford_johnson_sort) | Insertion | O(n log n) | O(n log n) | O(n log n) | O(n) | ✗ | ✗ |
+| [Library Sort (Gapped Insertion)](#library_sort) | Insertion | O(n log n) | O(n log n) expected | O(n²) | O(n) | ✓ | ✗ |
+| [Cartesian Tree Sort](#cartesian_tree_sort) | Insertion | O(n) | O(n log n) | O(n log n) | O(n) | ✗ | ✗ |
 | [Merge Sort](#merge_sort) | Merge | O(n log n) | O(n log n) | O(n log n) | O(n) | ✓ | ✗ |
 | [Merge Sort (Bottom-Up)](#merge_sort_bottom_up) | Merge | O(n log n) | O(n log n) | O(n log n) | O(n) | ✓ | ✗ |
 | [In-Place Merge Sort](#in_place_merge_sort) | Merge | O(n log n) | O(n log² n) | O(n log² n) | O(log n) | ✓ | ✓ |
@@ -110,6 +121,7 @@ Out-of-place algorithms (merge, counting, tree, patience, …) additionally emit
 | [Sleep Sort (simulated)](#sleep_sort) | Distribution | O(n + max) | O(n + max) | O(n + max) | O(n) | ✓ | ✗ |
 | [Bitonic Sort](#bitonic_sort) | Network | O(n log² n) | O(n log² n) | O(n log² n) | O(1) | ✗ | ✓ |
 | [Batcher Odd–Even Merge Sort](#odd_even_merge_sort) | Network | O(n log² n) | O(n log² n) | O(n log² n) | O(1) | ✗ | ✓ |
+| [Pairwise Sorting Network](#pairwise_sorting_network) | Network | O(n log² n) | O(n log² n) | O(n log² n) | O(1) | ✗ | ✓ |
 | [Bogo Sort](#bogo_sort) | Probabilistic | O(n) | O(n·n!) | unbounded | O(1) | ✗ | ✓ |
 | [Bozo Sort](#bozo_sort) | Probabilistic | O(n) | O(n·n!) | unbounded | O(1) | ✗ | ✓ |
 <!-- END:TABLE -->
@@ -236,7 +248,7 @@ Dutch-national-flag partition into <, =, > pivot; linear time on inputs with few
 <a id="quick_sort_dual_pivot"></a>
 #### Quick Sort (Dual-Pivot)
 
-Two pivots split the range into three parts; the scheme used by Java's Arrays.sort for primitives.
+Two pivots split the range into three parts; the scheme used by Java's Arrays.sort. This version takes the end elements as pivots, so sorted input is quadratic.
 
 <img src="visualizations/gifs/quick_sort_dual_pivot.gif" alt="Quick Sort (Dual-Pivot) animation" width="480">
 
@@ -276,6 +288,17 @@ Only prefix reversals ('spatula flips') are allowed: bring the max to the front,
 - **Time:** best O(n) · average O(n²) · worst O(n²)
 - **Space:** O(1) · unstable, in-place
 - **Origin:** Gates & Papadimitriou 1979 (their only joint paper; Gates co-founded Microsoft).
+
+<a id="permutation_sort"></a>
+#### Permutation Sort
+
+Enumerate permutations in lexicographic order until one is sorted. Deterministic cousin of bogo sort.
+
+<img src="visualizations/gifs/permutation_sort.gif" alt="Permutation Sort animation" width="480">
+
+- **Time:** best O(n) · average O(n·n!) · worst O(n·n!)
+- **Space:** O(n) · stable, not in-place
+- **Origin:** Folklore ('exhaustive search sort').
 
 ### Selection
 
@@ -369,6 +392,39 @@ Heap sort on a weak heap (a binary tree with a reverse bit per node); near-optim
 - **Space:** O(n) bits · unstable, in-place
 - **Origin:** Dutton 1993; Edelkamp & Wegener 2002.
 
+<a id="bottom_up_heap_sort"></a>
+#### Bottom-Up Heap Sort
+
+Heap sort whose sift-down first descends along larger children to a leaf, then climbs back to the key's slot: ~n log n comparisons instead of 2 n log n.
+
+<img src="visualizations/gifs/bottom_up_heap_sort.gif" alt="Bottom-Up Heap Sort animation" width="480">
+
+- **Time:** best O(n log n) · average O(n log n) · worst O(n log n)
+- **Space:** O(1) · unstable, in-place
+- **Origin:** Ingo Wegener, 1993 ('Bottom-up heapsort').
+
+<a id="ternary_heap_sort"></a>
+#### Ternary Heap Sort
+
+Heap sort on a 3-ary heap: shallower tree (log₃ n levels), more comparisons per level, better cache locality.
+
+<img src="visualizations/gifs/ternary_heap_sort.gif" alt="Ternary Heap Sort animation" width="480">
+
+- **Time:** best O(n log n) · average O(n log n) · worst O(n log n)
+- **Space:** O(1) · unstable, in-place
+- **Origin:** d-ary heaps: Johnson 1975; ternary heaps minimise the comparison cost for d = 3.
+
+<a id="enumeration_sort"></a>
+#### Enumeration (Rank) Sort
+
+Compute every element's final rank by counting how many elements precede it, then place it directly.
+
+<img src="visualizations/gifs/enumeration_sort.gif" alt="Enumeration (Rank) Sort animation" width="480">
+
+- **Time:** best O(n²) · average O(n²) · worst O(n²)
+- **Space:** O(n) · stable, not in-place
+- **Origin:** Folklore; the textbook parallel sort (every rank can be computed independently).
+
 ### Insertion
 
 Grow a sorted structure one element at a time: arrays, gapped arrays, trees and piles.
@@ -449,6 +505,39 @@ Deal cards onto piles (binary-searching the leftmost legal pile), then merge the
 - **Time:** best O(n log n) · average O(n log n) · worst O(n log n)
 - **Space:** O(n) · unstable, not in-place
 - **Origin:** Named by Mallows 1960s after the card game; yields the longest increasing subsequence length for free.
+
+<a id="ford_johnson_sort"></a>
+#### Merge-Insertion Sort (Ford–Johnson)
+
+Pair up elements, recursively sort the winners, then binary-insert the losers in Jacobsthal order. Uses the fewest comparisons of any known algorithm for small n.
+
+<img src="visualizations/gifs/ford_johnson_sort.gif" alt="Merge-Insertion Sort (Ford–Johnson) animation" width="480">
+
+- **Time:** best O(n log n) · average O(n log n) · worst O(n log n)
+- **Space:** O(n) · unstable, not in-place
+- **Origin:** Lester Ford Jr. & Selmer Johnson, 1959; optimal for n ≤ 22 (Peczarski 2004).
+
+<a id="library_sort"></a>
+#### Library Sort (Gapped Insertion)
+
+Insertion sort into an array that keeps gaps, like a librarian leaving shelf space; rebalanced as it doubles.
+
+<img src="visualizations/gifs/library_sort.gif" alt="Library Sort (Gapped Insertion) animation" width="480">
+
+- **Time:** best O(n log n) · average O(n log n) expected · worst O(n²)
+- **Space:** O(n) · stable, not in-place
+- **Origin:** Bender, Farach-Colton & Mosteiro 2004, 'Insertion Sort is O(n log n)'.
+
+<a id="cartesian_tree_sort"></a>
+#### Cartesian Tree Sort
+
+Build a Cartesian tree in O(n), then emit minima with a priority queue holding only the tree frontier; adaptive to presortedness.
+
+<img src="visualizations/gifs/cartesian_tree_sort.gif" alt="Cartesian Tree Sort animation" width="480">
+
+- **Time:** best O(n) · average O(n log n) · worst O(n log n)
+- **Space:** O(n) · unstable, not in-place
+- **Origin:** Levcopoulos & Petersson, 1989 ('Heapsort — adapted for presorted files').
 
 ### Merge
 
@@ -653,6 +742,17 @@ Batcher's other network: recursively merge sorted halves with an odd–even merg
 - **Space:** O(1) · unstable, in-place
 - **Origin:** Ken Batcher, 1968; Knuth TAOCP vol. 3 §5.3.4.
 
+<a id="pairwise_sorting_network"></a>
+#### Pairwise Sorting Network
+
+Compare pairs, then pairs of pairs, in a pattern with the same size as Batcher's networks but a simpler structure.
+
+<img src="visualizations/gifs/pairwise_sorting_network.gif" alt="Pairwise Sorting Network animation" width="480">
+
+- **Time:** best O(n log² n) · average O(n log² n) · worst O(n log² n)
+- **Space:** O(1) · unstable, in-place
+- **Origin:** Ian Parberry, 1992 ('The pairwise sorting network').
+
 ### Probabilistic
 
 Randomised sorts with no worst-case bound. Included as cautionary tales.
@@ -683,17 +783,42 @@ Swap two random elements, check, repeat. Even less strategic than bogo sort.
 
 ---
 
+## Benchmarks at a glance
+
+Operations per element relative to n·log₂n at n = 1024, for every algorithm and five input shapes (lower is better; see [REPORT.md](REPORT.md) for the full study, scaling curves and fitted exponents):
+
+<p align="center"><img src="report/figures/heatmap.png" alt="Heatmap of operations per n log n for every algorithm and input shape" width="560"></p>
+
+Highlights: binary insertion sort, Ford–Johnson and merge-style sorts come within a few percent of the information-theoretic comparison minimum; Lomuto and dual-pivot quicksort with end pivots degrade ~20–40× on already-sorted input; 3-way quicksort and bingo sort collapse on few-unique-key inputs; adaptive sorts (insertion, TimSort, smooth, Cartesian-tree) approach linear on nearly sorted data.
+
+## Coverage and omissions
+
+The catalogue covers every major family: exchange, selection/heap, insertion/tree, merge, hybrid, distribution, sorting networks and the pathological/probabilistic sorts. "Every sorting algorithm" is not a finite list, so here is what is deliberately **not** included and why:
+
+| Not implemented | Reason |
+| --- | --- |
+| Block / WikiSort, GrailSort, pdqsort, ips⁴o, Spreadsort, Burstsort, Cubesort | Highly engineered production algorithms (thousands of lines, many tuning constants) that do not animate or explain cleanly. Their ideas appear here through TimSort, intro sort, MSD radix and American flag sort. |
+| Shear sort, Rotatesort, other 2-D mesh sorts | Need a rectangular grid; this framework sorts a 1-D array. |
+| Stalin sort and similar "delete the unsorted" jokes | Not actually sorting (they discard data). |
+| Spaghetti sort | A physical analogue computer; the closest honest simulation is bead/selection sort. |
+| Bogobogosort, quantum bogosort | Variants with no new idea over bogo sort. |
+| External / disk sorts (k-way merge, replacement selection) | Out of scope for an in-memory array visualiser; tournament and strand sort show the core ideas. |
+
+Contributions of any of these are welcome; see [Contributing](#contributing-a-new-algorithm).
+
 ## Other languages
+
+The 28 algorithms of the original catalogue are ported to four more languages; the 28 added in v1.1 exist in Python only.
 
 | Language | Location | Status |
 | --- | --- | --- |
-| Python | `python/` | **Reference.** 48 algorithms, tracing, tests, benchmarks. |
-| C | `c/` | 28 algorithms (the original catalogue) → `libsort.a`; build with `cd c && make`. |
-| Go | `go/` | 28 algorithms; `cd go && go run ./cmd`. |
-| Rust | `rust/` | 28 algorithms; `cd rust && cargo run`. |
-| x86-64 assembly | `assembly/` | Hand-written cores for 8 algorithms, C tail-calls for the rest (see `assembly/README.md`). |
+| Python | `python/` | **Reference.** <!--N-->56<!--/N--> algorithms, tracing, tests, benchmarks. |
+| C | `c/` | 28 algorithms → `libsort.a`; `cd c && make test`. |
+| Go | `go/` | 28 algorithms; `cd go && go test ./...`. |
+| Rust | `rust/` | 28 algorithms; `cd rust && cargo test`. |
+| x86-64 assembly | `assembly/` | **28 algorithms in pure, hand-written assembly** (GNU `as`, Intel syntax). No C, no libc: only two raw `mmap`/`munmap` syscalls. `cd assembly && make test freestanding`. See [assembly/README.md](assembly/README.md). |
 
-All C, Go and Rust ports are covered by their own test suites (`make test`, `go test ./...`, `cargo test`), which check random, sorted, reversed and duplicate-heavy inputs of many lengths (the C suite is also clean under AddressSanitizer). Some ports are deliberately simplified relative to Python: for example the Go/Rust `tim_sort` is a fixed-minrun bottom-up hybrid rather than a full run-detecting TimSort. The 20 algorithms added in v1.1 exist in Python only.
+Each port has its own test suite checking random, sorted, reversed and duplicate-heavy inputs of many lengths; the C suite is clean under AddressSanitizer and the assembly suite under Valgrind, and the assembly sorts also link and pass in a binary built with `-nostdlib` (no libc whatsoever). Some ports are simplified relative to Python, e.g. the Go/Rust `tim_sort` is a fixed-minrun bottom-up hybrid rather than a full run-detecting TimSort.
 
 ## Repository layout
 
@@ -703,8 +828,20 @@ python/tests/                correctness, stability, networks, docs-consistency
 visualizations/              GIF renderer and generated gifs/
 benchmarks/                  measurement + report generator
 report/                      raw data and figures used by REPORT.md
-c/  go/  rust/  assembly/    ports of the original catalogue
+c/  go/  rust/  assembly/    ports of the original 28 (assembly is pure, libc-free)
 ```
+
+## Testing
+
+```sh
+cd python   && python -m pytest          # Python reference: correctness, stability, networks, docs consistency
+cd c        && make test                 # C
+cd go       && go test ./...             # Go
+cd rust     && cargo test                # Rust
+cd assembly && make test freestanding    # assembly (add `make memcheck` for Valgrind)
+```
+
+CI runs all of them (see `.github/workflows/ci.yml`).
 
 ## Contributing a new algorithm
 
